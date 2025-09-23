@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:forceDarkAllowed="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/ava_loading2"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@drawable/ava_loading2"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Test"
+        tools:targetApi="31" >
+
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:exported="false" >
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
+        <activity
+            android:name=".ui.englishlevel.EnglishLevelActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.question_data.ReadingTextActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.question_data.ListeningChoiceActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".ui.schedule.BootReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".ui.schedule.AlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.profile.LanguageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.profile.TermActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.profile.EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.DiscussionActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.question_data.WrittingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.DictionaryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.entrance_test.WritingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.entrance_test.Pick1Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.entrance_test.PickManyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.entrance_test.ListeningActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.entrance_test.TextReadingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.entrance_test.ListeningPick1Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.entrance_test.SpeakingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.question_data.PointResultLessonActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.question_data.ReviewAnswerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.CourseInformationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.ReviewActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.GroupFlashcardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.FlashcardInformationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.FlashcardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".NevigateQuestion"
+            android:exported="false" />
+        <activity
+            android:name=".ui.explore.ExploreActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.schedule.ScheduleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.NotificationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.question_data.PointResultCourseActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.question_data.RecordQuestionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.LoadingTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ChooseFieldsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.question_data.GrammarPickManyActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.question_data.ListeningQuestionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.question_data.GrammarPick1QuestionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.SetUpAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ConfirmCode2Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name=".ui.LoadPassActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.NewPassActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.Intro2Activity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.ForgotPassWordActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.SelectActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.SignInActivity"
+            android:exported="true" />
+        <activity android:name=".ui.Test2"
+            android:exported="true" />
+
+        <!-- <activity -->
+        <!-- android:name=".ui.login.LoginActivity" -->
+        <!-- android:exported="false" -->
+        <!-- android:label="@string/title_activity_login" /> -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

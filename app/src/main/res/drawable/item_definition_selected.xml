@@ -1,0 +1,11 @@
+<!-- res/drawable/item_definition_selected.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="350dp"
+    android:height="80dp"
+    android:viewportWidth="380"
+    android:viewportHeight="150">
+    <path
+        android:pathData="M26,6L354,6A16,16 0,0 1,370 22L370,120A16,16 0,0 1,354 136L26,136A16,16 0,0 1,10 120L10,22A16,16 0,0 1,26 6z"
+        android:fillColor="#BC725F"/>
+</vector>
+

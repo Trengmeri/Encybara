@@ -1,0 +1,13 @@
+<resources>
+    <dimen name="activity_horizontal_margin">24dp</dimen>
+    <dimen name="activity_vertical_margin">24dp</dimen>
+    <dimen name="margin_all">16dp</dimen>
+    <dimen name="dp_60">60dp</dimen>
+    <dimen name="dp_16">20dp</dimen>
+    <dimen name="dp_30">40dp</dimen>
+    <dimen name="size_button_all">20sp</dimen>
+    <dimen name="dp40">50dp</dimen>
+    <dimen name="button_height">60dp</dimen>
+    <dimen name="text_margin">20dp</dimen>
+    <dimen name="textsize_big">34sp</dimen>
+</resources>

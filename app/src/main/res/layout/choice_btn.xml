@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/btnOption"
+    style="@style/Text_Button_All"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="150dp"
+    android:minHeight="70dp"
+    android:breakStrategy="simple"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="8dp"
+    android:background="@drawable/button_background"
+    android:layout_marginBottom="12dp"
+    android:layout_marginEnd="12dp"
+    android:textColor="@color/black"
+    android:textSize="15sp"
+    android:gravity="center"/>

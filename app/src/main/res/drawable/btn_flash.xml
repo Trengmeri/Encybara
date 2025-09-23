@@ -1,0 +1,41 @@
+<!--<vector xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:width="350dp"-->
+<!--    android:height="80dp"-->
+<!--    android:viewportWidth="275"-->
+<!--    android:viewportHeight="68">-->
+<!--  <path-->
+<!--      android:pathData="M18,2L257,2A12,12 0,0 1,269 14L269,46A12,12 0,0 1,257 58L18,58A12,12 0,0 1,6 46L6,14A12,12 0,0 1,18 2z"-->
+<!--      android:fillColor="#FFFFFF"/>-->
+<!--  <path-->
+<!--      android:pathData="M18,3L257,3A11,11 0,0 1,268 14L268,46A11,11 0,0 1,257 57L18,57A11,11 0,0 1,7 46L7,14A11,11 0,0 1,18 3z"-->
+<!--      android:strokeWidth="2"-->
+<!--      android:fillColor="#00000000"-->
+<!--      android:strokeColor="#FFFFFF"/>-->
+<!--</vector>-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Lớp nền đen để kiểm soát padding -->
+    <item android:left="16dp" android:right="16dp" android:top="8dp" android:bottom="8dp">
+        <shape>
+            <solid android:color="#00000000"/>
+        </shape>
+    </item>
+
+    <!-- Vector chính -->
+    <item>
+        <vector xmlns:android="http://schemas.android.com/apk/res/android"
+            android:width="350dp"
+            android:height="80dp"
+            android:viewportWidth="275"
+            android:viewportHeight="68">
+            <path
+                android:pathData="M18,2L257,2A12,12 0,0 1,269 14L269,46A12,12 0,0 1,257 58L18,58A12,12 0,0 1,6 46L6,14A12,12 0,0 1,18 2z"
+                android:fillColor="#FFFFFF"/>
+            <path
+                android:pathData="M18,3L257,3A11,11 0,0 1,268 14L268,46A11,11 0,0 1,257 57L18,57A11,11 0,0 1,7 46L7,14A11,11 0,0 1,18 3z"
+                android:strokeWidth="2"
+                android:fillColor="#00000000"
+                android:strokeColor="#FFFFFF"/>
+        </vector>
+    </item>
+</layer-list>
+

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.question_data.RecordQuestionActivity">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/record"
+        android:textColor="#CE9566"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center" />
+
+    <!-- Thanh tiến trình -->
+    <LinearLayout
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:id="@+id/progressContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <!-- ScrollView -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:drawableLeft="@drawable/grommet_icons_assist_listening"
+                android:text="@string/ans_record"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvQuestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/fe_question"
+                android:layout_marginTop="30dp"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp_60">
+
+                    <!-- Nút nghe tùy chỉnh -->
+                    <LinearLayout
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <!-- Biểu tượng loa -->
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_record" />
+                    </LinearLayout>
+                    <!-- Vòng tròn 1 -->
+                    <View
+                        android:id="@+id/wave_1"
+                        android:layout_width="220dp"
+                        android:layout_height="220dp"
+                        android:background="@drawable/circle_shape2"
+                        android:alpha="0.5"
+                        android:layout_gravity="center" />
+
+                    <!-- Vòng tròn 2 -->
+                    <View
+                        android:id="@+id/wave_2"
+                        android:layout_width="240dp"
+                        android:layout_height="240dp"
+                        android:background="@drawable/circle_shape2"
+                        android:alpha="0.3"
+                        android:layout_gravity="center" />
+
+                    <!-- Vòng tròn 3 -->
+                    <View
+                        android:id="@+id/wave_3"
+                        android:layout_width="260dp"
+                        android:layout_height="260dp"
+                        android:background="@drawable/circle_shape2"
+                        android:alpha="0.1"
+                        android:layout_gravity="center" />
+                    <LinearLayout
+                        android:id="@+id/imgVoice"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <!-- Biểu tượng loa -->
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_record2" />
+                    </LinearLayout>
+                </FrameLayout>
+
+                <ImageView
+                    android:id="@+id/imgReset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/icon_restart"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/your_ans"
+                android:textColor="#CE9566"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/tvTranscription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textSize="16dp"/>
+
+            <Button
+                android:id="@+id/btnCheckResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/check"
+                android:textSize="20dp"
+                android:backgroundTint="#BC6136"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/popupContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
+</LinearLayout>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/popup_background_correct"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Thông báo -->
+    <TextView
+    android:id="@+id/tvResultMessage"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="18sp"
+    android:textStyle="bold"
+    android:textColor="@android:color/black"
+    android:gravity="left"
+    android:layout_marginBottom="10dp" />
+
+        <!-- Nội dung chi tiết -->
+    <TextView
+    android:id="@+id/tvResultDetail"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="18sp"
+    android:textColor="@android:color/black"
+    android:gravity="left"
+    android:layout_marginBottom="20dp" />
+
+        <!-- Nút chuyển câu hỏi -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btnview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/view"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnNextQuestion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/nextquestion"/>
+    </LinearLayout>
+
+</LinearLayout>

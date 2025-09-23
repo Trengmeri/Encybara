@@ -1,0 +1,47 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_choose"
+    android:backgroundTint="@color/colorDefault"
+    android:padding="@dimen/dp_16"
+    android:layout_margin="@dimen/dp_16">
+
+    <!-- Tiêu đề khóa học -->
+    <TextView
+        android:id="@+id/tvCourseTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#333333"/>
+    <TextView
+        android:id="@+id/tvCourseDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="#333333"/>
+
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+    <!-- Chứa danh sách bài học -->
+    <LinearLayout
+        android:id="@+id/lessonContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="10dp">
+    </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>

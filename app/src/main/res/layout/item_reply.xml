@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+    <ImageView
+        android:id="@+id/imgArrowReply"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/icon_reply"
+        android:layout_marginEnd="5dp" />
+
+
+    <ImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/icon_numlesson"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="8dp">
+
+        <TextView
+            android:id="@+id/txtUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Name"
+            android:textStyle="bold"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/txtContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reply content here..."
+            android:textSize="12sp"
+            android:textColor="#545454"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <ImageView
+                android:id="@+id/btnLike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/like_selector"/>
+
+            <TextView
+                android:id="@+id/txtLikeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="123"
+                android:textSize="12sp"
+                android:layout_marginStart="5dp"/>
+        </LinearLayout>
+
+<!--        <TextView-->
+<!--            android:id="@+id/txtCreatedAt"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="1 week ago"-->
+<!--            android:textSize="10sp"-->
+<!--            android:layout_marginTop="5dp"/>-->
+    </LinearLayout>
+
+
+
+</LinearLayout>

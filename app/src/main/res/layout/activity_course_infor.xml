@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F9FF"
+    tools:context=".ui.CourseInformationActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:background="#B0694B"
+                        android:gravity="center">
+                        <ImageView
+                            android:layout_width="110dp"
+                            android:layout_height="110dp"
+                            android:layout_marginTop="35dp"
+                            android:scaleType="centerCrop"
+                            android:background="@drawable/ava_loading2"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="-30dp"
+                        android:layout_marginStart="@dimen/dp_30"
+                        android:layout_marginEnd="@dimen/dp_30"
+                        android:layout_gravity="center"
+                        android:background="@drawable/course_discuss">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/dp_30"
+                                android:layout_marginTop="@dimen/dp_16">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="App development"
+                                    android:textColor="#FF6B00"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"/>
+                             <!--Rate sao-->
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/courseName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Designing App Layouts"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                android:layout_marginStart="@dimen/dp_30"
+                                android:layout_marginEnd="@dimen/dp_30"
+                                android:layout_marginTop="10dp"/>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginStart="@dimen/dp_30"
+                                android:layout_marginTop="@dimen/dp_16">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/icon_lesson"/>
+                                <TextView
+                                    android:id="@+id/numLessons"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="5dp"
+                                    android:text="20 lessons "
+                                    android:textStyle="bold"
+                                    android:textSize="14sp"/>
+
+<!--                                <ImageView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:background="@drawable/icon_clock"/>-->
+
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_marginStart="5dp"-->
+<!--                                    android:text=" 42 hours"-->
+<!--                                    android:textStyle="bold"-->
+<!--                                    android:textSize="14sp"/>-->
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="#E8F1FF"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginTop="@dimen/dp_16">
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnAbout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    style="@style/Text_Button_All"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_about"
+                                    android:textSize="16sp"
+                                    android:text="@string/txt_about"/>
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnLesson"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    style="@style/Text_Button_All"
+                                    android:layout_weight="1"
+                                    android:textSize="16sp"
+                                    android:text="@string/txt_lesson"
+                                    android:background="@drawable/bg_lesson"/>
+                            </LinearLayout>
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <LinearLayout
+                                    android:id="@+id/contentAbout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginTop="@dimen/dp_30">
+
+                                    <TextView
+                                        android:id="@+id/txtContentAbout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/dp_30"
+                                        android:layout_marginEnd="@dimen/dp_30"
+                                        android:textSize="14sp"
+                                        android:textColor="#A0A4AB"
+                                        android:layout_marginBottom="20dp"/>
+                                </LinearLayout>
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerViewLessons"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:padding="16dp"
+                                    android:scrollbars="vertical"/>
+
+                            </FrameLayout>
+
+
+                        </LinearLayout>
+
+
+                </LinearLayout>
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="16dp"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:layout_marginBottom="8dp"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:padding="8dp">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="Rate this course:"-->
+<!--                        android:textSize="14sp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:textColor="@color/black"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginEnd="25dp"/>-->
+
+<!--                    <RatingBar-->
+<!--                        android:id="@+id/ratingBar"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:numStars="5"-->
+<!--                        android:stepSize="1.0"-->
+<!--                        android:rating="5"-->
+<!--                        android:isIndicator="false"-->
+<!--                        style="?android:attr/ratingBarStyleSmall"-->
+<!--                        android:scaleX="1.5"-->
+<!--                        android:scaleY="1.5"-->
+<!--                        android:theme="@style/CustomRatingBar" />-->
+<!--                </LinearLayout>-->
+
+
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="16dp"-->
+<!--                    android:padding="8dp"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:background="@drawable/border_bg"-->
+<!--                    android:gravity="center_vertical">-->
+
+<!--                    <EditText-->
+<!--                        android:id="@+id/edtReview"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:hint="Wirte a review..."-->
+<!--                        android:padding="8dp"-->
+<!--                        android:background="@null"-->
+<!--                        android:textSize="14sp"/>-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/btSendReview"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/icon_send"-->
+<!--                        android:padding="8dp"/>-->
+<!--                </LinearLayout>-->
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_30"
+                            android:layout_marginBottom="10dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Reviews"
+                                android:textStyle="bold"
+                                android:textSize="18sp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewDiscussion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingBottom="80dp" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+        <ImageView
+            android:id="@+id/btnBackto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_30"
+            android:background="@drawable/icon_back"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_30">
+            <ImageView
+                android:id="@+id/btnJoin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_joincourse"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/join"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20dp"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+        <View
+            android:id="@+id/darkOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80000000"
+            android:visibility="gone"/>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/imgSuccessGif"
+                android:layout_width="wrap_content"
+                android:layout_height="392dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/dp40"
+                android:layout_marginRight="@dimen/dp40"
+                android:src="@raw/like"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tvSuccessMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/joinn"
+                android:textSize="24sp"
+                android:layout_marginLeft="35dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

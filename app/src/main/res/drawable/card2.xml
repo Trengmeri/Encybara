@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="431dp"
+    android:height="212dp"
+    android:viewportWidth="431"
+    android:viewportHeight="212">
+
+    <group>
+        <!-- Bo tròn góc -->
+        <clip-path
+            android:pathData="M10,2C10,1 11,0 12,0H419C425,0 431,6 431,12V200C431,206 425,212 419,212H12C6,212 0,206 0,200V12C0,6 6,2 10,2Z"/>
+
+        <!-- Nền chính -->
+        <path
+            android:pathData="M10,2C10,1 11,0 12,0H419C425,0 431,6 431,12V200C431,206 425,212 419,212H12C6,212 0,206 0,200V12C0,6 6,2 10,2Z"
+            android:fillColor="#21253D"/>
+
+
+
+        <!-- Hình khối vàng -->
+        <path
+            android:pathData="M290,230C290,160 350,100 431,100L431,230L290,230Z"
+            android:fillColor="#FFBA1A"/>
+    </group>
+</vector>

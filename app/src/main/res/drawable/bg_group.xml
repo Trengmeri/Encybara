@@ -1,0 +1,56 @@
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<shape xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:shape="rectangle">-->
+
+<!--    <gradient-->
+<!--        android:angle="90"-->
+<!--        android:startColor="#F4D168"-->
+<!--        android:endColor="#F0ECC2"-->
+<!--        android:type="linear"/>-->
+
+<!--    <corners android:radius="30dp"/>-->
+
+<!--    <padding android:left="@dimen/dp_16"-->
+<!--        android:right="@dimen/dp_16"-->
+<!--        android:top="8dp"-->
+<!--        android:bottom="8dp"/>-->
+
+<!--    <stroke-->
+<!--        android:width="4dp"-->
+<!--        android:color="#EDEAEA"/>-->
+
+<!--</shape>-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Main background -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:startColor="#F4D168"
+                android:endColor="#F0ECC2"
+                android:type="linear"/>
+
+            <corners android:radius="30dp"/>
+
+            <padding
+                android:left="@dimen/dp_16"
+                android:right="@dimen/dp_16"
+                android:top="8dp"
+                android:bottom="8dp"/>
+
+            <stroke
+                android:width="4dp"
+                android:color="#EDEAEA"/>
+        </shape>
+    </item>
+
+    <!-- Cute icon at bottom left -->
+    <item
+        android:drawable="@drawable/cat_print"
+        android:gravity="bottom|left"
+        android:bottom="8dp"
+        android:left="8dp"/>
+</layer-list>
+

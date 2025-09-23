@@ -1,0 +1,50 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Text_Button_All">
+        <item name="android:textSize">@dimen/size_button_all</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+    </style>
+
+    <style name="Button_Active_All" parent="Text_Button_All">
+        <item name="android:background">@drawable/bg_schedule</item>
+        <item name="android:paddingStart">@dimen/dp_16</item>
+        <item name="android:paddingEnd">@dimen/dp_16</item>
+        <item name="android:layout_marginStart">@dimen/dp_30</item>
+        <item name="android:layout_marginEnd">@dimen/dp_60</item>
+        <item name="paddingEnd">@dimen/dp_30</item>
+        <item name="paddingStart">@dimen/dp_30</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_height">@dimen/dp40</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:stateListAnimator" tools:targetApi="lollipop">@null</item>
+    </style>
+    <style name="Answer_Multi_style">
+        <item name="android:textSize">@dimen/size_button_all</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:background">@color/colorDefault</item>
+        <item name="android:layout_marginStart">@dimen/dp_16</item>
+        <item name="android:layout_marginEnd">@dimen/dp_16</item>
+        <item name="android:layout_marginTop">@dimen/margin_all</item>
+    </style>
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_down_top</item>
+        <item name="android:windowExitAnimation">@anim/slide_up_top</item>
+    </style>
+
+    <style name="CustomRatingBar">
+        <item name="colorControlNormal">@color/grayy</item>
+        <item name="colorControlActivated">@color/gold</item>
+    </style>
+
+
+
+</resources>

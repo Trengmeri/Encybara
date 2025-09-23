@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    app:cardCornerRadius="@dimen/dp_16"
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <TextView
+        android:id="@+id/textViewLevel"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/dp_30"
+        android:layout_marginRight="@dimen/dp_30"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        style="@style/Button_Active_All"
+        android:textColor="@android:color/black"/>
+</LinearLayout>
