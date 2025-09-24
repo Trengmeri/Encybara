@@ -36,6 +36,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.BaseApiManager;
 import com.example.test.api.UserManager;
 
 import org.json.JSONException;
@@ -201,7 +202,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         // Replace IP address in avatar URL
                         currentAvatarUrl = result.optString("avatar");
                         if (currentAvatarUrl != null && !currentAvatarUrl.isEmpty()) {
-                            currentAvatarUrl = currentAvatarUrl.replace("0.0.0.0", "14.225.198.3");
+                            currentAvatarUrl = BaseApiManager.replaceHost(currentAvatarUrl);
                             Log.d("EditProfile", "Modified avatar URL: " + currentAvatarUrl);
 
                             imgAvatar = findViewById(R.id.imgAvatar); // Find the ImageView
@@ -319,7 +320,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         progressDialog.dismiss();
                         if (newAvatarUrl != null && !newAvatarUrl.isEmpty()) {
-                            String modifiedUrl = newAvatarUrl.replace("0.0.0.0", "14.225.198.3");
+                            String modifiedUrl = BaseApiManager.replaceHost(newAvatarUrl);
                             currentAvatarUrl = modifiedUrl;
                             Glide.with(EditProfileActivity.this)
                                     .load(modifiedUrl)

@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.BaseApiManager;
 import com.example.test.api.ReviewManager;
 import com.example.test.api.UserManager;
 import com.example.test.model.Discussion;
@@ -81,7 +82,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             public void onSuccess(User user) {
                 String avatar = user.getAvt();
                 String name = user.getName();
-                String uri = (avatar != null) ? avatar.replace("0.0.0.0", "14.225.198.3") : null;
+                String uri = (avatar != null) ? BaseApiManager.replaceHost(avatar) : null;
 
                 new Handler(Looper.getMainLooper()).post(() -> {
                     int adapterPosition = holder.getAdapterPosition();

@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.BaseApiManager;
 import com.example.test.api.LearningProgressManager;
 import com.example.test.api.UserManager;
 import com.example.test.ui.NotificationActivity;
@@ -234,7 +235,7 @@ public class HomeActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     String avatarUrl = result.optString("avatar");
                     if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                        avatarUrl = avatarUrl.replace("0.0.0.0", "14.225.198.3");
+                        avatarUrl = BaseApiManager.replaceHost(avatarUrl);
                         Glide.with(HomeActivity.this)
                                 .load(avatarUrl)
                                 .placeholder(R.drawable.img_avt_profile)
