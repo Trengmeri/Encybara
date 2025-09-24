@@ -43,6 +43,7 @@ public class HomeActivity extends AppCompatActivity {
     private List<CourseInfo> activeCourses;
     private int selectedCourseId = -1;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -271,6 +272,11 @@ public class HomeActivity extends AppCompatActivity {
         LinearLayout icStudy = findViewById(R.id.ic_study);
         LinearLayout icExplore = findViewById(R.id.ic_explore);
         LinearLayout icProfile = findViewById(R.id.ic_profile);
+
+        icHome.setSelected(true);
+        icProfile.setSelected(false);
+        icStudy.setSelected(false);
+        icExplore.setSelected(false);
 
         icHome.setOnClickListener(v -> {
             if (!(HomeActivity.this instanceof HomeActivity)) {

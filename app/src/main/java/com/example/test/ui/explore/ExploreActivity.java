@@ -67,6 +67,11 @@ public class ExploreActivity extends AppCompatActivity {
         LinearLayout icExplore = findViewById(R.id.ic_explore);
         LinearLayout icProfile = findViewById(R.id.ic_profile);
 
+        icHome.setSelected(false);
+        icProfile.setSelected(false);
+        icStudy.setSelected(false);
+        icExplore.setSelected(true);
+
         icExplore.setOnClickListener(v -> {
             if (!(ExploreActivity.this instanceof ExploreActivity)) {
                 startActivity(new Intent(ExploreActivity.this, ExploreActivity.class));
