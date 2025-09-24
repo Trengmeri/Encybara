@@ -1,38 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<GridLayout-->
-<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="wrap_content"-->
-<!--    android:background="#FFF2DB"-->
-<!--    android:columnCount="4"-->
-<!--    android:rowCount="1"-->
-<!--    android:padding="16dp">-->
-
-<!--    <ImageView-->
-<!--        android:id="@+id/ic_home"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_columnWeight="1"-->
-<!--        android:src="@drawable/home"/>-->
-<!--    <ImageView-->
-<!--        android:id="@+id/ic_study"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_columnWeight="1"-->
-<!--        android:src="@drawable/study"/>-->
-<!--    <ImageView-->
-<!--        android:id="@+id/ic_explore"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_columnWeight="1"-->
-<!--        android:src="@drawable/explore" />-->
-<!--    <ImageView-->
-<!--        android:id="@+id/ic_profile"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_columnWeight="1"-->
-<!--        android:src="@drawable/profile" />-->
-<!--</GridLayout>-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
