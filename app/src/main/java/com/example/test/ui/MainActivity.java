@@ -1,37 +1,25 @@
 package com.example.test.ui;
 
-import android.app.AlarmManager;
-import android.content.Context;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.net.Uri;
-import android.os.Build;
-import android.os.PowerManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
-import android.provider.Settings;
-import android.util.Log;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatDelegate;
-
-
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
 import com.example.test.R;
 import com.example.test.ui.schedule.AlarmScheduler;
 
@@ -41,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "MyPrefs";
     private static final String KEY_IS_FIRST_TIME = "isFirstTime";
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Load lại ngôn ngữ trước khi hiển thị giao diện
@@ -49,36 +39,66 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-
         setContentView(R.layout.activity_main);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.mainIntro), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        AlarmScheduler.logAllAlarms(this);
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        boolean isFirstTime = prefs.getBoolean(KEY_IS_FIRST_TIME, true);
 
-        // Chuyển sang Intro2 sau 3 giây
-        // Hiển thị MainActivity trong 3 giây, sau đó điều hướng
+        AlarmScheduler.logAllAlarms(this);
+
+        final ImageView bookTextImageView = findViewById(R.id.bookTextImageView);
+        final ImageView capybaraImageView = findViewById(R.id.capybaraImageView);
+
+        // Ban đầu ẩn bookText và capybara
+        bookTextImageView.setAlpha(0f);
+        capybaraImageView.setAlpha(0f);
+
+// Lấy vị trí Y của bookText
+        float bookY = bookTextImageView.getY();
+        float startY = 400f; // điểm bắt đầu từ dưới
+        float endY = bookY - capybaraImageView.getHeight(); // lên sát chữ
+
+// Thời gian fade-in book
+        long fadeDuration = 1000;
+
+// Hiện bookText bằng fade-in
+        bookTextImageView.animate()
+                .alpha(1f)
+                .setDuration(fadeDuration)
+                .start();
+
+// Hiện capybara alpha = 1 ngay từ đầu để nhìn thấy nhảy
+        capybaraImageView.setAlpha(1f);
+
+// Tạo ValueAnimator để capybara nhảy cùng lúc với book fade-in
+        ValueAnimator jumpAnimator = ValueAnimator.ofFloat(startY, endY);
+        jumpAnimator.setDuration(fadeDuration); // cùng thời gian với book fade-in
+        jumpAnimator.setInterpolator(new DecelerateInterpolator());
+        jumpAnimator.addUpdateListener(animation -> {
+            float value = (float) animation.getAnimatedValue();
+            capybaraImageView.setTranslationY(value);
+        });
+        jumpAnimator.start();
+
+        // Chuyển sang màn hình kế tiếp sau 3 giây
         new Handler().postDelayed(() -> {
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            boolean isFirstTime = prefs.getBoolean(KEY_IS_FIRST_TIME, true);
             Intent intent;
             if (isFirstTime) {
-                // Lần đầu mở app, đi qua Intro2
                 intent = new Intent(MainActivity.this, Intro2Activity.class);
-                // Đánh dấu đã qua lần đầu
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean(KEY_IS_FIRST_TIME, false);
                 editor.apply();
             } else {
-                // Không phải lần đầu, chuyển thẳng đến SignInActivity
                 intent = new Intent(MainActivity.this, SignInActivity.class);
             }
             startActivity(intent);
-            finish(); // Đóng MainActivity sau khi chuyển màn
-        }, 3000);
+            finish();
+        }, 5000);
     }
 
     private void loadLocale() {
