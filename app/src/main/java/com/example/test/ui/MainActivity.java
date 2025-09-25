@@ -56,24 +56,24 @@ public class MainActivity extends AppCompatActivity {
         bookTextImageView.setAlpha(0f);
         capybaraImageView.setAlpha(0f);
 
-// Lấy vị trí Y của bookText
+        // Lấy vị trí Y của bookText
         float bookY = bookTextImageView.getY();
         float startY = 400f; // điểm bắt đầu từ dưới
         float endY = bookY - capybaraImageView.getHeight(); // lên sát chữ
 
-// Thời gian fade-in book
+        // Thời gian fade-in book
         long fadeDuration = 1000;
 
-// Hiện bookText bằng fade-in
+        // Hiện bookText bằng fade-in
         bookTextImageView.animate()
                 .alpha(1f)
                 .setDuration(fadeDuration)
                 .start();
 
-// Hiện capybara alpha = 1 ngay từ đầu để nhìn thấy nhảy
+        // Hiện capybara alpha = 1 ngay từ đầu để nhìn thấy nhảy
         capybaraImageView.setAlpha(1f);
 
-// Tạo ValueAnimator để capybara nhảy cùng lúc với book fade-in
+        // Tạo ValueAnimator để capybara nhảy cùng lúc với book fade-in
         ValueAnimator jumpAnimator = ValueAnimator.ofFloat(startY, endY);
         jumpAnimator.setDuration(fadeDuration); // cùng thời gian với book fade-in
         jumpAnimator.setInterpolator(new DecelerateInterpolator());
