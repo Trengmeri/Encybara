@@ -152,7 +152,7 @@ public class Intro2Activity extends AppCompatActivity {
     }
 
     private void AnhXa() {
-        logoImage = (ImageView) findViewById(R.id.logoimageView);
+        logoImage = (ImageView) findViewById(R.id.logoimageView1);
         btnNext = (Button) findViewById(R.id.btnNext);
         btnSkip = (Button) findViewById(R.id.btnSkip);
         txtN = (TextView) findViewById(R.id.txtNguyen);

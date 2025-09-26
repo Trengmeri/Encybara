@@ -20,33 +20,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
+                android:id="@+id/backgroundLogo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_intro1"/>
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center">
-
-                <!-- Capybara nhảy lên nhưng nằm sau -->
-                <ImageView
-                    android:id="@+id/capybaraImageView"
-                    android:layout_width="180dp"
-                    android:layout_height="180dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="24dp"
-                    android:src="@drawable/capy_popup"
-                    android:alpha="1"/>
-
-                <!-- Book + chữ luôn nằm trên cùng -->
-                <ImageView
-                    android:id="@+id/bookTextImageView"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_gravity="center"
-
-                    android:src="@drawable/book_popup" />
-            </FrameLayout>
+            <ImageView
+                android:id="@+id/logoimageView"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:layout_gravity="center"
+                android:background="@drawable/logo_popup"/>
     </FrameLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

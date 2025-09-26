@@ -49,39 +49,26 @@ public class MainActivity extends AppCompatActivity {
 
         AlarmScheduler.logAllAlarms(this);
 
-        final ImageView bookTextImageView = findViewById(R.id.bookTextImageView);
-        final ImageView capybaraImageView = findViewById(R.id.capybaraImageView);
+        final ImageView backgroundLogo = findViewById(R.id.backgroundLogo);
+        final ImageView logoimageView = findViewById(R.id.logoimageView);
 
-        // Ban đầu ẩn bookText và capybara
-        bookTextImageView.setAlpha(0f);
-        capybaraImageView.setAlpha(0f);
 
-        // Lấy vị trí Y của bookText
-        float bookY = bookTextImageView.getY();
-        float startY = 400f; // điểm bắt đầu từ dưới
-        float endY = bookY - capybaraImageView.getHeight(); // lên sát chữ
+        backgroundLogo.setAlpha(0f);
+        logoimageView.setAlpha(0f);
 
-        // Thời gian fade-in book
-        long fadeDuration = 1000;
+        long fadeDuration = 1700;
 
-        // Hiện bookText bằng fade-in
-        bookTextImageView.animate()
+// Fade in background logo
+        backgroundLogo.animate()
                 .alpha(1f)
                 .setDuration(fadeDuration)
                 .start();
 
-        // Hiện capybara alpha = 1 ngay từ đầu để nhìn thấy nhảy
-        capybaraImageView.setAlpha(1f);
-
-        // Tạo ValueAnimator để capybara nhảy cùng lúc với book fade-in
-        ValueAnimator jumpAnimator = ValueAnimator.ofFloat(startY, endY);
-        jumpAnimator.setDuration(fadeDuration); // cùng thời gian với book fade-in
-        jumpAnimator.setInterpolator(new DecelerateInterpolator());
-        jumpAnimator.addUpdateListener(animation -> {
-            float value = (float) animation.getAnimatedValue();
-            capybaraImageView.setTranslationY(value);
-        });
-        jumpAnimator.start();
+// Fade in logoimageView cùng lúc
+        logoimageView.animate()
+                .alpha(1f)
+                .setDuration(fadeDuration)
+                .start();
 
         // Chuyển sang màn hình kế tiếp sau 3 giây
         new Handler().postDelayed(() -> {

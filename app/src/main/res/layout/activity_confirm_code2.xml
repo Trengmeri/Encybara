@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="01:00"
-                android:textColor="#A95D40"
+                android:textColor="#15154C"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
