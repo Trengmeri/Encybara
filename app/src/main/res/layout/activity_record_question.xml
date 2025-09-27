@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#E4EFFA"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.question_data.RecordQuestionActivity">
 
@@ -13,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/record"
-        android:textColor="#CE9566"
+        android:textColor="#436EEE"
         android:textSize="32sp"
         android:textStyle="bold"
         android:layout_marginTop="@dimen/dp_30"
@@ -154,7 +155,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/your_ans"
-                android:textColor="#CE9566"
+                android:textColor="#436EEE"
                 android:textSize="20sp"
                 android:layout_marginTop="12dp"
                 android:textStyle="bold"
@@ -181,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/check"
                 android:textSize="20sp"
-                android:backgroundTint="#BC6136"
+                android:backgroundTint="#436EEE"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="@dimen/dp_30"
                 android:layout_gravity="center" />

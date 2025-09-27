@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#E4EFFA"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.question_data.ListeningQuestionActivity">
 
@@ -13,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/lis"
-        android:textColor="#CE9566"
+        android:textColor="#436EEE"
         android:textSize="32sp"
         android:textStyle="bold"
         android:layout_marginTop="@dimen/dp_30"
@@ -165,7 +166,7 @@
         android:layout_marginStart="@dimen/dp_16"
         android:layout_marginEnd="@dimen/dp_16"
         android:background="@drawable/rounded_corner"
-        android:backgroundTint="#FFDDD0"
+        android:backgroundTint="#87CEFA"
         android:orientation="horizontal"
         android:padding="@dimen/dp_16">
 
@@ -182,7 +183,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/check"
-        android:backgroundTint="#BC6136"
+        android:backgroundTint="#436EEE"
         android:layout_marginTop="@dimen/dp_16"
         android:layout_marginBottom="@dimen/dp_30"
         android:layout_gravity="center"/>

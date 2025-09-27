@@ -112,7 +112,7 @@
                             android:backgroundTint="@color/white"
                             android:drawableEnd="@drawable/icon_next"
                             android:text="@string/start"
-                            android:textColor="#A95D40" />
+                            android:textColor="#15154C" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -176,7 +176,7 @@
                             android:backgroundTint="@color/white"
                             android:drawableEnd="@drawable/icon_next"
                             android:text="@string/start"
-                            android:textColor="#A95D40" />
+                            android:textColor="#15154C" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -240,7 +240,7 @@
                             android:backgroundTint="@color/white"
                             android:drawableEnd="@drawable/icon_next"
                             android:text="@string/start"
-                            android:textColor="#A95D40" />
+                            android:textColor="#15154C" />
                     </LinearLayout>
 
                 </LinearLayout>
