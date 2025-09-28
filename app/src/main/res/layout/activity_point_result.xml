@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#F0F0F0"
+    android:background="#EAF6FF"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.question_data.PointResultCourseActivity">
 
@@ -20,17 +20,17 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/congrattt"
-                android:padding="10dp" />
+                android:background="@drawable/point_result_ptr"
+                android:layout_gravity="center"/>
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:layout_marginStart="85dp"
-                android:layout_marginTop="@dimen/dp_16"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="100dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/welldone" />
             <!--            <ImageView-->
             <!--                android:layout_width="wrap_content"-->
@@ -440,7 +440,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/btncolor"
+                    android:backgroundTint="#2A548E"
                     android:text="Next"
                     android:textColor="@color/white" />
             </LinearLayout>

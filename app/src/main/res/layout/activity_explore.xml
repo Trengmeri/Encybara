@@ -16,28 +16,11 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_bar">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/ellipse_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ellipse_3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ellipse_4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                tools:ignore="MissingConstraints" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pattern"
+            android:layout_gravity="right"/>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -55,23 +38,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_30"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="@dimen/dp_30"
                     android:textSize="22sp"
                     android:textStyle="bold" />
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginTop="@dimen/dp_30"
+                    android:text="Games"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
                 <ImageView
-                    android:layout_width="300dp"
-                    android:layout_height="300dp"
-                    android:background="@drawable/capy_sleep"
-                    android:alpha="0.8"
-                    android:layout_gravity="top"
-                    android:layout_marginStart="@dimen/dp_16" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/game"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_16"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_30"
                     android:layout_marginBottom="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_16"
                     android:text="@string/txt_explore"
                     android:textSize="22sp"
                     android:textStyle="bold" />

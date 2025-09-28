@@ -38,7 +38,7 @@
             android:layout_weight="1"
             android:text="Done"
             android:textStyle="bold"
-            android:textColor="#ECD29C"
+            android:textColor="#577194"
             android:textSize="18sp"
             android:layout_marginEnd="@dimen/dp_16"
             android:gravity="end" />
@@ -131,7 +131,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_schedule"
-                    android:backgroundTint="#ECD29C"/>
+                    android:backgroundTint="#79B0E6"/>
 
                 <ImageView
                     android:id="@+id/check_icon_advance"
@@ -187,7 +187,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_schedule"
-                    android:backgroundTint="#CE9566"/>
+                    android:backgroundTint="#097FF2"/>
 
                 <ImageView
                     android:id="@+id/check_icon_levelup"

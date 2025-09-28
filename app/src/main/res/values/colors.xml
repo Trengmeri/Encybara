@@ -2,16 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorDefault">#F8E6D6</color>
-    <color name="colorPressed">#C4865E</color>
-    <color name="btncolor">#A95D40</color>
+    <color name="colorDefault">#C0D4F2</color>
+    <color name="colorPressed">#89AFE4</color>
+    <color name="btncolor">#577194</color>
     <color name="grayy">#E5E5E8</color>
     <color name="light_red">#FF8282</color>
     <color name="light_green">#66C263</color>
     <color name="light_yellow">#FFD96F</color>
     <color name="none">#F5F5F5</color>
     <color name="cotinute">#7FD4E9</color>
-    <color name="color_selected">#CE9566</color>  <!-- Màu khi được chọn -->
+    <color name="color_selected">#89AFE4</color>  <!-- Màu khi được chọn -->
     <color name="color_unselected">#FF000000</color>  <!-- Màu mặc định -->
     <color name="yellow">#FFC31F</color>
     <color name="gold">#FFD700</color>
