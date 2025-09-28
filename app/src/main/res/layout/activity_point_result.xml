@@ -469,7 +469,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="@dimen/dp40"
             android:layout_marginRight="@dimen/dp40"
-            android:src="@raw/butterfly"
+            android:src="@raw/dragon_like"
             android:visibility="gone"/>
 
         <TextView

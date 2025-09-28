@@ -222,7 +222,7 @@
             android:id="@+id/imgSuccessGif"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:src="@raw/butterfly"/>
+            android:src="@raw/dragon_like"/>
 
         <TextView
             android:id="@+id/tvSuccessMessage"

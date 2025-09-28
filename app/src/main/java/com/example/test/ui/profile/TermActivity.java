@@ -33,7 +33,7 @@ public class TermActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        webView.loadUrl("https://trengmeri.github.io/WebView/webview.html");
+        webView.loadUrl("file:///android_asset/webview/index.html");
 
         webView.getSettings().setJavaScriptEnabled(true);
 

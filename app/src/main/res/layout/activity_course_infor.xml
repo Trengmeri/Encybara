@@ -56,7 +56,6 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="App development"
                                     android:textColor="#1E90FF"
                                     android:textSize="13sp"
                                     android:textStyle="bold"
@@ -312,7 +311,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/dp40"
                 android:layout_marginRight="@dimen/dp40"
-                android:src="@raw/like"
+                android:src="@raw/dragon_like"
                 android:visibility="gone"/>
 
             <TextView

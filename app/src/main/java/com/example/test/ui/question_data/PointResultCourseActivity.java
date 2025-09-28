@@ -136,7 +136,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
         // Load GIF bằng Glide
         Glide.with(PointResultCourseActivity.this)
                 .asGif()
-                .load(R.raw.butterfly)
+                .load(R.raw.dragon_like)
                 .into(imgSuccessGif);
     }
 
