@@ -160,7 +160,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@android:color/transparent"
                     android:text="@string/txt_resendcode"
-                    android:textColor="#9E3A00"
+                    android:textColor="#15154C"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.428"
                     app:layout_constraintStart_toStartOf="parent"
