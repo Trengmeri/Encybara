@@ -2,7 +2,7 @@
     <!-- Trạng thái được chọn -->
     <item android:state_selected="true">
         <shape>
-            <solid android:color="#BC725F"/> <!-- Màu nền khi được chọn -->
+            <solid android:color="#8EA5EF"/> <!-- Màu nền khi được chọn -->
             <corners android:radius="12dp"/>
             <padding android:left="8dp" android:right="8dp" android:top="8dp" android:bottom="8dp"/>
         </shape>

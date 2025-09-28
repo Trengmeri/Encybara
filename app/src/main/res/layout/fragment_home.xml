@@ -11,14 +11,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="20dp"
-        android:paddingTop="60dp"
         android:layout_above="@id/bottom_bar">
 
         <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -71,12 +70,14 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_margin="@dimen/dp_16">
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_16">
 
             <LinearLayout
                 android:id="@+id/pointContainer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <!-- Tổng điểm -->
@@ -110,7 +111,7 @@
                 <!-- Điểm kỹ năng -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_marginTop="@dimen/dp_30">
 

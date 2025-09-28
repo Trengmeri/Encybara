@@ -21,6 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_30"
             android:background="@drawable/icon_close"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
