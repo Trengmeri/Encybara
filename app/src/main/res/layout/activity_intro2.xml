@@ -11,8 +11,8 @@
 
     <ImageView
         android:id="@+id/logoimageView1"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
         android:background="@drawable/bg_intr2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
