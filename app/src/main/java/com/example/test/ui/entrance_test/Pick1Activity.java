@@ -289,7 +289,7 @@ public class Pick1Activity extends AppCompatActivity {
             bar.setLayoutParams(params);
 
             if (i < currentProgress) {
-                bar.setBackgroundColor(Color.parseColor("#C4865E")); // Màu đã hoàn thành
+                bar.setBackgroundColor(Color.parseColor("#436EEE")); // Màu đã hoàn thành
             } else {
                 bar.setBackgroundColor(Color.parseColor("#E0E0E0")); // Màu chưa hoàn thành
             }

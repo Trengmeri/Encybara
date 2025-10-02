@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EAF6FF"
     app:layout_constraintDimensionRatio="16:9"
     tools:context=".ui.ForgotPassWordActivity">
 
@@ -57,7 +58,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/dp_30"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/img_ava" />
+                app:srcCompat="@drawable/pic_forgot" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -108,10 +109,10 @@
             android:layout_marginLeft="@dimen/dp_60"
             android:layout_marginRight="@dimen/dp_60"
             android:layout_marginBottom="@dimen/dp_60"
-            android:backgroundTint="#BC6136"
+            android:backgroundTint="#172B4D"
             android:text="@string/countinue"
             android:textColor="#FFFFFF"
-            android:textColorLink="#9E3A00"
+
             android:drawableEnd="@drawable/circle__1_"
             android:paddingEnd="6dp"/>
     </LinearLayout>

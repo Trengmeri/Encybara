@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F1F5FE"
+    android:background="#EAF6FF"
     tools:context=".ui.ConfirmCode2Activity">
     <LinearLayout
         android:layout_width="match_parent"
@@ -160,7 +160,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@android:color/transparent"
                     android:text="@string/txt_resendcode"
-                    android:textColor="#9E3A00"
+                    android:textColor="#15154C"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.428"
                     app:layout_constraintStart_toStartOf="parent"
@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="01:00"
-                android:textColor="#A95D40"
+                android:textColor="#15154C"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -184,20 +184,11 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <FrameLayout
+            <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/elip_cfcode"/>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/elip_cfcode2"
-                    android:layout_gravity="bottom"/>
-            </FrameLayout>
+                android:layout_height="250dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/groupfl_pattern"/>
 
         <GridLayout
             android:id="@+id/numericKeyboard"

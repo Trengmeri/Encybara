@@ -52,7 +52,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/dp_30"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/img_ava" />
+            app:srcCompat="@drawable/pic_forgot" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -150,7 +150,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="30dp"
-                android:backgroundTint="#8B3000"
+                android:backgroundTint="#172B4D"
                 android:text="@string/Continue"
                 android:textColor="@color/white"
                 android:drawableEnd="@drawable/circle__1_"

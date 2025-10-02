@@ -107,10 +107,10 @@
             android:id="@+id/btnAdd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#BC725F"
+            android:backgroundTint="#172B4D"
             android:text="@string/addflash"
             android:textColor="#FFFFFF"
-            android:textColorLink="#9E3A00"
+            android:textColorLink="#172B4D"
             android:layout_margin="20dp"
             android:visibility="gone"/>
     </LinearLayout>

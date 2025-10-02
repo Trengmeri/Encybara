@@ -8,7 +8,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F0F0F0"
+        android:background="#EAF6FF"
         android:padding="10dp"
         tools:context=".ui.question_data.PointResultLessonActivity">
 
@@ -27,19 +27,20 @@
 
                     <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
 
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/congrattt" />
+                            android:background="@drawable/point_result_ptr" />
 
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/dp_16"
-                            android:layout_marginStart="85dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginStart="100dp"
+                            android:layout_marginTop="16dp"
                             android:background="@drawable/welldone" />
 
                     </FrameLayout>
@@ -175,7 +176,7 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:backgroundTint="@color/btncolor"
+                        android:backgroundTint="#577194"
                         android:text="@string/txt_discussion"
                         android:textColor="@color/white" />
                     <Button
@@ -184,7 +185,7 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:backgroundTint="@color/btncolor"
+                        android:backgroundTint="#577194"
                         android:textColor="@color/white" />
                 </LinearLayout>
 
@@ -193,7 +194,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
-                    android:backgroundTint="@color/color_selected"
+                    android:backgroundTint="#A6C0ED"
                     android:text="@string/backhome"
                     android:textColor="@color/white"/>
             </LinearLayout>
@@ -221,7 +222,7 @@
             android:id="@+id/imgSuccessGif"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:src="@raw/butterfly"/>
+            android:src="@raw/dragon_like"/>
 
         <TextView
             android:id="@+id/tvSuccessMessage"

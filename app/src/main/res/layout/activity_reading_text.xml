@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#E4EFFA"
     tools:context=".ui.question_data.ReadingTextActivity">
 
     <!-- Tiêu đề -->
@@ -14,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/grammar"
-        android:textColor="#CE9566"
+        android:textColor="#436EEE"
         android:textSize="32sp"
         android:textStyle="bold"
         android:layout_marginTop="@dimen/dp_30"
@@ -87,7 +88,7 @@
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_16"
                 android:background="@drawable/rounded_corner"
-                android:backgroundTint="#FFDDD0"
+                android:backgroundTint="#87CEFA"
                 android:orientation="horizontal"
                 android:padding="16dp">
 
@@ -109,7 +110,7 @@
                 android:layout_marginLeft="@dimen/dp_30"
                 android:layout_marginRight="@dimen/dp_30"
                 android:text="@string/check"
-                android:backgroundTint="#E0EBFF"
+                android:backgroundTint="#6689F2"
                 android:textColor="@color/black"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

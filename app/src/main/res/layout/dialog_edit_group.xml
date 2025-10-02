@@ -66,14 +66,14 @@
             android:paddingBottom="20dp"
             android:paddingLeft="@dimen/dp_30"
             android:paddingRight="@dimen/dp_30"
-            android:textColor="@color/black"
-            android:backgroundTint="#C7D8F2"/>
+            android:textColor="@color/white"
+            android:backgroundTint="#334561"/>
         <Button
             android:id="@+id/btnEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Edit"
-            android:backgroundTint="#A95D40"
+            android:backgroundTint="#2574EF"
             android:textColor="@color/white"
             android:layout_marginStart="@dimen/dp_60"
             android:paddingTop="20dp"

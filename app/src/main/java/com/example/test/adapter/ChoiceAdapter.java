@@ -51,7 +51,7 @@ public class ChoiceAdapter extends RecyclerView.Adapter<ChoiceAdapter.ChoiceView
             holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_answer_pressed)); // Màu khi được chọn
 
         } else {
-            holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_answer)); // Màu khi được chọn
+            holder.choiceButton.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_answer));
 
         }
 

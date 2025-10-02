@@ -185,11 +185,11 @@ import java.util.List;
                                 imgSuccessGif.setVisibility(View.VISIBLE);
                                 tvSuccessMessage.setVisibility(View.VISIBLE);
 
-                                // Load GIF bằng Glide
-                                Glide.with(CourseInformationActivity.this)
-                                        .asGif()
-                                        .load(R.raw.like)
-                                        .into(imgSuccessGif);
+//                                // Load GIF bằng Glide
+//                                Glide.with(CourseInformationActivity.this)
+//                                        .asGif()
+//                                        .load(R.raw.dragon_like)
+//                                        .into(imgSuccessGif);
 
                                 // Tự động chuyển đến Study sau vài giây
                                 new Handler().postDelayed(() -> {
@@ -225,10 +225,10 @@ import java.util.List;
                                 tvSuccessMessage.setVisibility(View.VISIBLE);
 
                                 // Load GIF bằng Glide
-                                Glide.with(CourseInformationActivity.this)
-                                        .asGif()
-                                        .load(R.raw.like)
-                                        .into(imgSuccessGif);
+//                                Glide.with(CourseInformationActivity.this)
+//                                        .asGif()
+//                                        .load(R.raw.dragon_like)
+//                                        .into(imgSuccessGif);
 
                                 // Tự động chuyển đến Study sau vài giây
                                 new Handler().postDelayed(() -> {

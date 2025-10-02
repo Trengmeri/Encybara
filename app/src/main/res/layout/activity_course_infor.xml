@@ -22,14 +22,14 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:background="#B0694B"
+                        android:background="#577194"
                         android:gravity="center">
                         <ImageView
-                            android:layout_width="110dp"
-                            android:layout_height="110dp"
-                            android:layout_marginTop="35dp"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_marginTop="20dp"
                             android:scaleType="centerCrop"
-                            android:background="@drawable/ava_loading2"/>
+                            android:background="@drawable/review_ptr"/>
 
                     </LinearLayout>
 
@@ -56,8 +56,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="App development"
-                                    android:textColor="#FF6B00"
+                                    android:textColor="#1E90FF"
                                     android:textSize="13sp"
                                     android:textStyle="bold"
                                     app:layout_constraintBottom_toBottomOf="parent"
@@ -312,7 +311,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/dp40"
                 android:layout_marginRight="@dimen/dp40"
-                android:src="@raw/like"
+                android:src="@raw/dragon_like"
                 android:visibility="gone"/>
 
             <TextView

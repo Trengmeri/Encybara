@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F2F2"
+    android:background="#EEF7FB"
     tools:context=".ui.FlashcardActivity">
 <FrameLayout
     android:layout_width="match_parent"
@@ -13,20 +13,13 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dp_16"
+        android:layout_marginBottom="8dp"
         android:layout_gravity="bottom"
         tools:ignore="MissingConstraints">
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="157dp"
-            android:background="@drawable/vector_2"
-            />
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="157dp"
-            android:background="@drawable/vector_1"
-            />
-
+            android:layout_height="wrap_content"
+            android:background="@drawable/flashcard_decor" />
     </FrameLayout>
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -77,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:background="@android:color/transparent"
-            android:textColor="#BC5738"
+            android:textColor="#15154C"
             android:textSize="18sp"
             android:text="@string/sort"/>
         <LinearLayout

@@ -17,7 +17,7 @@
             android:layout_marginTop="@dimen/dp_16"
             android:backgroundTint="@android:color/transparent"
             android:text="@string/Done"
-            android:textColor="#E65D33"
+            android:textColor="#577194"
             android:textSize="18sp"
             android:textStyle="bold" />
 

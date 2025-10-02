@@ -6,23 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintDimensionRatio="16:9"
+    android:background="#EAF6FF"
     tools:context=".ui.SignInActivity">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ellipse_3"
+        android:layout_width="160dp"
+        android:layout_height="178dp"
+        android:background="@drawable/pattern"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ellipse_4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintTop_toTopOf="parent" />
     <TextView
         android:id="@+id/txtTitle"
@@ -31,8 +22,8 @@
         android:layout_marginTop="44dp"
         android:text="Encybara"
         android:textAlignment="center"
-        android:textColor="#9E3A00"
-        android:textSize="28sp"
+        android:textColor="#15154C"
+        android:textSize="@dimen/textsize_big"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.431"
@@ -54,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/action_sign_up_short"
-                    android:textColor="#172B4D"
+                    android:textColor="#15154C"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:layout_marginStart="50dp"/>
@@ -72,7 +63,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/createacc"
-                        android:textColor="#AC3B00"
+                        android:textColor="#577194"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginStart="30dp"/>
@@ -83,7 +74,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/hellothere2"
-                        android:textColor="#545454"
+                        android:textColor="#6D77A8"
                         android:textSize="14sp"
                         android:layout_marginStart="30dp"/>
 
@@ -191,7 +182,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:text="@string/agree"
-                            android:textColor="#545454"
+                            android:textColor="#6D77A8"
                             android:textStyle="bold"/>
 
                         <Button
@@ -203,12 +194,12 @@
                             android:layout_marginBottom="@dimen/dp_16"
                             android:paddingEnd="6dp"
                             android:drawableEnd="@drawable/circle__1_"
-                            android:backgroundTint="#BC6136"
+                            android:backgroundTint="#172B4D"
                             android:enabled="false"
                             android:alpha="0.5"
                             android:text="@string/action_sign_up_short"
                             android:textColor="#FFFFFF"
-                            android:textColorLink="#9E3A00"
+                            android:textColorLink="#172B4D"
                             android:textSize="16sp"/>
 
                 </LinearLayout>
@@ -223,7 +214,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/havedacc"
-                        android:textColor="#545454"/>
+                        android:textColor="#577194"/>
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -236,14 +227,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/signin"
-                            android:textColor="#AF4610"
+                            android:textColor="#15154C"
                             android:textSize="14sp"
                             android:textStyle="bold"/>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="#AF4610"
+                            android:background="#15154C"
                             android:layout_marginTop="1dp" /> <!-- chỉnh khoảng cách chữ với gạch -->
                     </LinearLayout>
                 </LinearLayout>

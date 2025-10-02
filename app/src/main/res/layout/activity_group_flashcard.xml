@@ -5,27 +5,19 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F2F2"
+    android:background="#EAF6FF"
     tools:context=".ui.GroupFlashcardActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center">
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/elip_cfcode"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/elip_cfcode2"
-                android:layout_gravity="bottom"/>
-        </FrameLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
+            android:background="@drawable/groupfl_pattern"
+            android:layout_gravity="bottom"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
