@@ -1,7 +1,9 @@
 package com.example.test.ui.home;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,12 +45,21 @@ public class HomeActivity extends AppCompatActivity {
     private LearningProgressManager learningProgressManager;
     private List<CourseInfo> activeCourses;
     private int selectedCourseId = -1;
+    private Dialog loadingDialog;
+    private int apiPendingCount = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_home);
+
+        // Khởi tạo Dialog loading
+        loadingDialog = new Dialog(this);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loadingDialog.setCancelable(false); // Không cho phép đóng khi chạm ngoài màn hình
 
         initializeViews();
         initializeManagers();
@@ -102,9 +113,18 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        apiPendingCount = 3;
+        showLoading();
         loadLearningResults();
         loadLatestLessonAndCourse();
         loadUserProfile();
+    }
+
+    private synchronized void apiFinished() {
+        apiPendingCount--;
+        if (apiPendingCount <= 0) {
+            hideLoading();
+        }
     }
 
     private void showNoCourseMessage() {
@@ -117,14 +137,18 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JsonObject result) {
                 updateScores(result);
+                apiFinished();
             }
 
             @Override
-            public void onSuccess() {}
+            public void onSuccess() {
+                apiFinished();
+            }
 
             @Override
             public void onFailure(String error) {
                 handleError("Failed to load learning results", error);
+                apiFinished();
             }
         });
     }
@@ -159,7 +183,9 @@ public class HomeActivity extends AppCompatActivity {
     private void loadLatestLessonAndCourse() {
         learningProgressManager.fetchLatestLesson(new ApiCallback<JsonObject>() {
             @Override
-            public void onSuccess() {}
+            public void onSuccess() {
+                apiFinished();
+            }
 
             @Override
             public void onSuccess(JsonObject latestLesson) {
@@ -172,18 +198,22 @@ public class HomeActivity extends AppCompatActivity {
                             fetchCoursesContainingLesson(lessonId);
                         } else {
                             runOnUiThread(HomeActivity.this::showNoCourseMessage);
+                            apiFinished();
                         }
                     } else {
                         runOnUiThread(HomeActivity.this::showNoCourseMessage);
+                        apiFinished();
                     }
                 } catch (Exception e) {
                     handleError("Error parsing latest lesson", e.getMessage());
+                    apiFinished();
                 }
             }
 
             @Override
             public void onFailure(String error) {
                 handleError("Failed to fetch latest lesson", error);
+                apiFinished();
             }
         });
     }
@@ -191,7 +221,9 @@ public class HomeActivity extends AppCompatActivity {
     private void fetchCoursesContainingLesson(int lessonId) {
         learningProgressManager.fetchCourses(new ApiCallback<JsonArray>() {
             @Override
-            public void onSuccess() {}
+            public void onSuccess() {
+                apiFinished();
+            }
 
             @Override
             public void onSuccess(JsonArray courses) {
@@ -208,26 +240,33 @@ public class HomeActivity extends AppCompatActivity {
                                     selectedCourseId = courseId;
                                     continueButton.setVisibility(View.VISIBLE);
                                 });
+                                apiFinished();
                                 return;
                             }
                         }
                     }
                     runOnUiThread(HomeActivity.this::showNoCourseMessage);
+                    apiFinished();
                 } catch (Exception e) {
                     handleError("Error parsing courses", e.getMessage());
+                    apiFinished();
                 }
             }
 
             @Override
             public void onFailure(String error) {
                 handleError("Failed to fetch courses", error);
+                apiFinished();
             }
         });
     }
 
     private void loadUserProfile() {
         String userId = SharedPreferencesManager.getInstance(this).getID();
-        if (userId == null) return;
+        if (userId == null) {
+            apiFinished();
+            return;
+        }
 
         userManager.fetchUserProfile(Integer.parseInt(userId), new ApiCallback<JSONObject>() {
             @Override
@@ -244,10 +283,13 @@ public class HomeActivity extends AppCompatActivity {
                                 .into(btnProfile);
                     }
                 });
+                apiFinished();
             }
 
             @Override
-            public void onSuccess() {}
+            public void onSuccess() {
+                apiFinished();
+            }
 
             @Override
             public void onFailure(String errorMessage) {
@@ -256,6 +298,7 @@ public class HomeActivity extends AppCompatActivity {
                                 "Failed to load profile: " + errorMessage,
                                 Toast.LENGTH_SHORT).show()
                 );
+                apiFinished();
             }
         });
     }
@@ -327,6 +370,18 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         public String toString() {
             return courseName;
+        }
+    }
+
+    private void showLoading() {
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void hideLoading() {
+        if (loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
         }
     }
 }

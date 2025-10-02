@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient;
 
 public abstract class BaseApiManager {
 
-    public static final String BASE_URL = "http://52.77.224.170:8080"; // Thay đổi URL của bạn nếu cần
+    public static final String BASE_URL = "http://13.250.38.30:8080"; // Thay đổi URL của bạn nếu cần
 
     protected static final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(20, TimeUnit.SECONDS) // Thời gian chờ kết nối
