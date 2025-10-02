@@ -72,7 +72,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
     private int totalPages;
     private int groupId;
     boolean isLastFlashcardSwiped;
-
+    private boolean isAnimating = false; // 🔹 Thêm biến này
     @SuppressLint({"ResourceType", "MissingInflatedId", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +139,7 @@ public class FlashcardInformationActivity extends AppCompatActivity {
                                         Log.d("FlashcardSwipe", "Marked as learned: " + selectedFlashcard.getId());
 
                                             // Chỉ đổi flashcard sau khi API hoàn tất
-                                        animateSwipe(flashcardContainer, 600, true, new AnimationEndCallback() {
+                                        animateSwipe(flashcardContainer, 400, true, new AnimationEndCallback() {
                                             @Override
                                             public void onAnimationEnd() {
                                                 countGreen++;
@@ -522,21 +522,42 @@ public class FlashcardInformationActivity extends AppCompatActivity {
             mediaPlayer = null;
         }
     }
-    private void animateSwipe(View view, int duration, boolean toRight, AnimationEndCallback callback) {
-        float translationX = toRight ? view.getWidth() : -view.getWidth();
-        view.animate()
-                .translationX(translationX)
-                .setDuration(600)  // Giảm từ 800ms xuống 600ms
-                .withEndAction(() -> {
-                    view.setTranslationX(0); // Đặt lại vị trí ban đầu
-                    showNextFlashcard();  // Chuyển flashcard sau khi animation kết thúc
-                    if (callback != null) {
-                        callback.onAnimationEnd(); // Đảm bảo callback được gọi
-                    }
-                })
+        private void animateSwipe(View view, int duration, boolean toRight, AnimationEndCallback callback) {
+            if (isAnimating) return; // 🔹 tránh double swipe crash
+            isAnimating = true;
 
-                .start();
-    }
+            float translationX = toRight ? view.getWidth() : -view.getWidth();
+
+            // Swipe ra ngoài (trượt + mờ dần)
+            view.animate()
+                    .translationX(translationX)
+                    .alpha(0f)
+                    .setDuration(duration)
+                    .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
+                    .withEndAction(() -> {
+                        // Reset lại vị trí + alpha
+                        view.setTranslationX(0);
+                        view.setAlpha(0f);
+
+                        // Đổi flashcard
+                        showNextFlashcard();
+
+                        // Swipe vào (fade in mượt hơn)
+                        view.animate()
+                                .alpha(1f)
+                                .setDuration(250)
+                                .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                                .withEndAction(() -> {
+                                    isAnimating = false; // 🔹 cho phép swipe mới
+                                    if (callback != null) {
+                                        callback.onAnimationEnd();
+                                    }
+                                })
+                                .start();
+                    })
+                    .start();
+        }
+
 
     private String getUniquePhonetic(String phoneticText) {
         if (phoneticText == null || phoneticText.isEmpty()) {
