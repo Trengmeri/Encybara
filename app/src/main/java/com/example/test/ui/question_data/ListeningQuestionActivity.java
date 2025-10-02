@@ -24,6 +24,7 @@ import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiService;
+import com.example.test.api.BaseApiManager;
 import com.example.test.api.LearningMaterialsManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.MediaManager;
@@ -260,7 +261,7 @@ public class ListeningQuestionActivity extends AppCompatActivity {
             public void onSuccess(MediaFile mediaFile) {
                 runOnUiThread(() -> {
                     if (mediaFile != null && mediaFile.getMaterLink() != null && mediaFile.getMaterLink().endsWith(".mp3")) {
-                        audioUrl = mediaFile.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                        audioUrl = BaseApiManager.replaceHost(mediaFile.getMaterLink());
                         isUsingLessonAudio = false;
                         currentPosition = 0; // Reset position for new question-specific audio
                         resetMediaPlayer(audioUrl);

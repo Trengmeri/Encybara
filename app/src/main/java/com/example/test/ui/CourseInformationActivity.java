@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.test.NevigateQuestion;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.adapter.LessonAdapter;
@@ -37,7 +36,6 @@ import com.example.test.model.Lesson;
 import com.example.test.model.Review;
 import com.example.test.model.User;
 import com.example.test.ui.home.HomeActivity;
-import com.example.test.ui.study.StudyFragment;
 
 import java.util.ArrayList;
 import java.util.List;

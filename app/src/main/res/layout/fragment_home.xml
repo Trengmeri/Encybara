@@ -1,17 +1,20 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_homefragment"
-    android:fitsSystemWindows="false"
-    android:orientation="vertical">
+    android:fitsSystemWindows="false">
 
+    <!-- Nội dung chính -->
     <LinearLayout
+        android:id="@+id/contentLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="20dp"
-        android:paddingTop="60dp">
+        android:paddingTop="60dp"
+        android:layout_above="@id/bottom_bar">
 
+        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,10 +23,11 @@
 
             <ImageView
                 android:id="@+id/imgAvatar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:layout_margin="@dimen/dp_16"
-                android:background="@drawable/cricle" />
+                android:background="@drawable/cricle"
+                android:scaleType="centerCrop" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -32,7 +36,6 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
-                <!-- Container cho course info -->
 
                 <TextView
                     android:id="@+id/courseTitle"
@@ -50,199 +53,213 @@
                 android:background="@drawable/notifications" />
         </LinearLayout>
 
+        <!-- Nút Continue -->
         <Button
             android:id="@+id/btn_continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
+            android:layout_marginStart="50dp"
             android:layout_marginTop="@dimen/dp_16"
-            android:layout_marginRight="50dp"
+            android:layout_marginEnd="50dp"
             android:backgroundTint="@color/cotinute"
             android:padding="8dp"
             android:text="@string/btn_continute"
             android:textColor="@color/black" />
-    </LinearLayout>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_16">
+        <!-- Scroll content -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/dp_16">
 
-        <LinearLayout
-            android:id="@+id/pointContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:orientation="vertical">
-
-            <!-- Tổng điểm -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_overalpoint"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/OverallPoints"
-                    android:textColor="@color/btncolor"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/totalPoints"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="1.0"
-                    android:textColor="@color/btncolor"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Kỹ năng + điểm hiển thị theo hàng ngang -->
-            <LinearLayout
+                android:id="@+id/pointContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <!-- Tổng điểm -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_30"
-                    android:background="@drawable/bg_listenpoint"
+                    android:background="@drawable/bg_overalpoint"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lis"
-                        android:textSize="18sp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/OverallPoints"
+                        android:textColor="@color/btncolor"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/listeningpoint"
-                        android:layout_width="0dp"
+                        android:id="@+id/totalPoints"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="@dimen/dp_30"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="1.o"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:background="@drawable/bg_speakpoint"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/speak"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/speakingpoint"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="@dimen/dp_30"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="1"
-                        android:gravity="end"
+                        android:layout_margin="10dp"
                         android:text="1.0"
-                        android:textSize="18sp"
+                        android:textColor="@color/btncolor"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
+                <!-- Điểm kỹ năng -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:background="@drawable/bg_readpoint"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/dp_30">
 
-                    <TextView
-                        android:layout_width="0dp"
+                    <!-- Listening -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_weight="1"
+                        android:background="@drawable/bg_listenpoint"
                         android:gravity="center"
-                        android:text="@string/read"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/readingpoint"
-                        android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/lis"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/listeningpoint"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="@dimen/dp_30"
+                            android:layout_marginBottom="10dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="1.0"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Speaking -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="@dimen/dp_30"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="1.0"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:background="@drawable/bg_wripoint"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:background="@drawable/bg_speakpoint"
                         android:gravity="center"
-                        android:text="@string/write"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/writingpoint"
-                        android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/speak"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/speakingpoint"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="@dimen/dp_30"
+                            android:layout_marginBottom="10dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="1.0"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Reading -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="@dimen/dp_30"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="1.0"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:background="@drawable/bg_readpoint"
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/read"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/readingpoint"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="@dimen/dp_30"
+                            android:layout_marginBottom="10dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="1.0"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Writing -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_16"
+                        android:background="@drawable/bg_wripoint"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/write"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/writingpoint"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="@dimen/dp_30"
+                            android:layout_marginBottom="10dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="1.0"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</LinearLayout>
+    <!-- Bottom bar -->
+    <include
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/bottom_bar" />
+
+</RelativeLayout>

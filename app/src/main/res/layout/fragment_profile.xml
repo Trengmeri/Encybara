@@ -1,150 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.core.widget.NestedScrollView android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#F2EFEC"
-    tools:context=".ui.profile.ProfileFragment">
-    <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-        android:layout_gravity="center">
+    android:background="#F2EFEC"
+    tools:context=".ui.profile.ProfileActivity">
 
-        <LinearLayout
+    <!-- Nội dung scroll -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_bar">
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/rounded_corner"
             android:orientation="vertical"
-            android:layout_marginTop="60dp"
-            android:layout_marginStart="@dimen/dp_30"
-            android:layout_marginEnd="@dimen/dp_30">
-
-            <TextView
-                android:id="@+id/userName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="80dp"
-                android:gravity="center"
-                android:textSize="25sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:id="@+id/userEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_16"
-                android:gravity="center"
-                android:textSize="15sp"/>
+            android:layout_gravity="center">
 
             <LinearLayout
-                android:id="@+id/btnEdit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_30"
-                android:layout_marginTop="@dimen/dp_30"
-                android:layout_marginEnd="@dimen/dp_30">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/profile_human" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:textSize="15sp"
-                    android:text="@string/Editprofile"
-                    android:drawableEnd="@drawable/muiten_right"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/language"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_corner"
+                android:orientation="vertical"
+                android:layout_marginTop="60dp"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginEnd="@dimen/dp_30">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/profile_language" />
                 <TextView
+                    android:id="@+id/userName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:textSize="15sp"
-                    android:text="@string/Language2"
-                    android:drawableEnd="@drawable/muiten_right"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/term"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_30"
-                android:layout_marginStart="@dimen/dp_30"
-                android:layout_marginEnd="@dimen/dp_30">
+                    android:layout_marginTop="80dp"
+                    android:gravity="center"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@drawable/profile_term" />
                 <TextView
+                    android:id="@+id/userEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:textSize="15sp"
-                    android:text="@string/TermsAndConditions"
-                    android:drawableEnd="@drawable/muiten_right"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_30"
-            android:layout_marginBottom="@dimen/dp_30"
-            android:layout_marginStart="@dimen/dp_30"
-            android:layout_marginEnd="@dimen/dp_30">
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:gravity="center"
+                    android:textSize="15sp" />
 
-            <ImageView
+                <!-- Edit Profile -->
+                <LinearLayout
+                    android:id="@+id/btnEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginTop="@dimen/dp_30"
+                    android:layout_marginEnd="@dimen/dp_30">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile_human" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textSize="15sp"
+                        android:text="@string/Editprofile"
+                        android:drawableEnd="@drawable/muiten_right"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Language -->
+                <LinearLayout
+                    android:id="@+id/language"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_30"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginEnd="@dimen/dp_30">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile_language" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textSize="15sp"
+                        android:text="@string/Language2"
+                        android:drawableEnd="@drawable/muiten_right"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Terms -->
+                <LinearLayout
+                    android:id="@+id/term"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_30"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginEnd="@dimen/dp_30">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/profile_term" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textSize="15sp"
+                        android:text="@string/TermsAndConditions"
+                        android:drawableEnd="@drawable/muiten_right"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Logout -->
+                <LinearLayout
+                    android:id="@+id/btnLogout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_30"
+                    android:layout_marginBottom="@dimen/dp_30"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginEnd="@dimen/dp_30">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/profile_logout" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textSize="15sp"
+                        android:text="@string/Logout"
+                        android:drawableEnd="@drawable/muiten_right"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Avatar nổi trên khung -->
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/profile_logout" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:textSize="15sp"
-                android:text="@string/Logout"
-                android:drawableEnd="@drawable/muiten_right"
-                android:textColor="@color/black"
-                android:textStyle="bold"/>
-        </LinearLayout>
+                android:layout_gravity="center|top">
 
-
-        </LinearLayout>
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|top">
-            <ImageView
-                android:id="@+id/imgAvatar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/img_avt_profile"
-                android:clickable="false"
-                android:focusable="false">
-            </ImageView>
-
+                <ImageView
+                    android:id="@+id/imgAvatar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/img_avt_profile"
+                    android:clickable="false"
+                    android:focusable="false" />
+            </FrameLayout>
         </FrameLayout>
-</FrameLayout>
-</androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom bar -->
+    <include
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/bottom_bar" />
+
+</RelativeLayout>

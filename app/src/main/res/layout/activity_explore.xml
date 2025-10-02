@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#FFFEF6"
+    android:fitsSystemWindows="true"
     tools:context=".ui.explore.ExploreActivity">
 
+    <!-- Phần nội dung chính -->
     <FrameLayout
+        android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_bar">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ImageView
                 android:id="@+id/ellipse_3"
                 android:layout_width="wrap_content"
@@ -25,6 +29,7 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -33,40 +38,43 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 tools:ignore="MissingConstraints" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_16">
-    <LinearLayout
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:ignore="MissingConstraints">
+            android:layout_marginTop="@dimen/dp_16">
 
-            <TextView
-                android:id="@+id/tvName"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_30"
-                android:layout_marginTop="50dp"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
+                android:orientation="vertical"
+                tools:ignore="MissingConstraints">
 
-            <ImageView
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:background="@drawable/capy_sleep"
-                android:alpha="0.8"
-                android:layout_gravity="top"
-                android:layout_marginStart="@dimen/dp_16"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_30"
-                android:layout_marginBottom="@dimen/dp_16"
-                android:text="@string/txt_explore"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginTop="50dp"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:background="@drawable/capy_sleep"
+                    android:alpha="0.8"
+                    android:layout_gravity="top"
+                    android:layout_marginStart="@dimen/dp_16" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_30"
+                    android:layout_marginBottom="@dimen/dp_16"
+                    android:text="@string/txt_explore"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:id="@+id/content"
@@ -114,6 +122,7 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="25dp"
                             android:background="@drawable/icon_flash"/>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -122,6 +131,7 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"/>
                     </LinearLayout>
+
                     <LinearLayout
                         android:id="@+id/btnSche"
                         android:layout_width="match_parent"
@@ -137,6 +147,7 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="25dp"
                             android:background="@drawable/icon_schedule"/>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -146,9 +157,16 @@
                             android:layout_marginStart="10dp"/>
                     </LinearLayout>
                 </LinearLayout>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </FrameLayout>
-</LinearLayout>
+
+    <!-- Bottom bar -->
+    <include
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/bottom_bar" />
+
+</RelativeLayout>

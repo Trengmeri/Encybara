@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.ApiCallback;
+import com.example.test.api.BaseApiManager;
 import com.example.test.api.DiscussionManager;
 import com.example.test.api.UserManager;
 import com.example.test.model.Discussion;
@@ -66,7 +67,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
                 new Handler(Looper.getMainLooper()).post(() -> {
                     holder.txtUser.setText(user.getName());
                     if (avatar == null) return;
-                    String uri = avatar.replace("0.0.0.0", "14.225.198.3");
+                    String uri = BaseApiManager.replaceHost(avatar);
                     Log.d("DiscussionAdapter", user.getName());
                     Glide.with(context)
                             .load(uri)
