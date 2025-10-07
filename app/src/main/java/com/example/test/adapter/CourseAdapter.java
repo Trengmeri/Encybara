@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,7 @@ import com.example.test.model.Enrollment;
 import com.example.test.model.Lesson;
 import com.example.test.model.Result;
 import com.example.test.ui.CourseInformationActivity;
+import com.example.test.ui.study.MaterialCourseActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,6 +77,11 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         if (course == null) {
             return; // Tránh lỗi khi đối tượng bị null
         }
+        holder.videobtn.setOnClickListener(v -> {
+            Intent intent = new Intent(context, MaterialCourseActivity.class);
+            //intent.putExtra("courseId", course.getId());
+            context.startActivity(intent);
+        });
         holder.tvCourseTitle.setText(course.getName());
         holder.tvCourseDescription.setText(course.getIntro());
         holder.tvCourseDescription.setMaxLines(3);
@@ -336,12 +343,14 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     static class CourseViewHolder extends RecyclerView.ViewHolder {
         TextView tvCourseTitle, tvCourseDescription;
         LinearLayout lessonContainer;
+        private Button videobtn;
 
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
             tvCourseTitle = itemView.findViewById(R.id.tvCourseTitle);
             tvCourseDescription = itemView.findViewById(R.id.tvCourseDescription);
             lessonContainer = itemView.findViewById(R.id.lessonContainer);
+            videobtn = itemView.findViewById(R.id.videobtn);
         }
     }
     public void openLesson(int courseId, int lessonId) {
