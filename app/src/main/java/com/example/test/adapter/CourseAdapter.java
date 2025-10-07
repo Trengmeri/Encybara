@@ -19,6 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import com.example.test.VideoStatusManager;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -53,6 +56,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     private LessonManager lessonManager = new LessonManager();
     private ResultManager resultManager;
     private CourseManager courseManager;
+    private VideoStatusManager videoStatusManager;
 
     public CourseAdapter(String proStatus, Context context, List<Course> courseList) {
         this.proStatus = proStatus;
@@ -65,6 +69,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                 : new ArrayList<>();
         this.resultManager = new ResultManager(context);
         this.courseManager = new CourseManager(context);
+        this.videoStatusManager = new VideoStatusManager(context);
+
     }
 
     @NonNull
@@ -74,8 +80,6 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         return new CourseViewHolder(view);
     }
 
-    // Thay thế toàn bộ phương thức onBindViewHolder bằng phiên bản dưới đây
-
     @Override
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
 
@@ -84,42 +88,55 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
             return; // Tránh lỗi khi đối tượng bị null
         }
 
-        // BƯỚC 1: Ẩn nút video theo mặc định cho mỗi course item
         holder.videobtn.setVisibility(View.GONE);
-
-        holder.videobtn.setOnClickListener(v -> {
-            Intent intent = new Intent(context, MaterialCourseActivity.class);
-            intent.putExtra("courseId", course.getId()); // Sửa lại: nên truyền courseId
-            context.startActivity(intent);
-        });
         holder.tvCourseTitle.setText(course.getName());
         holder.tvCourseDescription.setText(course.getIntro());
         holder.tvCourseDescription.setMaxLines(3);
         holder.tvCourseDescription.setEllipsize(TextUtils.TruncateAt.END);
 
-        if(proStatus.equals("True")){
-            // BƯỚC 2: Gọi API để kiểm tra xem course có video không
+        // --- GÁN SỰ KIỆN CLICK MỚI CHO NÚT VIDEO ---
+        holder.videobtn.setOnClickListener(v -> {
+            boolean hasBeenClicked = videoStatusManager.hasVideoBeenClicked(course.getId());
+            if (hasBeenClicked) {
+                showReplayDialog(course.getId());
+            } else {
+                showFirstTimeDialog(course.getId());
+            }
+        });
+
+
+        if (proStatus.equals("True")) {
             courseManager.fetchMaterialsByCourse(course.getId(), new ApiCallback<List<MediaFile>>() {
                 @Override
                 public void onSuccess(List<MediaFile> materials) {
-                    // onSuccess được gọi khi API trả về status 200 và có dữ liệu
-                    if (materials != null && !materials.isEmpty()) {
-                        // Nếu danh sách tài liệu không rỗng -> hiển thị nút video
-                        new Handler(Looper.getMainLooper()).post(() -> {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        if (materials != null && !materials.isEmpty()) {
+                            // --- LOGIC HIỂN THỊ ICON VÀ DẤU CHẤM THAN ---
+                            boolean hasBeenClicked = videoStatusManager.hasVideoBeenClicked(course.getId());
+                            if (hasBeenClicked) {
+                                // Nếu đã click, dùng icon thường
+                                holder.videobtn.setBackgroundResource(R.drawable.video_17236469);
+                                holder.videobtn.setBackgroundTintList(null);
+                            } else {
+                                // Nếu chưa click, dùng icon có dấu chấm than
+                                holder.videobtn.setBackgroundResource(R.drawable.video_icon_with_notification);
+                                holder.videobtn.setBackgroundTintList(null);
+                            }
                             holder.videobtn.setVisibility(View.VISIBLE);
-                        });
-                    } else holder.videobtn.setVisibility(View.GONE);
+                        } else {
+                            holder.videobtn.setVisibility(View.GONE);
+                        }
+                    });
                 }
 
                 @Override
                 public void onFailure(String errorMessage) {
-                    holder.videobtn.setVisibility(View.GONE);
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        holder.videobtn.setVisibility(View.GONE);
+                    });
                 }
-
                 @Override
-                public void onSuccess() {
-                    holder.videobtn.setVisibility(View.GONE);
-                }
+                public void onSuccess() {}
             });
 
 
@@ -352,7 +369,44 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         }
     }
 
+    // Hàm hiển thị dialog cho lần đầu click
+    private void showFirstTimeDialog(int courseId) {
+        new AlertDialog.Builder(context)
+                // SỬA LỖI: Dùng R.string.ten_resource thay vì "@string/..."
+                .setTitle(R.string.noti)
+                .setMessage(R.string.first)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    // Đánh dấu là đã click
+                    videoStatusManager.setVideoClicked(courseId);
 
+                    // Điều hướng đến màn hình video
+                    Intent intent = new Intent(context, MaterialCourseActivity.class);
+                    intent.putExtra("courseId", courseId);
+                    context.startActivity(intent);
+
+                    // Yêu cầu adapter cập nhật lại item này để bỏ dấu chấm than
+                    // Lưu ý: Giải pháp cập nhật trực tiếp button sẽ tốt hơn, nhưng nếu bạn muốn dùng notifyDataSetChanged() thì giữ lại dòng này
+                    notifyDataSetChanged();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    // Hàm hiển thị dialog cho các lần click sau
+    private void showReplayDialog(int courseId) {
+        new AlertDialog.Builder(context)
+                // SỬA LỖI: Dùng R.string.ten_resource thay vì "@string/..."
+                .setTitle(R.string.noti)
+                .setMessage(R.string.not_first)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    // Điều hướng đến màn hình video
+                    Intent intent = new Intent(context, MaterialCourseActivity.class);
+                    intent.putExtra("courseId", courseId);
+                    context.startActivity(intent);
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
+                .show();
+    }
 
     static class CourseViewHolder extends RecyclerView.ViewHolder {
         TextView tvCourseTitle, tvCourseDescription;

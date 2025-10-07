@@ -21,6 +21,8 @@
     <string name="check">Check Result</string>
     <string name="review">Review Answer</string>
     <string name="material_course">Complete the lesson</string>
+    <string name="first">Do you want to study the lecture of this course?</string>
+    <string name="not_first">Do you want to study the lecture of this course again?</string>
     <string name="grammar">Grammar</string>
     <string name="result">Hold on a second, we are working out your results!</string>
     <string name="writting">Writing</string>
