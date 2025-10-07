@@ -8,6 +8,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient; // Thêm import này nếu chưa có
 import android.widget.Toast;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +43,19 @@ public class MaterialCourseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_material_course);
 
         webView = findViewById(R.id.webViewMaterial); // Đảm bảo ID này khớp với layout của bạn
+        // Tìm các nút từ layout
+        ImageButton closeButton = findViewById(R.id.closeButton);
+        Button completeButton = findViewById(R.id.completeButton);
+
+        // Gán sự kiện click cho nút "X"
+        closeButton.setOnClickListener(v -> {
+            finish(); // Kết thúc activity và quay lại màn hình trước
+        });
+
+        // Gán sự kiện click cho nút "Hoàn thành"
+        completeButton.setOnClickListener(v -> {
+            finish(); // Kết thúc activity và quay lại màn hình trước
+        });
 
         // Cấu hình WebSettings: RẤT QUAN TRỌNG cho video và JS
         WebSettings settings = webView.getSettings();
