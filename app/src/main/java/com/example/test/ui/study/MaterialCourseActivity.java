@@ -107,7 +107,7 @@ public class MaterialCourseActivity extends AppCompatActivity {
 
         courseManager = new CourseManager(this);
 
-        int courseId = getIntent().getIntExtra("courseId", 24); // Lấy courseId từ Intent
+        int courseId = getIntent().getIntExtra("courseId", 1); // Lấy courseId từ Intent
         fetchMaterial(courseId);
     }
 
