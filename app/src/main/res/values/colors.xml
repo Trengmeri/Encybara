@@ -20,6 +20,10 @@
     <color name="textPrimary">#212121</color> <!-- Màu chữ chính (đen đậm) -->
     <color name="textSecondary">#757575</color> <!-- Màu chữ phụ (xám nhạt) -->
 
-    3FB8D2
+        <!-- ... các màu khác của bạn ... -->
+        <color name="pronunciation_good">#008000</color> <!-- Xanh lá cây -->
+    <color name="pronunciation_fair">#CCCC00</color>
+        <color name="pronunciation_poor">#FF0000</color> <!-- Đỏ -->
+        <color name="pronunciation_default">#000000</color> <!-- Đen (mặc định) -->
 
 </resources>

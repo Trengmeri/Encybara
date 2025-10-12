@@ -14,7 +14,6 @@ import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.FieldManager;
 import com.example.test.model.Field;
-import com.example.test.ui.question_data.RecordQuestionActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,14 +93,7 @@ public class ChooseFieldsActivity extends AppCompatActivity {
         btnConstruct.setOnClickListener(listener);
         btnIT.setOnClickListener(listener);
         btnMechan.setOnClickListener(listener);
-        btnOther.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ChooseFieldsActivity.this, Test2.class);
-                startActivity(intent);
-
-            }
-        });
+        btnOther.setOnClickListener(listener);
     }
 
     private void updateUserField(String field) {

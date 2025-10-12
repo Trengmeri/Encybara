@@ -5,15 +5,15 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
-import android.os.Handler;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,15 +27,13 @@ import com.example.test.api.ApiService;
 import com.example.test.api.AudioManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
-import com.example.test.api.ResultManager;
 import com.example.test.model.EvaluationResult;
 import com.example.test.model.Lesson;
+import com.example.test.model.PronunciationResult;
 import com.example.test.model.Question;
-import com.example.test.model.SpeechResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 // Đổi tên class nếu cần thiết, ví dụ thành RecordQuestionActivity để khớp với file layout
@@ -161,27 +159,40 @@ public class SpeakingActivity extends AppCompatActivity {
             progressDialog.show();
         });
 
-        audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
+        // Lấy transcript từ câu hỏi đang hiển thị
+        String transcript = tvTalk.getText().toString();
+
+        // GỌI HÀM MỚI
+        audioManager.assessPronunciation(recordedFile, transcript, new ApiCallback<PronunciationResult>() {
             @Override
-            public void onSuccess(SpeechResult result) {
-                String transcript = result.getTranscript();
-                Log.d("SPEECH_TO_TEXT", "Transcript: " + transcript);
-                runOnUiThread(() -> tvTalk.setText(transcript)); // Hiển thị kết quả nhận dạng
-                // **LOGIC MỚI: Gọi kiểm tra câu trả lời ngay lập tức**
-                checkAnswer(transcript);
+            public void onSuccess(PronunciationResult result) {
+                recordedFile.delete(); // Xóa file sau khi gửi
+                // Bây giờ bạn có thể xử lý kết quả
+                Log.d("PRONUNCIATION_RESULT", "Overall Score: " + result.getOverallScore());
+
+                // TODO: Hiển thị kết quả lên giao diện
+                // Ví dụ: Tạo một SpannableString để tô màu chữ
+                // Sau đó gọi hàm lưu điểm và chuyển câu hỏi
+
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+
+                // Ví dụ về cách hiển thị popup (bạn cần cập nhật PopupHelper để hiển thị kết quả mới này)
+                checkAnswer(tvTalk.getText().toString());
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("SPEECH_TO_TEXT", errorMessage);
+                recordedFile.delete();
+                Log.e("PRONUNCIATION_RESULT", errorMessage);
                 if (progressDialog != null && progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-                showErrorDialog("Lỗi nhận dạng giọng nói. Vui lòng thử lại.");
+                showErrorDialog("Lỗi chấm điểm phát âm: " + errorMessage);
             }
 
-            @Override
-            public void onSuccess() { }
+            @Override public void onSuccess() {}
         });
     }
 

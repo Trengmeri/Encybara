@@ -3,15 +3,20 @@ package com.example.test.ui.question_data;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,8 +25,13 @@ import androidx.core.content.ContextCompat;
 
 import com.example.test.PopupHelper;
 import com.example.test.R;
-import com.example.test.api.*;
-import com.example.test.model.*;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.AudioManager;
+import com.example.test.api.QuestionManager;
+import com.example.test.model.EvaluationResult;
+import com.example.test.model.PhonemeScore;
+import com.example.test.model.PronunciationResult;
+import com.example.test.model.Question;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +41,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
 
     // Views
     private LinearLayout imgVoice;
-    private TextView tvQuestion, tvTalk; // tvTalk thay thế cho tvTranscription và key
+    private TextView tvQuestion, tvTalk, tvphoneme; // tvTalk thay thế cho tvTranscription và key
     private ProgressDialog progressDialog;
 
     // Data
@@ -65,6 +75,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
         imgVoice = findViewById(R.id.imgVoice);
         tvQuestion = findViewById(R.id.tvQuestion);
         tvTalk = findViewById(R.id.tvTalk); // View mới để hiển thị text
+        tvphoneme = findViewById(R.id.tvphoneme); // View mới để hiển thị text
         wave1 = findViewById(R.id.wave_1);
         wave2 = findViewById(R.id.wave_2);
         wave3 = findViewById(R.id.wave_3);
@@ -80,6 +91,8 @@ public class RecordQuestionActivity extends AppCompatActivity {
         setupWaveAnimators();
         createProgressBars(totalSteps, currentQuestionIndex);
         loadQuestion(currentQuestionIndex);
+        tvTalk.setText("My name is Treng. I'm 21 years old."); // Khởi đầu với text rỗng
+        tvphoneme.setText("");
 
         // Kiểm tra và yêu cầu quyền ghi âm
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -94,6 +107,10 @@ public class RecordQuestionActivity extends AppCompatActivity {
                 stopRecording(); // Logic kiểm tra kết quả sẽ được gọi từ đây
             }
         });
+    }
+
+    private enum DisplayType {
+        CHARACTER, PHONEME
     }
 
     private void startRecording() {
@@ -116,7 +133,6 @@ public class RecordQuestionActivity extends AppCompatActivity {
             recorder.start();
             isRecording = true;
             startWaves();
-            tvTalk.setText("Đang lắng nghe..."); // Phản hồi cho người dùng
             Log.d("Recording", "Recording started");
         } catch (IOException e) {
             e.printStackTrace();
@@ -156,82 +172,109 @@ public class RecordQuestionActivity extends AppCompatActivity {
             progressDialog.show();
         });
 
-        audioManager.uploadAndTranscribeM4A(recordedFile, new ApiCallback<SpeechResult>() {
-            @Override
-            public void onSuccess(SpeechResult result) {
-                String transcript = result.getTranscript();
-                double confidence = result.getConfidence();
-                Log.d("SPEECH_TO_TEXT", "Transcript: " + transcript + ", Confidence: " + confidence);
-                runOnUiThread(() -> tvTalk.setText(transcript));
+        // Lấy transcript từ câu hỏi đang hiển thị
+        String transcript = tvTalk.getText().toString();
 
-                // **LOGIC MỚI: Gọi kiểm tra câu trả lời ngay lập tức**
-                checkAnswer(transcript, confidence);
+        // GỌI HÀM MỚI
+        audioManager.assessPronunciation(recordedFile, transcript, new ApiCallback<PronunciationResult>() {
+            @Override
+            public void onSuccess(PronunciationResult result) {
+                recordedFile.delete(); // Xóa file sau khi gửi
+                // Bây giờ bạn có thể xử lý kết quả
+                Log.d("PRONUNCIATION_RESULT", "Overall Score: " + result.getOverallScore());
+
+                // TODO: Hiển thị kết quả lên giao diện
+                // Ví dụ: Tạo một SpannableString để tô màu chữ
+                // Sau đó gọi hàm lưu điểm và chuyển câu hỏi
+
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+
+                // GỌI HÀM ĐÃ SỬA
+                // Gọi cho character, không cần dấu /
+                SpannableStringBuilder characterSpannable = buildColoredSpannable(result.getPhonemeScores(), DisplayType.CHARACTER, false);
+                tvTalk.setText(characterSpannable);
+
+                // Gọi cho phoneme, CÓ cần dấu /
+                SpannableStringBuilder phonemeSpannable = buildColoredSpannable(result.getPhonemeScores(), DisplayType.PHONEME, true);
+                tvphoneme.setText(phonemeSpannable);
+
+                //showResultAndMoveNext(result.getOverallScore());
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("SPEECH_TO_TEXT", errorMessage);
+                recordedFile.delete();
+                Log.e("PRONUNCIATION_RESULT", errorMessage);
                 if (progressDialog != null && progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-                showErrorDialog("Lỗi nhận dạng giọng nói. Vui lòng thử lại.");
+                showErrorDialog("Lỗi chấm điểm phát âm: " + errorMessage);
             }
 
             @Override public void onSuccess() {}
         });
     }
 
-    private void checkAnswer(String userAnswer, double confidence) {
-        if (userAnswer == null || userAnswer.trim().isEmpty()) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            showErrorDialog("Không nhận dạng được giọng nói. Vui lòng thử lại.");
-            return;
+    /**
+     * HÀM CHUNG: Xây dựng một chuỗi Spannable được tô màu
+     * @param phonemeScores Danh sách điểm của âm vị
+     * @param type Loại hiển thị (ký tự hay phiên âm)
+     * @param includeSlashes Thêm dấu / ở đầu và cuối (chỉ dùng cho phoneme)
+     * @return Một đối tượng SpannableStringBuilder đã được định dạng
+     */
+    private SpannableStringBuilder buildColoredSpannable(List<PhonemeScore> phonemeScores, DisplayType type, boolean includeSlashes) {
+        SpannableStringBuilder spannableBuilder = new SpannableStringBuilder();
+        if (phonemeScores == null || phonemeScores.isEmpty()) {
+            return spannableBuilder;
         }
 
-        String questionContent = tvQuestion.getText().toString().trim();
-        ApiService apiService = new ApiService(this);
+        // THÊM BƯỚC NÀY: Thêm dấu / ở đầu nếu được yêu cầu
+        if (includeSlashes) {
+            spannableBuilder.append("/");
+        }
 
-        apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
-            @Override
-            public void onSuccess(EvaluationResult result) {
-                // Công thức tính điểm đặc thù của bạn
-                double finalPoint = result.getPoint() * 0.7 + confidence * 0.3;
+        int currentWordIndex = phonemeScores.get(0).getWordIndex();
 
-                quesManager.saveUserAnswer(questions.get(currentQuestionIndex).getId(), userAnswer, finalPoint, result.getimprovements(), enrollmentId, new ApiCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d("CheckAnswer", "Lưu câu trả lời thành công!");
-                        if (progressDialog != null && progressDialog.isShowing()) {
-                            progressDialog.dismiss();
-                        }
-                        // Hiển thị popup kết quả và chuyển câu
-                        runOnUiThread(() -> showResultAndMoveNext(result));
-                    }
+        int goodColor = ContextCompat.getColor(this, R.color.pronunciation_good);
+        int fairColor = ContextCompat.getColor(this, R.color.pronunciation_fair);
+        int poorColor = ContextCompat.getColor(this, R.color.pronunciation_poor);
+        int defaultColor = ContextCompat.getColor(this, R.color.pronunciation_default);
 
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        Log.e("CheckAnswer", "Lỗi lưu câu trả lời: " + errorMessage);
-                        if (progressDialog != null && progressDialog.isShowing()) {
-                            progressDialog.dismiss();
-                        }
-                        showErrorDialog("Lỗi khi lưu kết quả. Vui lòng thử lại.");
-                    }
-                    @Override public void onSuccess(Object result) {}
-                });
+        for (PhonemeScore score : phonemeScores) {
+            if (score.getWordIndex() > currentWordIndex) {
+                spannableBuilder.append(" ");
+                currentWordIndex = score.getWordIndex();
             }
 
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("CheckAnswer", "API đánh giá thất bại: " + errorMessage);
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-                showErrorDialog(getString(R.string.invalidans));
+            String textToAppend = (type == DisplayType.CHARACTER) ? score.getCharacter() : score.getPhoneme();
+
+            int start = spannableBuilder.length();
+            spannableBuilder.append(textToAppend);
+            int end = spannableBuilder.length();
+
+            int color;
+            String quality = score.getQuality();
+            if ("good".equalsIgnoreCase(quality)) {
+                color = goodColor;
+            } else if ("fair".equalsIgnoreCase(quality)) {
+                color = fairColor;
+            } else if ("poor".equalsIgnoreCase(quality)) {
+                color = poorColor;
+            } else {
+                color = defaultColor;
             }
-            @Override public void onSuccess() {}
-        });
+
+            spannableBuilder.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        // THÊM BƯỚC NÀY: Thêm dấu / ở cuối nếu được yêu cầu
+        if (includeSlashes) {
+            spannableBuilder.append("/");
+        }
+
+        return spannableBuilder;
     }
 
     private void showResultAndMoveNext(EvaluationResult result) {
