@@ -200,7 +200,7 @@ public class WritingActivity extends AppCompatActivity {
                     public void onFailure(String errorMessage) {
                         progressDialog.dismiss();
                         Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
-                        showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
+                        showErrorDialog(getString(R.string.invalidans));
                     }
                 });
             }
@@ -210,37 +210,6 @@ public class WritingActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 Log.e("WritingActivity", "Câu trả lời khong hop le: " + errorMessage);
                 showErrorDialog(getString(R.string.invalidans));
-                apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
-
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onSuccess(String tip) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                                key.setMovementMethod(new ScrollingMovementMethod());
-
-                                String formattedTip = tip
-                                        .replaceAll("(?<!\\d)\\. ", ".\n")
-                                        .replaceAll(": ", ":\n");
-
-                                key.setText("Tip: \n" +formattedTip);
-                            }
-                        });
-                    }
-
-
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-
-                    }
-                });
             }
         });
     }

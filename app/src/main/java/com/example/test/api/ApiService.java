@@ -11,6 +11,7 @@ import com.example.test.model.EvaluationResult;
 import com.example.test.response.ApiResponseEnrollment;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -38,19 +39,18 @@ public class ApiService {
     }
 
     public void sendAnswerToApi(String question, String userAnswer, ApiCallback<EvaluationResult> callback) {
-        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
 
         try {
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("question", question);
-            jsonBody.put("userAnswer", userAnswer);
-            jsonBody.put("prompt", "Evaluate the user's response based on grammar accuracy, logical coherence, and relevance to the question. Note that names can be unique or unconventional (e.g., 'Home' or other unusual names). If the user's response is completely irrelevant to the question, assign a score of 0. Provide feedback in a supportive tone and assign a slightly higher score than usual for relevant answers to encourage the user.");
+            jsonBody.put("answer", userAnswer);
 
             RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json; charset=utf-8"));
 
+            String scoringUrl = BASE_URL.replace(":8080", ":5001") + "/api/content-scoring";
+
             Request request = new Request.Builder()
-                    .url(BASE_URL + "/api/v1/perplexity/evaluate")
-                    .addHeader("Authorization", "Bearer " + token)
+                    .url(scoringUrl)
                     .post(body)
                     .build();
 
@@ -61,16 +61,36 @@ public class ApiService {
                         callback.onFailure("API error: " + response.message());
                         return;
                     }
-                    String responseBody = response.body().string(); // Lưu body vào biến trước
+                    String responseBody = response.body().string();
                     Log.d("API_RESPONSE", "JSON: " + responseBody);
 
                     JSONObject responseObject = new JSONObject(responseBody);
-                    JSONObject dataObject = responseObject.getJSONObject("data"); // Lấy object `data`
 
-                    double point = dataObject.getDouble("score"); // ✅ Lấy giá trị `score`
-                    String evaluation = dataObject.getString("evaluation");
-                    String improvements = dataObject.getString("improvements");
+                    // --- PHẦN SỬA LẠI ---
 
+                    // 1. Lấy "score" trực tiếp từ object gốc, không thông qua "data"
+                    double point = responseObject.getDouble("score");
+
+                    // 2. Lấy object con "advanced_answer"
+                    JSONObject advancedAnswerObject = responseObject.getJSONObject("advanced_answer");
+
+                    // 3. Lấy "suggestion" từ object con
+                    String improvements = advancedAnswerObject.getString("suggestion");
+
+                    // 4. Lấy mảng "improvement_points" và chuyển thành một String duy nhất
+                    JSONArray improvementPointsArray = advancedAnswerObject.getJSONArray("improvement_points");
+                    StringBuilder evaluationBuilder = new StringBuilder();
+                    for (int i = 0; i < improvementPointsArray.length(); i++) {
+                        // Nối các phần tử trong mảng lại, có thể thêm dấu gạch đầu dòng cho đẹp
+                        evaluationBuilder.append("- ").append(improvementPointsArray.getString(i));
+                        // Thêm ký tự xuống dòng nếu không phải là phần tử cuối cùng
+                        if (i < improvementPointsArray.length() - 1) {
+                            evaluationBuilder.append("\n");
+                        }
+                    }
+                    String evaluation = evaluationBuilder.toString();
+
+                    // Tạo đối tượng kết quả với dữ liệu đã được đọc chính xác
                     EvaluationResult result = new EvaluationResult(improvements, evaluation, point);
                     callback.onSuccess(result);
 
