@@ -4,195 +4,204 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.view.View;
+import android.util.AttributeSet;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 import com.example.test.R;
 
 import java.util.Random;
 
-public class GameView extends View {
-
-    private static final int GRID_SIZE = 6;
-
-    private int[][] board = new int[GRID_SIZE][GRID_SIZE];
-    private int bearRow, bearCol;
-    private int honeyRow, honeyCol;
-
-    private Bitmap bg, bear, honey, rock, question;
-    private Paint paint = new Paint();
-    private Random random = new Random();
-
+public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+    private int numRows = 6, numCols = 6;
     private int cellSize;
+    private Paint paintGrass, paintGrid, paintTree;
+    private int[][] map;
+    private int bearRow, bearCol;
+    private int honeyRow, honeyCol; // ✅ vị trí hũ mật
     private boolean gameWon = false;
+
+    private Bitmap bear, rock, question, honey;
+    private OnQuestionListener listener; // 👈 interface callback
+    private OnWinListener winListener;   // 👈 callback khi thắng
+
+    private Random random = new Random();
 
     public static final int TYPE_EMPTY = 0;
     public static final int TYPE_ROCK = 1;
     public static final int TYPE_QUESTION = 2;
-    public static final int TYPE_HONEY = 3;
 
-    private int numRows = 6, numCols = 6;
-    private int[][] map;
+    // Giao diện callback cho sự kiện câu hỏi
+    public interface OnQuestionListener {
+        void onQuestionTriggered(int row, int col);
+    }
+
+    public interface OnWinListener {
+        void onGameWon();
+    }
+
+    public void setOnQuestionListener(OnQuestionListener listener) {
+        this.listener = listener;
+    }
+
+    public void setOnWinListener(OnWinListener listener) {
+        this.winListener = listener;
+    }
 
     public GameView(Context context) {
         super(context);
+        getHolder().addCallback(this);
         initBitmaps(context);
-        initGame();
+        initPaints();
+        initMap();
+    }
+
+    public GameView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        getHolder().addCallback(this);
+        initBitmaps(context);
+        initPaints();
+        initMap();
+    }
+
+    private void initPaints() {
+        paintGrass = new Paint();
+        paintGrass.setColor(Color.rgb(180, 255, 180));
+
+        paintGrid = new Paint();
+        paintGrid.setColor(Color.rgb(100, 180, 100));
+        paintGrid.setStyle(Paint.Style.STROKE);
+        paintGrid.setStrokeWidth(3);
+
+        paintTree = new Paint();
+        paintTree.setColor(Color.rgb(34, 139, 34));
     }
 
     private void initBitmaps(Context ctx) {
-        bg = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.background_game);
         bear = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.bear);
-        honey = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.honey);
         rock = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.rock);
         question = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ques);
-
-        // Tính toán kích thước mỗi ô dựa trên kích thước khung nền
-        int cellWidth = bg.getWidth() / numCols;
-        int cellHeight = bg.getHeight() / numRows;
-
-// Scale các vật thể cho vừa khít từng ô
-        bear = Bitmap.createScaledBitmap(bear, cellWidth, cellHeight, true);
-        rock = Bitmap.createScaledBitmap(rock, cellWidth, cellHeight, true);
-        question = Bitmap.createScaledBitmap(question, cellWidth, cellHeight, true);
-        honey = Bitmap.createScaledBitmap(honey, cellWidth, cellHeight, true);
-
-
-        // ✅ Khởi tạo bản đồ
-        map = new int[numRows][numCols];
-
-        // Thêm vật cản (1 = đá, 2 = dấu hỏi)
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                double rand = Math.random();
-                if (rand < 0.15) map[i][j] = 1;        // 15% là đá
-                else if (rand < 0.35) map[i][j] = 2;   // 20% là dấu hỏi
-                else map[i][j] = 0;                    // 0 = đường trống
-            }
-        }
-
-        // ✅ Đặt gấu vào vị trí bắt đầu
-        bearRow = numRows / 2;
-        bearCol = numCols / 2;
-        map[bearRow][bearCol] = 0; // đảm bảo chỗ này trống
+        honey = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.honey); // ✅ thêm hũ mật
     }
 
-    public void initGame() {
-        // Tạo bản đồ ngẫu nhiên
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                board[i][j] = random.nextInt(10) < 7 ? TYPE_QUESTION : TYPE_ROCK;
+    private void initMap() {
+        map = new int[numRows][numCols];
+        for (int r = 0; r < numRows; r++) {
+            for (int c = 0; c < numCols; c++) {
+                double rand = Math.random();
+                if (rand < 0.15) map[r][c] = TYPE_ROCK;
+                else if (rand < 0.35) map[r][c] = TYPE_QUESTION;
+                else map[r][c] = TYPE_EMPTY;
             }
         }
 
-        // Mật ong
-        do {
-            honeyRow = random.nextInt(GRID_SIZE);
-            honeyCol = random.nextInt(GRID_SIZE);
-        } while (board[honeyRow][honeyCol] == TYPE_ROCK);
-        board[honeyRow][honeyCol] = TYPE_HONEY;
+        // ✅ Đặt gấu giữa bản đồ
+        bearRow = numRows / 2;
+        bearCol = numCols / 2;
 
-        // Gấu
+        // ✅ Đặt hũ mật ngẫu nhiên, không trùng đá hoặc gấu
         do {
-            bearRow = random.nextInt(GRID_SIZE);
-            bearCol = random.nextInt(GRID_SIZE);
-        } while (board[bearRow][bearCol] == TYPE_ROCK || board[bearRow][bearCol] == TYPE_HONEY);
-
-        invalidate();
+            honeyRow = random.nextInt(numRows);
+            honeyCol = random.nextInt(numCols);
+        } while (map[honeyRow][honeyCol] == TYPE_ROCK ||
+                (honeyRow == bearRow && honeyCol == bearCol));
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        int width = getWidth();
-        int height = getHeight();
-
-        // Kích thước mỗi ô
-        cellSize = Math.min(width / numCols, height / numRows);
-
-        // 🎨 Vẽ nền đồng cỏ
-        Paint grassPaint = new Paint();
-        grassPaint.setColor(0xFFA8E6A3); // xanh nhạt
-        canvas.drawRect(0, 0, numCols * cellSize, numRows * cellSize, grassPaint);
-
-        // 🎨 Vẽ các ô lưới
-        Paint gridPaint = new Paint();
-        gridPaint.setColor(0xFF66BB6A); // xanh đậm
-        gridPaint.setStyle(Paint.Style.STROKE);
-        gridPaint.setStrokeWidth(3);
-
-        for (int i = 0; i <= numCols; i++) {
-            canvas.drawLine(i * cellSize, 0, i * cellSize, numRows * cellSize, gridPaint);
-        }
-        for (int j = 0; j <= numRows; j++) {
-            canvas.drawLine(0, j * cellSize, numCols * cellSize, j * cellSize, gridPaint);
-        }
-
-        // 🌳 Vẽ viền cây cối xung quanh
-        Paint treePaint = new Paint();
-        treePaint.setColor(0xFF2E7D32); // xanh rừng
-        for (int i = 0; i < numCols; i++) {
-            // hàng trên
-            canvas.drawRect(i * cellSize, 0, (i + 1) * cellSize, cellSize / 3, treePaint);
-            // hàng dưới
-            canvas.drawRect(i * cellSize, (numRows - 1) * cellSize + cellSize * 2 / 3,
-                    (i + 1) * cellSize, numRows * cellSize, treePaint);
-        }
-        for (int j = 0; j < numRows; j++) {
-            // cột trái
-            canvas.drawRect(0, j * cellSize, cellSize / 3, (j + 1) * cellSize, treePaint);
-            // cột phải
-            canvas.drawRect((numCols - 1) * cellSize + cellSize * 2 / 3, j * cellSize,
-                    numCols * cellSize, (j + 1) * cellSize, treePaint);
-        }
-
-        // 🪨 Vẽ vật thể trong bản đồ
-        for (int row = 0; row < numRows; row++) {
-            for (int col = 0; col < numCols; col++) {
-                float x = col * cellSize;
-                float y = row * cellSize;
-
-                if (map[row][col] == 1) {
-                    canvas.drawBitmap(Bitmap.createScaledBitmap(rock, cellSize, cellSize, false), x, y, null);
-                } else if (map[row][col] == 2) {
-                    canvas.drawBitmap(Bitmap.createScaledBitmap(question, cellSize, cellSize, false), x, y, null);
-                }
-            }
-        }
-
-        // 🐻 Vẽ gấu
-        canvas.drawBitmap(
-                Bitmap.createScaledBitmap(bear, (int)(cellSize*0.9), (int)(cellSize*0.9), false),
-                bearCol * cellSize + cellSize*0.05f,
-                bearRow * cellSize + cellSize*0.05f,
-                null
-        );
+    public void surfaceCreated(SurfaceHolder holder) {
+        drawGame(holder);
     }
 
-
-    // Di chuyển gấu
     public void moveBear(int dr, int dc) {
         if (gameWon) return;
 
         int nr = bearRow + dr;
         int nc = bearCol + dc;
-        if (nr < 0 || nc < 0 || nr >= GRID_SIZE || nc >= GRID_SIZE) return;
-        if (board[nr][nc] == TYPE_ROCK) return;
+
+        if (nr < 0 || nr >= numRows || nc < 0 || nc >= numCols) return;
+        if (map[nr][nc] == TYPE_ROCK) return;
 
         bearRow = nr;
         bearCol = nc;
 
-        if (board[nr][nc] == TYPE_HONEY) {
-            gameWon = true;
-            // bạn có thể gọi callback về Activity ở đây
+        if (map[nr][nc] == TYPE_QUESTION && listener != null) {
+            listener.onQuestionTriggered(nr, nc);
         }
 
-        // Nếu là ô dấu hỏi, sau khi đi qua thì trống
-        if (board[nr][nc] == TYPE_QUESTION)
-            board[nr][nc] = TYPE_EMPTY;
+        // ✅ Kiểm tra thắng
+        if (bearRow == honeyRow && bearCol == honeyCol) {
+            gameWon = true;
+            if (winListener != null) winListener.onGameWon();
+        }
 
-        invalidate(); // Vẽ lại
+        drawGame(getHolder());
     }
+
+    public void clearQuestionAt(int row, int col) {
+        map[row][col] = TYPE_EMPTY;
+        drawGame(getHolder());
+    }
+
+    private void drawGame(SurfaceHolder holder) {
+        Canvas canvas = holder.lockCanvas();
+        if (canvas == null) return;
+
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
+        cellSize = Math.min(width, height) / (numRows + 2);
+
+        canvas.drawRect(0, 0, width, height, paintGrass);
+
+        // Viền cây
+        for (int row = 0; row < numRows + 2; row++) {
+            for (int col = 0; col < numCols + 2; col++) {
+                if (row == 0 || col == 0 || row == numRows + 1 || col == numCols + 1) {
+                    float cx = col * cellSize + cellSize / 2f;
+                    float cy = row * cellSize + cellSize / 2f;
+                    canvas.drawCircle(cx, cy, cellSize / 2.5f, paintTree);
+                }
+            }
+        }
+
+        // Vẽ bản đồ (đá, dấu hỏi)
+        for (int r = 0; r < numRows; r++) {
+            for (int c = 0; c < numCols; c++) {
+                float x = (c + 1) * cellSize;
+                float y = (r + 1) * cellSize;
+
+                Bitmap obj = null;
+                if (map[r][c] == TYPE_ROCK) obj = rock;
+                else if (map[r][c] == TYPE_QUESTION) obj = question;
+
+                if (obj != null) {
+                    Bitmap scaled = Bitmap.createScaledBitmap(obj, cellSize, cellSize, true);
+                    canvas.drawBitmap(scaled, x, y, null);
+                }
+
+                canvas.drawRect(x, y, x + cellSize, y + cellSize, paintGrid);
+            }
+        }
+
+        // ✅ Vẽ hũ mật
+        float honeyX = (honeyCol + 1) * cellSize;
+        float honeyY = (honeyRow + 1) * cellSize;
+        Bitmap honeyScaled = Bitmap.createScaledBitmap(honey, cellSize, cellSize, true);
+        canvas.drawBitmap(honeyScaled, honeyX, honeyY, null);
+
+        // ✅ Vẽ gấu
+        float bearX = (bearCol + 1) * cellSize;
+        float bearY = (bearRow + 1) * cellSize;
+        Bitmap bearScaled = Bitmap.createScaledBitmap(bear, cellSize, cellSize, true);
+        canvas.drawBitmap(bearScaled, bearX, bearY, null);
+
+        holder.unlockCanvasAndPost(canvas);
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {}
 }
