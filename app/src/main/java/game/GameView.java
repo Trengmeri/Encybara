@@ -38,6 +38,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public static final int TYPE_ROCK = 1;
     public static final int TYPE_QUESTION = 2;
 
+    //private int bearRow, bearCol;
+    private int prevBearRow, prevBearCol;
+
     // Giao diện callback cho sự kiện câu hỏi
     public interface OnQuestionListener {
         void onQuestionTriggered(int row, int col);
@@ -94,6 +97,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private void initMap() {
         bearRow = numRows / 2;
         bearCol = numCols / 2;
+        prevBearRow = bearRow;
+        prevBearCol = bearCol;
         int minQuestions = 5;
         boolean validMap = false;
 
@@ -183,6 +188,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if (nr < 0 || nr >= numRows || nc < 0 || nc >= numCols) return;
         if (map[nr][nc] == TYPE_ROCK) return;
 
+        // ✅ Lưu vị trí hiện tại làm vị trí trước đó
+        prevBearRow = bearRow;
+        prevBearCol = bearCol;
+
         bearRow = nr;
         bearCol = nc;
 
@@ -264,4 +273,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {}
+
+    // ✅ Phương thức được gọi khi người chơi trả lời sai câu hỏi
+    public void handleWrongAnswer(int questionRow, int questionCol) {
+        // Biến ô câu hỏi thành đá
+        if (map[questionRow][questionCol] == TYPE_QUESTION) {
+            map[questionRow][questionCol] = TYPE_ROCK;
+        }
+
+        // Đẩy gấu về ô trước đó
+        bearRow = prevBearRow;
+        bearCol = prevBearCol;
+
+        drawGame(getHolder());
+    }
 }

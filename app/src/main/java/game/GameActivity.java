@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast; // ✅ Thêm Toast để hiển thị thông báo
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,8 +44,15 @@ public class GameActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Câu hỏi tiếng Anh 🧠")
                 .setMessage("Từ 'bear' có nghĩa là gì?")
-                .setPositiveButton("Con gấu", (d, w) -> gameView.clearQuestionAt(row, col))
-                .setNegativeButton("Con ong", null)
+                .setPositiveButton("Con gấu", (d, w) -> {
+                    gameView.clearQuestionAt(row, col);
+                    Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống.", Toast.LENGTH_SHORT).show(); // ✅ Thông báo đúng
+                })
+                .setNegativeButton("Con ong", (d, w) -> {
+                    gameView.handleWrongAnswer(row, col); // ✅ Gọi phương thức xử lý trả lời sai
+                    Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi!", Toast.LENGTH_LONG).show(); // ✅ Thông báo sai
+                })
+                .setCancelable(false) // ✅ Ngăn không cho người dùng đóng dialog mà không trả lời
                 .show();
     }
 
@@ -53,7 +61,11 @@ public class GameActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("🎉 Chúc mừng!")
                 .setMessage("Bạn đã tìm được hũ mật 🍯!")
-                .setPositiveButton("OK", null)
+                .setPositiveButton("OK", (d, w) -> {
+                    // Có thể thêm logic khởi động lại game hoặc thoát ứng dụng tại đây
+                    finish(); // Ví dụ: đóng activity
+                })
+                .setCancelable(false) // ✅ Ngăn không cho người dùng đóng dialog mà không nhấn OK
                 .show();
     }
 }
