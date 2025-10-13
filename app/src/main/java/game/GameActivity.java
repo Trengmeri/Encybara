@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast; // ✅ Thêm Toast để hiển thị thông báo
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -27,6 +27,9 @@ public class GameActivity extends AppCompatActivity {
         // 🏁 Lắng nghe khi thắng
         gameView.setOnWinListener(() -> showWinDialog());
 
+        // ❌ Lắng nghe khi thua (bị chặn đường)
+        gameView.setOnGameOverListener(() -> showGameOverDialog()); // ✅ Thêm listener
+
         // ⚙️ Nút điều khiển
         ImageButton up = findViewById(R.id.buttonUp);
         ImageButton down = findViewById(R.id.buttonDown);
@@ -46,13 +49,13 @@ public class GameActivity extends AppCompatActivity {
                 .setMessage("Từ 'bear' có nghĩa là gì?")
                 .setPositiveButton("Con gấu", (d, w) -> {
                     gameView.clearQuestionAt(row, col);
-                    Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống.", Toast.LENGTH_SHORT).show(); // ✅ Thông báo đúng
+                    Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống.", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Con ong", (d, w) -> {
-                    gameView.handleWrongAnswer(row, col); // ✅ Gọi phương thức xử lý trả lời sai
-                    Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi!", Toast.LENGTH_LONG).show(); // ✅ Thông báo sai
+                    gameView.handleWrongAnswer(row, col);
+                    Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi!", Toast.LENGTH_LONG).show();
                 })
-                .setCancelable(false) // ✅ Ngăn không cho người dùng đóng dialog mà không trả lời
+                .setCancelable(false)
                 .show();
     }
 
@@ -61,11 +64,20 @@ public class GameActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("🎉 Chúc mừng!")
                 .setMessage("Bạn đã tìm được hũ mật 🍯!")
-                .setPositiveButton("OK", (d, w) -> {
-                    // Có thể thêm logic khởi động lại game hoặc thoát ứng dụng tại đây
-                    finish(); // Ví dụ: đóng activity
-                })
-                .setCancelable(false) // ✅ Ngăn không cho người dùng đóng dialog mà không nhấn OK
+                .setPositiveButton("Chơi lại", (d, w) -> gameView.resetGame()) // ✅ Thêm tùy chọn chơi lại
+                .setNegativeButton("Thoát", (d,w) -> finish()) // ✅ Thêm tùy chọn thoát
+                .setCancelable(false)
+                .show();
+    }
+
+    // ✅ Dialog thông báo Game Over
+    private void showGameOverDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Game Over 😭")
+                .setMessage("Bạn đã bị chặn hết đường đi! Thử lại nhé.")
+                .setPositiveButton("Chơi lại", (d, w) -> gameView.resetGame()) // ✅ Chơi lại
+                .setNegativeButton("Thoát", (d,w) -> finish()) // ✅ Thoát game
+                .setCancelable(false)
                 .show();
     }
 }

@@ -25,12 +25,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private Paint paintGrass, paintGrid, paintTree;
     private int[][] map;
     private int bearRow, bearCol;
-    private int honeyRow, honeyCol; // ✅ vị trí hũ mật
+    private int prevBearRow, prevBearCol;
+    private int honeyRow, honeyCol;
     private boolean gameWon = false;
+    private boolean gameOver = false; // ✅ Thêm cờ game over
 
     private Bitmap bear, rock, question, honey;
-    private OnQuestionListener listener; // 👈 interface callback
-    private OnWinListener winListener;   // 👈 callback khi thắng
+    private OnQuestionListener listener;
+    private OnWinListener winListener;
+    private OnGameOverListener gameOverListener; // ✅ Thêm listener cho Game Over
 
     private Random random = new Random();
 
@@ -38,10 +41,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public static final int TYPE_ROCK = 1;
     public static final int TYPE_QUESTION = 2;
 
-    //private int bearRow, bearCol;
-    private int prevBearRow, prevBearCol;
-
-    // Giao diện callback cho sự kiện câu hỏi
     public interface OnQuestionListener {
         void onQuestionTriggered(int row, int col);
     }
@@ -50,12 +49,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         void onGameWon();
     }
 
+    // ✅ Giao diện callback cho sự kiện Game Over
+    public interface OnGameOverListener {
+        void onGameOver();
+    }
+
     public void setOnQuestionListener(OnQuestionListener listener) {
         this.listener = listener;
     }
 
     public void setOnWinListener(OnWinListener listener) {
-        this.winListener  = listener;
+        this.winListener = listener;
+    }
+
+    // ✅ Setter cho OnGameOverListener
+    public void setOnGameOverListener(OnGameOverListener listener) {
+        this.gameOverListener = listener;
     }
 
     public GameView(Context context) {
@@ -91,7 +100,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         bear = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.bear);
         rock = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.rock);
         question = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ques);
-        honey = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.honey); // ✅ thêm hũ mật
+        honey = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.honey);
     }
 
     private void initMap() {
@@ -99,55 +108,79 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         bearCol = numCols / 2;
         prevBearRow = bearRow;
         prevBearCol = bearCol;
+        gameWon = false;
+        gameOver = false; // ✅ Đảm bảo reset cờ game over khi khởi tạo map
+
         int minQuestions = 5;
         boolean validMap = false;
 
         while (!validMap) {
             map = new int[numRows][numCols];
-            // Khởi tạo map với đá và câu hỏi ngẫu nhiên
             for (int r = 0; r < numRows; r++) {
                 for (int c = 0; c < numCols; c++) {
-                    map[r][c] = TYPE_EMPTY; // Mặc định là ô trống
-                    if (r == bearRow && c == bearCol) continue; // Không đặt gì ở vị trí gấu
-
-                    double rand = Math.random();
-                    if (rand < 0.20) map[r][c] = TYPE_ROCK; // Tăng tỉ lệ đá để tạo đường đi khó hơn
-                    else if (rand < 0.45) map[r][c] = TYPE_QUESTION; // Tăng tỉ lệ câu hỏi
+                    map[r][c] = TYPE_EMPTY;
                 }
             }
 
-            // Đặt hũ mật ngẫu nhiên, không trùng đá hoặc gấu
-            do {
-                honeyRow = random.nextInt(numRows);
-                honeyCol = random.nextInt(numCols);
-            } while (map[honeyRow][honeyCol] == TYPE_ROCK ||
-                    (honeyRow == bearRow && honeyCol == bearCol));
+            List<int[]> availableCells = new ArrayList<>();
+            for (int r = 0; r < numRows; r++) {
+                for (int c = 0; c < numCols; c++) {
+                    if (r == bearRow && c == bearCol) continue;
+                    availableCells.add(new int[]{r, c});
+                }
+            }
+            Collections.shuffle(availableCells, random);
 
-            // Đảm bảo vị trí hũ mật không phải là câu hỏi ban đầu để người chơi phải đi qua các câu hỏi khác
+            int[] honeyCell = availableCells.remove(0);
+            honeyRow = honeyCell[0];
+            honeyCol = honeyCell[1];
+
+            int rocksToPlace = (int) (numRows * numCols * 0.20);
+            int questionsToPlace = (int) (numRows * numCols * 0.45);
+
+            for (int[] cell : availableCells) {
+                int r = cell[0];
+                int c = cell[1];
+
+                if (rocksToPlace > 0) {
+                    map[r][c] = TYPE_ROCK;
+                    rocksToPlace--;
+                } else if (questionsToPlace > 0) {
+                    map[r][c] = TYPE_QUESTION;
+                    questionsToPlace--;
+                } else {
+                    break;
+                }
+            }
+
+            map[bearRow][bearCol] = TYPE_EMPTY;
             map[honeyRow][honeyCol] = TYPE_EMPTY;
 
-            // Kiểm tra đường đi có hợp lệ và số câu hỏi tối thiểu
-            if (isValidPath(bearRow, bearCol, honeyRow, honeyCol, minQuestions)) {
+            if (findPathAndQuestionCount(bearRow, bearCol, honeyRow, honeyCol) >= minQuestions) {
                 validMap = true;
-            } else {
-                // Nếu không hợp lệ, thử lại với một bản đồ mới
-                // Có thể điều chỉnh số lượng đá/câu hỏi hoặc vị trí khởi tạo để tăng khả năng tìm được bản đồ hợp lệ
             }
         }
     }
 
-    private boolean isValidPath(int startR, int startC, int targetR, int targetC, int minQuestions) {
-        // Sử dụng BFS để tìm đường đi ngắn nhất và đếm số câu hỏi trên đường đi
+    // Hàm này sẽ trả về số câu hỏi trên đường đi ngắn nhất, hoặc -1 nếu không có đường đi.
+    // Dùng BFS để tìm đường đi ngắn nhất và đếm số câu hỏi.
+    private int findPathAndQuestionCount(int startR, int startC, int targetR, int targetC) {
         Queue<int[]> queue = new LinkedList<>();
+        int[][] visitedQuestions = new int[numRows][numCols];
         boolean[][] visited = new boolean[numRows][numCols];
-        int[][] questionCount = new int[numRows][numCols]; // Số câu hỏi đã gặp trên đường đến ô này
+
+        for(int r=0; r<numRows; r++) {
+            for(int c=0; c<numCols; c++) {
+                visitedQuestions[r][c] = -1;
+            }
+        }
 
         queue.offer(new int[]{startR, startC});
         visited[startR][startC] = true;
-        questionCount[startR][startC] = (map[startR][startC] == TYPE_QUESTION ? 1 : 0);
+        visitedQuestions[startR][startC] = (map[startR][startC] == TYPE_QUESTION ? 1 : 0);
 
-        int[] dr = {-1, 1, 0, 0}; // Lên, xuống
-        int[] dc = {0, 0, -1, 1}; // Trái, phải
+        int[] dr = {-1, 1, 0, 0};
+        int[] dc = {0, 0, -1, 1};
 
         while (!queue.isEmpty()) {
             int[] current = queue.poll();
@@ -155,22 +188,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             int c = current[1];
 
             if (r == targetR && c == targetC) {
-                return questionCount[r][c] >= minQuestions;
+                return visitedQuestions[r][c];
             }
 
             for (int i = 0; i < 4; i++) {
                 int nr = r + dr[i];
                 int nc = c + dc[i];
 
-                if (nr >= 0 && nr < numRows && nc >= 0 && nc < numCols && !visited[nr][nc] && map[nr][nc] != TYPE_ROCK) {
-                    visited[nr][nc] = true;
-                    int newQuestionCount = questionCount[r][c] + (map[nr][nc] == TYPE_QUESTION ? 1 : 0);
-                    questionCount[nr][nc] = newQuestionCount;
-                    queue.offer(new int[]{nr, nc});
+                if (nr >= 0 && nr < numRows && nc >= 0 && nc < numCols && map[nr][nc] != TYPE_ROCK) {
+                    // Check if already visited or if we found a path with fewer questions
+                    // For finding path existence, a simple visited check is enough
+                    if (!visited[nr][nc]) { // Ensure we don't revisit in the same BFS path
+                        visited[nr][nc] = true;
+                        visitedQuestions[nr][nc] = visitedQuestions[r][c] + (map[nr][nc] == TYPE_QUESTION ? 1 : 0);
+                        queue.offer(new int[]{nr, nc});
+                    }
                 }
             }
         }
-        return false; // Không tìm thấy đường đi đến hũ mật
+        return -1;
     }
 
 
@@ -180,7 +216,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void moveBear(int dr, int dc) {
-        if (gameWon) return;
+        if (gameWon || gameOver) return; // ✅ Thêm kiểm tra gameOver
 
         int nr = bearRow + dr;
         int nc = bearCol + dc;
@@ -188,7 +224,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if (nr < 0 || nr >= numRows || nc < 0 || nc >= numCols) return;
         if (map[nr][nc] == TYPE_ROCK) return;
 
-        // ✅ Lưu vị trí hiện tại làm vị trí trước đó
         prevBearRow = bearRow;
         prevBearCol = bearCol;
 
@@ -199,7 +234,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             listener.onQuestionTriggered(nr, nc);
         }
 
-        // ✅ Kiểm tra thắng
         if (bearRow == honeyRow && bearCol == honeyCol) {
             gameWon = true;
             if (winListener != null) winListener.onGameWon();
@@ -213,7 +247,33 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         drawGame(getHolder());
     }
 
+    // ✅ Cập nhật phương thức handleWrongAnswer
+    public void handleWrongAnswer(int questionRow, int questionCol) {
+        if (gameWon || gameOver) return; // ✅ Đảm bảo không xử lý nếu game đã kết thúc
+
+        // Biến ô câu hỏi thành đá
+        if (map[questionRow][questionCol] == TYPE_QUESTION) {
+            map[questionRow][questionCol] = TYPE_ROCK;
+        }
+
+        // Đẩy gấu về ô trước đó
+        bearRow = prevBearRow;
+        bearCol = prevBearCol;
+
+        // ✅ KIỂM TRA ĐƯỜNG ĐI SAU KHI Ô BỊ CHẶN
+        // findPathAndQuestionCount sẽ trả về -1 nếu không còn đường đi.
+        if (findPathAndQuestionCount(bearRow, bearCol, honeyRow, honeyCol) == -1) {
+            gameOver = true; // ✅ Đặt cờ game over
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver(); // ✅ Gọi callback thông báo game over
+            }
+        }
+
+        drawGame(getHolder());
+    }
+
     private void drawGame(SurfaceHolder holder) {
+        // ... giữ nguyên ...
         Canvas canvas = holder.lockCanvas();
         if (canvas == null) return;
 
@@ -253,13 +313,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
-        // ✅ Vẽ hũ mật
+        // Vẽ hũ mật
         float honeyX = (honeyCol + 1) * cellSize;
         float honeyY = (honeyRow + 1) * cellSize;
         Bitmap honeyScaled = Bitmap.createScaledBitmap(honey, cellSize, cellSize, true);
         canvas.drawBitmap(honeyScaled, honeyX, honeyY, null);
 
-        // ✅ Vẽ gấu
+        // Vẽ gấu
         float bearX = (bearCol + 1) * cellSize;
         float bearY = (bearRow + 1) * cellSize;
         Bitmap bearScaled = Bitmap.createScaledBitmap(bear, cellSize, cellSize, true);
@@ -274,17 +334,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {}
 
-    // ✅ Phương thức được gọi khi người chơi trả lời sai câu hỏi
-    public void handleWrongAnswer(int questionRow, int questionCol) {
-        // Biến ô câu hỏi thành đá
-        if (map[questionRow][questionCol] == TYPE_QUESTION) {
-            map[questionRow][questionCol] = TYPE_ROCK;
-        }
-
-        // Đẩy gấu về ô trước đó
-        bearRow = prevBearRow;
-        bearCol = prevBearCol;
-
+    // ✅ Phương thức để reset trạng thái game
+    public void resetGame() {
+        initMap(); // Khởi tạo lại bản đồ, gấu, mật
         drawGame(getHolder());
     }
 }
