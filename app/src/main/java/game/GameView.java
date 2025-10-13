@@ -12,6 +12,11 @@ import android.view.SurfaceView;
 
 import com.example.test.R;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
@@ -47,7 +52,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void setOnWinListener(OnWinListener listener) {
-        this.winListener = listener;
+        this.winListener  = listener;
     }
 
     public GameView(Context context) {
@@ -87,27 +92,82 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void initMap() {
-        map = new int[numRows][numCols];
-        for (int r = 0; r < numRows; r++) {
-            for (int c = 0; c < numCols; c++) {
-                double rand = Math.random();
-                if (rand < 0.15) map[r][c] = TYPE_ROCK;
-                else if (rand < 0.35) map[r][c] = TYPE_QUESTION;
-                else map[r][c] = TYPE_EMPTY;
-            }
-        }
-
-        // ✅ Đặt gấu giữa bản đồ
         bearRow = numRows / 2;
         bearCol = numCols / 2;
+        int minQuestions = 5;
+        boolean validMap = false;
 
-        // ✅ Đặt hũ mật ngẫu nhiên, không trùng đá hoặc gấu
-        do {
-            honeyRow = random.nextInt(numRows);
-            honeyCol = random.nextInt(numCols);
-        } while (map[honeyRow][honeyCol] == TYPE_ROCK ||
-                (honeyRow == bearRow && honeyCol == bearCol));
+        while (!validMap) {
+            map = new int[numRows][numCols];
+            // Khởi tạo map với đá và câu hỏi ngẫu nhiên
+            for (int r = 0; r < numRows; r++) {
+                for (int c = 0; c < numCols; c++) {
+                    map[r][c] = TYPE_EMPTY; // Mặc định là ô trống
+                    if (r == bearRow && c == bearCol) continue; // Không đặt gì ở vị trí gấu
+
+                    double rand = Math.random();
+                    if (rand < 0.20) map[r][c] = TYPE_ROCK; // Tăng tỉ lệ đá để tạo đường đi khó hơn
+                    else if (rand < 0.45) map[r][c] = TYPE_QUESTION; // Tăng tỉ lệ câu hỏi
+                }
+            }
+
+            // Đặt hũ mật ngẫu nhiên, không trùng đá hoặc gấu
+            do {
+                honeyRow = random.nextInt(numRows);
+                honeyCol = random.nextInt(numCols);
+            } while (map[honeyRow][honeyCol] == TYPE_ROCK ||
+                    (honeyRow == bearRow && honeyCol == bearCol));
+
+            // Đảm bảo vị trí hũ mật không phải là câu hỏi ban đầu để người chơi phải đi qua các câu hỏi khác
+            map[honeyRow][honeyCol] = TYPE_EMPTY;
+
+            // Kiểm tra đường đi có hợp lệ và số câu hỏi tối thiểu
+            if (isValidPath(bearRow, bearCol, honeyRow, honeyCol, minQuestions)) {
+                validMap = true;
+            } else {
+                // Nếu không hợp lệ, thử lại với một bản đồ mới
+                // Có thể điều chỉnh số lượng đá/câu hỏi hoặc vị trí khởi tạo để tăng khả năng tìm được bản đồ hợp lệ
+            }
+        }
     }
+
+    private boolean isValidPath(int startR, int startC, int targetR, int targetC, int minQuestions) {
+        // Sử dụng BFS để tìm đường đi ngắn nhất và đếm số câu hỏi trên đường đi
+        Queue<int[]> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[numRows][numCols];
+        int[][] questionCount = new int[numRows][numCols]; // Số câu hỏi đã gặp trên đường đến ô này
+
+        queue.offer(new int[]{startR, startC});
+        visited[startR][startC] = true;
+        questionCount[startR][startC] = (map[startR][startC] == TYPE_QUESTION ? 1 : 0);
+
+        int[] dr = {-1, 1, 0, 0}; // Lên, xuống
+        int[] dc = {0, 0, -1, 1}; // Trái, phải
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int r = current[0];
+            int c = current[1];
+
+            if (r == targetR && c == targetC) {
+                return questionCount[r][c] >= minQuestions;
+            }
+
+            for (int i = 0; i < 4; i++) {
+                int nr = r + dr[i];
+                int nc = c + dc[i];
+
+                if (nr >= 0 && nr < numRows && nc >= 0 && nc < numCols && !visited[nr][nc] && map[nr][nc] != TYPE_ROCK) {
+                    visited[nr][nc] = true;
+                    int newQuestionCount = questionCount[r][c] + (map[nr][nc] == TYPE_QUESTION ? 1 : 0);
+                    questionCount[nr][nc] = newQuestionCount;
+                    queue.offer(new int[]{nr, nc});
+                }
+            }
+        }
+        return false; // Không tìm thấy đường đi đến hũ mật
+    }
+
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
