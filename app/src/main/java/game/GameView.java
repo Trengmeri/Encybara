@@ -28,12 +28,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private int prevBearRow, prevBearCol;
     private int honeyRow, honeyCol;
     private boolean gameWon = false;
-    private boolean gameOver = false; // ✅ Thêm cờ game over
+    private boolean gameOver = false;
+    private boolean gameRunning = false; // ✅ Thêm cờ trạng thái game đang chạy
 
     private Bitmap bear, rock, question, honey;
     private OnQuestionListener listener;
     private OnWinListener winListener;
-    private OnGameOverListener gameOverListener; // ✅ Thêm listener cho Game Over
+    private OnGameOverListener gameOverListener;
 
     private Random random = new Random();
 
@@ -49,7 +50,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         void onGameWon();
     }
 
-    // ✅ Giao diện callback cho sự kiện Game Over
     public interface OnGameOverListener {
         void onGameOver();
     }
@@ -62,7 +62,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         this.winListener = listener;
     }
 
-    // ✅ Setter cho OnGameOverListener
     public void setOnGameOverListener(OnGameOverListener listener) {
         this.gameOverListener = listener;
     }
@@ -72,7 +71,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
         initBitmaps(context);
         initPaints();
-        initMap();
+        initMap(); // initMap sẽ gọi setGameRunning(true)
     }
 
     public GameView(Context context, AttributeSet attrs) {
@@ -80,7 +79,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
         initBitmaps(context);
         initPaints();
-        initMap();
+        initMap(); // initMap sẽ gọi setGameRunning(true)
     }
 
     private void initPaints() {
@@ -109,7 +108,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         prevBearRow = bearRow;
         prevBearCol = bearCol;
         gameWon = false;
-        gameOver = false; // ✅ Đảm bảo reset cờ game over khi khởi tạo map
+        gameOver = false;
+        gameRunning = true; // ✅ Bắt đầu game
 
         int minQuestions = 5;
         boolean validMap = false;
@@ -162,8 +162,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    // Hàm này sẽ trả về số câu hỏi trên đường đi ngắn nhất, hoặc -1 nếu không có đường đi.
-    // Dùng BFS để tìm đường đi ngắn nhất và đếm số câu hỏi.
     private int findPathAndQuestionCount(int startR, int startC, int targetR, int targetC) {
         Queue<int[]> queue = new LinkedList<>();
         int[][] visitedQuestions = new int[numRows][numCols];
@@ -196,9 +194,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 int nc = c + dc[i];
 
                 if (nr >= 0 && nr < numRows && nc >= 0 && nc < numCols && map[nr][nc] != TYPE_ROCK) {
-                    // Check if already visited or if we found a path with fewer questions
-                    // For finding path existence, a simple visited check is enough
-                    if (!visited[nr][nc]) { // Ensure we don't revisit in the same BFS path
+                    if (!visited[nr][nc]) {
                         visited[nr][nc] = true;
                         visitedQuestions[nr][nc] = visitedQuestions[r][c] + (map[nr][nc] == TYPE_QUESTION ? 1 : 0);
                         queue.offer(new int[]{nr, nc});
@@ -216,7 +212,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void moveBear(int dr, int dc) {
-        if (gameWon || gameOver) return; // ✅ Thêm kiểm tra gameOver
+        if (!gameRunning) return; // ✅ Chỉ cho phép di chuyển khi game đang chạy
+        if (gameWon || gameOver) return;
 
         int nr = bearRow + dr;
         int nc = bearCol + dc;
@@ -236,6 +233,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         if (bearRow == honeyRow && bearCol == honeyCol) {
             gameWon = true;
+            gameRunning = false; // ✅ Dừng game khi thắng
             if (winListener != null) winListener.onGameWon();
         }
 
@@ -247,25 +245,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         drawGame(getHolder());
     }
 
-    // ✅ Cập nhật phương thức handleWrongAnswer
     public void handleWrongAnswer(int questionRow, int questionCol) {
-        if (gameWon || gameOver) return; // ✅ Đảm bảo không xử lý nếu game đã kết thúc
+        if (!gameRunning) return; // ✅ Chỉ xử lý khi game đang chạy
+        if (gameWon || gameOver) return;
 
-        // Biến ô câu hỏi thành đá
         if (map[questionRow][questionCol] == TYPE_QUESTION) {
             map[questionRow][questionCol] = TYPE_ROCK;
         }
 
-        // Đẩy gấu về ô trước đó
         bearRow = prevBearRow;
         bearCol = prevBearCol;
 
-        // ✅ KIỂM TRA ĐƯỜNG ĐI SAU KHI Ô BỊ CHẶN
-        // findPathAndQuestionCount sẽ trả về -1 nếu không còn đường đi.
         if (findPathAndQuestionCount(bearRow, bearCol, honeyRow, honeyCol) == -1) {
-            gameOver = true; // ✅ Đặt cờ game over
+            gameOver = true;
+            gameRunning = false; // ✅ Dừng game khi thua
             if (gameOverListener != null) {
-                gameOverListener.onGameOver(); // ✅ Gọi callback thông báo game over
+                gameOverListener.onGameOver();
             }
         }
 
@@ -334,9 +329,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {}
 
-    // ✅ Phương thức để reset trạng thái game
     public void resetGame() {
-        initMap(); // Khởi tạo lại bản đồ, gấu, mật
+        initMap(); // Khởi tạo lại bản đồ, gấu, mật, và đặt gameRunning = true
         drawGame(getHolder());
+    }
+
+    // ✅ Thêm phương thức để GameActivity có thể điều khiển trạng thái gameRunning
+    public void setGameRunning(boolean running) {
+        this.gameRunning = running;
+    }
+
+    public boolean isGameRunning() {
+        return gameRunning;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public boolean isGameWon() {
+        return gameWon;
     }
 }
