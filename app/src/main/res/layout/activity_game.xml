@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:orientation="vertical">
+
     <TextView
         android:id="@+id/timerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="02:00"
+        android:text=" Time left: 02:00"
         android:textSize="36sp"
         android:textColor="@android:color/holo_red_dark"
         android:layout_marginTop="16dp"
         />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <!-- Màn chơi -->
     <game.GameView
         android:id="@+id/gameView"
@@ -27,7 +31,8 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="16dp"
+        android:layout_gravity="center">
 
         <ImageButton
             android:id="@+id/buttonUp"
@@ -54,7 +59,7 @@
                 android:background="@android:color/transparent"
                 android:padding="0dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/left_arow" />
+                android:src="@drawable/left_arrow" />
 
             <View
                 android:layout_width="48dp"
@@ -62,7 +67,7 @@
 
             <ImageButton
                 android:id="@+id/buttonRight"
-                android:src="@drawable/left_arow"
+                android:src="@drawable/right_arrow"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:adjustViewBounds="true"
@@ -82,4 +87,5 @@
             android:padding="0dp"
             android:layout_gravity="center"/>
     </LinearLayout>
-</RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>
