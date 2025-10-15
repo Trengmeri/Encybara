@@ -22,6 +22,11 @@ import java.util.Random;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private int numRows = 6, numCols = 6;
     private int cellSize;
+    private int gridPixelWidth; // Tổng chiều rộng lưới game tính bằng pixel
+    private int gridPixelHeight; // Tổng chiều cao lưới game tính bằng pixel
+    private int startX; // Tọa độ X bắt đầu vẽ lưới game
+    private int startY; // Tọa độ Y bắt đầu vẽ lưới game
+
     private Paint paintGrass, paintGrid, paintTree;
     private int[][] map;
     private int bearRow, bearCol;
@@ -29,7 +34,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private int honeyRow, honeyCol;
     private boolean gameWon = false;
     private boolean gameOver = false;
-    private boolean gameRunning = false; // ✅ Thêm cờ trạng thái game đang chạy
+    private boolean gameRunning = false;
 
     private Bitmap bear, rock, question, honey;
     private OnQuestionListener listener;
@@ -71,7 +76,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
         initBitmaps(context);
         initPaints();
-        initMap(); // initMap sẽ gọi setGameRunning(true)
+        // initMap sẽ được gọi sau khi SurfaceView có kích thước, thường trong surfaceCreated
     }
 
     public GameView(Context context, AttributeSet attrs) {
@@ -79,7 +84,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
         initBitmaps(context);
         initPaints();
-        initMap(); // initMap sẽ gọi setGameRunning(true)
+        // initMap sẽ được gọi sau khi SurfaceView có kích thước, thường trong surfaceCreated
     }
 
     private void initPaints() {
@@ -109,7 +114,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         prevBearCol = bearCol;
         gameWon = false;
         gameOver = false;
-        gameRunning = true; // ✅ Bắt đầu game
+        gameRunning = true; // Bắt đầu game
 
         int minQuestions = 5;
         boolean validMap = false;
@@ -208,11 +213,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        // Gọi initMap ở đây để đảm bảo kích thước view đã có
+        initMap();
         drawGame(holder);
     }
 
     public void moveBear(int dr, int dc) {
-        if (!gameRunning) return; // ✅ Chỉ cho phép di chuyển khi game đang chạy
+        if (!gameRunning) return;
         if (gameWon || gameOver) return;
 
         int nr = bearRow + dr;
@@ -233,7 +240,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         if (bearRow == honeyRow && bearCol == honeyCol) {
             gameWon = true;
-            gameRunning = false; // ✅ Dừng game khi thắng
+            gameRunning = false;
             if (winListener != null) winListener.onGameWon();
         }
 
@@ -246,7 +253,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void handleWrongAnswer(int questionRow, int questionCol) {
-        if (!gameRunning) return; // ✅ Chỉ xử lý khi game đang chạy
+        if (!gameRunning) return;
         if (gameWon || gameOver) return;
 
         if (map[questionRow][questionCol] == TYPE_QUESTION) {
@@ -258,7 +265,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         if (findPathAndQuestionCount(bearRow, bearCol, honeyRow, honeyCol) == -1) {
             gameOver = true;
-            gameRunning = false; // ✅ Dừng game khi thua
+            gameRunning = false;
             if (gameOverListener != null) {
                 gameOverListener.onGameOver();
             }
@@ -267,56 +274,92 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         drawGame(getHolder());
     }
 
+    private void calculateDrawingMetrics(int canvasWidth, int canvasHeight) {
+        // numRows và numCols là kích thước lưới game thực tế (6x6).
+        // Chúng ta có thêm 2 hàng/cột cho viền cây, nên tổng là (numRows + 2) x (numCols + 2) ô hiển thị.
+        int totalDisplayRows = numRows + 2;
+        int totalDisplayCols = numCols + 2;
+
+        // Tính toán kích thước ô dựa trên chiều rộng và chiều cao của canvas.
+        // Chọn kích thước ô nhỏ nhất để đảm bảo toàn bộ lưới game vừa với GameView.
+        cellSize = Math.min(canvasWidth / totalDisplayCols, canvasHeight / totalDisplayRows);
+
+        // Tổng chiều rộng và chiều cao của lưới game (bao gồm viền cây) tính bằng pixel.
+        gridPixelWidth = totalDisplayCols * cellSize;
+        gridPixelHeight = totalDisplayRows * cellSize;
+
+        // Tính toán tọa độ X, Y bắt đầu để căn giữa lưới game trên canvas.
+        startX = (canvasWidth - gridPixelWidth) / 2;
+        startY = (canvasHeight - gridPixelHeight) / 2;
+    }
+
+
     private void drawGame(SurfaceHolder holder) {
-        // ... giữ nguyên ...
         Canvas canvas = holder.lockCanvas();
         if (canvas == null) return;
 
-        int width = canvas.getWidth();
-        int height = canvas.getHeight();
-        cellSize = Math.min(width, height) / (numRows + 2);
+        // Lấy kích thước canvas (kích thước của GameView)
+        int viewWidth = canvas.getWidth();
+        int viewHeight = canvas.getHeight();
 
-        canvas.drawRect(0, 0, width, height, paintGrass);
+        // Tính toán lại các thông số vẽ mỗi khi vẽ (đảm bảo thích ứng với thay đổi kích thước)
+        calculateDrawingMetrics(viewWidth, viewHeight);
 
-        // Viền cây
+        // 1. Vẽ toàn bộ nền của GameView
+        canvas.drawColor(Color.rgb(180, 255, 180)); // Màu nền của GameView
+        // Hoặc có thể vẽ một hình chữ nhật lớn với màu này:
+        // canvas.drawRect(0, 0, viewWidth, viewHeight, paintGrass);
+
+        // 2. Vẽ viền cây
         for (int row = 0; row < numRows + 2; row++) {
             for (int col = 0; col < numCols + 2; col++) {
                 if (row == 0 || col == 0 || row == numRows + 1 || col == numCols + 1) {
-                    float cx = col * cellSize + cellSize / 2f;
-                    float cy = row * cellSize + cellSize / 2f;
+                    // Tọa độ X, Y của tâm hình tròn cây, được offset bởi startX, startY
+                    float cx = startX + col * cellSize + cellSize / 2f;
+                    float cy = startY + row * cellSize + cellSize / 2f;
                     canvas.drawCircle(cx, cy, cellSize / 2.5f, paintTree);
                 }
             }
         }
 
-        // Vẽ bản đồ (đá, dấu hỏi)
+        // 3. Vẽ bản đồ (đá, dấu hỏi) và lưới
+        // Các ô bản đồ thực tế bắt đầu từ hàng 1, cột 1 (sau viền cây)
         for (int r = 0; r < numRows; r++) {
             for (int c = 0; c < numCols; c++) {
-                float x = (c + 1) * cellSize;
-                float y = (r + 1) * cellSize;
+                // Tọa độ X, Y của góc trên bên trái của ô, offset bởi startX, startY
+                // +1 là để bỏ qua hàng/cột viền cây
+                float x = startX + (c + 1) * cellSize;
+                float y = startY + (r + 1) * cellSize;
+
+                // Vẽ nền màu cỏ cho ô game
+                canvas.drawRect(x, y, x + cellSize, y + cellSize, paintGrass);
 
                 Bitmap obj = null;
                 if (map[r][c] == TYPE_ROCK) obj = rock;
                 else if (map[r][c] == TYPE_QUESTION) obj = question;
 
                 if (obj != null) {
+                    // Scale bitmap để vừa với kích thước ô
                     Bitmap scaled = Bitmap.createScaledBitmap(obj, cellSize, cellSize, true);
                     canvas.drawBitmap(scaled, x, y, null);
                 }
 
+                // Vẽ đường lưới cho ô
                 canvas.drawRect(x, y, x + cellSize, y + cellSize, paintGrid);
             }
         }
 
-        // Vẽ hũ mật
-        float honeyX = (honeyCol + 1) * cellSize;
-        float honeyY = (honeyRow + 1) * cellSize;
+        // 4. Vẽ hũ mật
+        // (honeyCol + 1) và (honeyRow + 1) để căn chỉnh với lưới game thực tế
+        float honeyX = startX + (honeyCol + 1) * cellSize;
+        float honeyY = startY + (honeyRow + 1) * cellSize;
         Bitmap honeyScaled = Bitmap.createScaledBitmap(honey, cellSize, cellSize, true);
         canvas.drawBitmap(honeyScaled, honeyX, honeyY, null);
 
-        // Vẽ gấu
-        float bearX = (bearCol + 1) * cellSize;
-        float bearY = (bearRow + 1) * cellSize;
+        // 5. Vẽ gấu
+        // (bearCol + 1) và (bearRow + 1) để căn chỉnh với lưới game thực tế
+        float bearX = startX + (bearCol + 1) * cellSize;
+        float bearY = startY + (bearRow + 1) * cellSize;
         Bitmap bearScaled = Bitmap.createScaledBitmap(bear, cellSize, cellSize, true);
         canvas.drawBitmap(bearScaled, bearX, bearY, null);
 
@@ -324,7 +367,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        // Kích thước của SurfaceView đã thay đổi, cần vẽ lại
+        drawGame(holder);
+    }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {}
@@ -334,7 +380,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         drawGame(getHolder());
     }
 
-    // ✅ Thêm phương thức để GameActivity có thể điều khiển trạng thái gameRunning
     public void setGameRunning(boolean running) {
         this.gameRunning = running;
     }
