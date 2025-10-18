@@ -10,7 +10,7 @@
     <color name="light_green">#66C263</color>
     <color name="light_yellow">#FFD96F</color>
     <color name="none">#F5F5F5</color>
-    <color name="cotinute">#7FD4E9</color>
+    <color name="cotinute">#5DC9E4</color>
     <color name="color_selected">#89AFE4</color>  <!-- Màu khi được chọn -->
     <color name="color_unselected">#FF000000</color>  <!-- Màu mặc định -->
     <color name="yellow">#FFC31F</color>

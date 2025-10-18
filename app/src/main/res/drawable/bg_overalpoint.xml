@@ -6,8 +6,8 @@
 
     <!-- Main rounded rectangle (face) -->
     <path
-        android:fillColor="#FFF2DB"
-        android:strokeColor="#D6C6A1"
+        android:fillColor="#ADD8E6"
+        android:strokeColor="#88B6F4"
         android:strokeWidth="2"
         android:pathData="
             M30,30
@@ -23,8 +23,8 @@
 
     <!-- Left ear (gắn với phần trên của hình chữ nhật) -->
     <path
-        android:fillColor="#FFF2DB"
-        android:strokeColor="#D6C6A1"
+        android:fillColor="#ADD8E6"
+        android:strokeColor="#88B6F4"
         android:strokeWidth="2"
         android:pathData="
             M55,30
@@ -32,8 +32,8 @@
             Z" />
     <!-- Right ear (gắn với phần trên của hình chữ nhật) -->
     <path
-        android:fillColor="#FFF2DB"
-        android:strokeColor="#D6C6A1"
+        android:fillColor="#ADD8E6"
+        android:strokeColor="#88B6F4"
         android:strokeWidth="2"
         android:pathData="
             M145,30
