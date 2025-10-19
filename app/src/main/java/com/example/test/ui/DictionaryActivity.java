@@ -39,6 +39,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
 
+import com.example.test.BaseActivity;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.api.AddFlashCardApiCallback;
@@ -64,7 +65,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DictionaryActivity extends AppCompatActivity {
+public class DictionaryActivity extends BaseActivity {
 
     EditText edtWord;
     ImageView btnFind;

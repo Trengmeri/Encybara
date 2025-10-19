@@ -5,21 +5,17 @@ import android.util.Log;
 
 import com.example.test.SharedPreferencesManager;
 import com.example.test.model.Answer;
-import com.example.test.model.MediaFile;
+import com.example.test.response.ApiResponseSampleAns;
 import com.example.test.model.Question;
-import com.example.test.model.Result;
+import com.example.test.model.SampleAnswer;
 import com.example.test.response.ApiResponseAnswer;
-import com.example.test.response.ApiResponseMedia;
 import com.example.test.response.ApiResponseQuestion;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.Call;
@@ -167,6 +163,56 @@ public class QuestionManager extends BaseApiManager {
 
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.e("QuestionManager", "Lỗi kết nối: " + e.getMessage());
+                callback.onFailure("Không thể kết nối tới API.");
+            }
+        });
+    }
+
+    public void fetchSampleAnswersFromApi(int questionId, ApiCallback callback) {
+        // Xây dựng URL động
+        String url = BASE_URL + "/api/v1/questions/" + questionId + "/sample-answers";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse( Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body() != null ? response.body().string() : null;
+                    if (responseBody != null && !responseBody.isEmpty()) {
+                        Log.d("QuestionManager", "JSON trả về: " + responseBody);
+                        try {
+                            Gson gson = new Gson();
+                            // Parse JSON vào lớp ApiResponse
+                            ApiResponseSampleAns apiResponseSampleAns = gson.fromJson(responseBody, ApiResponseSampleAns.class);
+
+                            List<SampleAnswer> answers = apiResponseSampleAns.getData();
+                            if (answers != null) {
+                                // Gọi callback thành công với danh sách dữ liệu
+                                callback.onSuccess(answers);
+                            } else {
+                                Log.e("QuestionManager", "Danh sách 'data' trong JSON là null.");
+                                callback.onFailure("Dữ liệu không hợp lệ từ server.");
+                            }
+                        } catch (JsonSyntaxException e) {
+                            Log.e("QuestionManager", "Lỗi khi parse JSON: " + e.getMessage());
+                            callback.onFailure("Lỗi khi parse JSON.");
+                        }
+                    } else {
+                        Log.e("QuestionManager", "Body trả về rỗng hoặc không hợp lệ.");
+                        callback.onFailure("Dữ liệu không hợp lệ từ server.");
+                    }
+                } else {
+                    Log.e("QuestionManager", "Lỗi từ server: Mã lỗi " + response.code());
+                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure( Call call, IOException e) {
                 Log.e("QuestionManager", "Lỗi kết nối: " + e.getMessage());
                 callback.onFailure("Không thể kết nối tới API.");
             }

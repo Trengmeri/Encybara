@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.test.BaseActivity;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.adapter.DiscussionAdapter;
@@ -40,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DiscussionActivity extends AppCompatActivity implements DiscussionAdapter.OnReplyClickListener  {
+public class DiscussionActivity extends BaseActivity implements DiscussionAdapter.OnReplyClickListener  {
 
     private int currentPage = 1; // Bắt đầu từ trang 1
     private boolean isLoading = false; // Để tránh tải dữ liệu nhiều lần

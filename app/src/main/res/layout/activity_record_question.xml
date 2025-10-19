@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
                 android:drawablePadding="10dp"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -96,30 +96,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingBottom="24dp">
+        android:paddingBottom="16dp"> <!-- Giảm padding để có không gian cho các nút mới -->
 
-        <!-- Tôi đã xóa marginLeft để nút được căn giữa một cách chính xác -->
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-
-            <!-- Nút nghe tùy chỉnh (đã thu nhỏ) -->
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="3dp">
-
-                <!-- Biểu tượng loa -->
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_record" />
-            </LinearLayout>
 
             <!-- Vòng tròn 1 (đã thu nhỏ) -->
             <View
@@ -157,7 +138,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="3dp">
+                android:padding="3dp"
+                android:background="@drawable/circle_shape2"> <!-- Thêm background để dễ nhấn -->
 
                 <!-- Biểu tượng loa -->
                 <ImageView
@@ -166,6 +148,37 @@
                     android:src="@drawable/ic_record2" />
             </LinearLayout>
         </FrameLayout>
+
+    </LinearLayout>
+
+    <!-- KHỐI MÃ MỚI: Cụm nút hành động (Nói lại, Câu tiếp theo) -->
+    <LinearLayout
+        android:id="@+id/actionButtonsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingBottom="24dp"
+        android:visibility="gone"
+        tools:visibility="visible"> <!-- tools:visibility="visible" để xem trước trong Android Studio -->
+
+        <Button
+            android:id="@+id/btnRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/record_again"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/color_selected"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnNextQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nextquestion"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/btncolor"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

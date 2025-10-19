@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.test.BaseActivity;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.adapter.ReviewAdapter;
@@ -29,7 +30,7 @@ import com.example.test.model.Review;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReviewActivity extends AppCompatActivity {
+public class ReviewActivity extends BaseActivity {
     ImageView btnSendReview;
     EditText edtReview;
     TextView back;

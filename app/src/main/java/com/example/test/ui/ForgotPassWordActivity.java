@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.BaseActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -38,7 +39,7 @@ import com.example.test.model.Result;
 
 import java.util.List;
 
-public class ForgotPassWordActivity extends AppCompatActivity {
+public class ForgotPassWordActivity extends BaseActivity {
 
     EditText edtEmail;
     Button btnContinue;
