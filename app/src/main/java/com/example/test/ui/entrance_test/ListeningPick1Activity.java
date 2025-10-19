@@ -23,6 +23,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.test.BaseActivity;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.adapter.ChoiceAdapter;
@@ -53,7 +54,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ListeningPick1Activity extends AppCompatActivity {
+public class ListeningPick1Activity extends BaseActivity {
     String correctAnswers;
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;

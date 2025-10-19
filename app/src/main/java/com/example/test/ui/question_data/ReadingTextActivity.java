@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.test.BaseActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.PopupHelper;
 import com.example.test.R;
@@ -44,7 +45,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ReadingTextActivity extends AppCompatActivity {
+public class ReadingTextActivity extends BaseActivity {
     String correctAnswers ;
     private List<String> userAnswers = new ArrayList<>();
     private int totalSteps; // Tổng số bước trong thanh tiến trình

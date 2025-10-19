@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.BaseActivity;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -25,7 +26,7 @@ import com.example.test.model.Question;
 
 import java.util.List;
 
-public class WrittingActivity extends AppCompatActivity {
+public class WrittingActivity extends BaseActivity {
 
     private TextView tvContent, key;
     private EditText etAnswer;

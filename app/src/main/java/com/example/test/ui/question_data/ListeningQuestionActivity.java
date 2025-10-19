@@ -20,6 +20,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.BaseActivity;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -46,7 +47,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ListeningQuestionActivity extends AppCompatActivity {
+public class ListeningQuestionActivity extends BaseActivity {
     String correctAnswers ;
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;

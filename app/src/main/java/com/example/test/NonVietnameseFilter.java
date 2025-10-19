@@ -3,18 +3,19 @@ package com.example.test;
 import android.text.InputFilter;
 import android.text.Spanned;
 
+import java.text.Normalizer;
+
 public class NonVietnameseFilter implements InputFilter {
     @Override
     public CharSequence filter(CharSequence source, int start, int end,
                                Spanned dest, int dstart, int dend) {
-        // Regex chỉ cho phép ký tự không dấu (a-z, A-Z, 0-9, ký tự đặc biệt)
-        if (source.toString().matches(".*[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệ"
-                + "ìíỉĩịòóỏõọôồốổỗộơờớởỡợ"
-                + "ùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬ"
-                + "ÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢ"
-                + "ÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ].*")) {
-            return ""; // chặn ký tự có dấu
-        }
-        return null; // cho phép bình thường
+        // Loại bỏ dấu tiếng Việt
+        String normalized = Normalizer.normalize(source, Normalizer.Form.NFD);
+        // Xóa toàn bộ ký tự dấu (tổ hợp Unicode)
+        String noAccent = normalized.replaceAll("\\p{M}", "");
+
+        // Trả về chuỗi không dấu để hiển thị
+        return noAccent;
     }
 }
+

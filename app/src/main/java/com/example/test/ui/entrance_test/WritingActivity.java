@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.BaseActivity;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -31,7 +32,7 @@ import com.example.test.ui.question_data.PointResultCourseActivity;
 
 import java.util.List;
 
-public class WritingActivity extends AppCompatActivity {
+public class WritingActivity extends BaseActivity {
 
     private TextView tvContent, key;
     private EditText etAnswer;
