@@ -49,6 +49,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
     private TextView tvQuestion, tvTalk, tvphoneme; // tvTalk thay thế cho tvTranscription và key
     private ProgressDialog progressDialog;
     private Button btnRetry, btnNextQuestion;
+    private LinearLayout actionButtonsContainer;
 
     // Data
     private List<Question> questions;
@@ -87,6 +88,7 @@ public class RecordQuestionActivity extends AppCompatActivity {
         wave3 = findViewById(R.id.wave_3);
         btnNextQuestion = findViewById(R.id.btnNextQuestion);
         btnRetry = findViewById(R.id.btnRetry);
+        actionButtonsContainer = findViewById(R.id.actionButtonsContainer);
 
         // Lấy dữ liệu từ Intent
         currentQuestionIndex = getIntent().getIntExtra("currentQuestionIndex", 0);
@@ -183,46 +185,132 @@ public class RecordQuestionActivity extends AppCompatActivity {
         // Lấy transcript từ câu hỏi đang hiển thị
         String transcript = tvTalk.getText().toString();
 
-        // GỌI HÀM MỚI
+        // GỌI HÀM MỚI (ĐÃ SỬA HOÀN CHỈNH)
         audioManager.assessPronunciation(recordedFile, transcript, new ApiCallback<PronunciationResult>() {
             @Override
             public void onSuccess(PronunciationResult result) {
-                recordedFile.delete(); // Xóa file sau khi gửi
-                // Bây giờ bạn có thể xử lý kết quả
-                Log.d("PRONUNCIATION_RESULT", "Overall Score: " + result.getOverallScore());
-
-                // TODO: Hiển thị kết quả lên giao diện
-                // Ví dụ: Tạo một SpannableString để tô màu chữ
-                // Sau đó gọi hàm lưu điểm và chuyển câu hỏi
-
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
+                if (recordedFile != null) {
+                    recordedFile.delete(); // Xóa file sau khi gửi
                 }
 
-                // GỌI HÀM ĐÃ SỬA
-                // Gọi cho character, không cần dấu /
-                SpannableStringBuilder characterSpannable = buildColoredSpannable(result.getPhonemeScores(), DisplayType.CHARACTER, false);
-                tvTalk.setText(characterSpannable);
+                // BẮT BUỘC: Chuyển mọi thao tác UI vào luồng chính
+                runOnUiThread(() -> {
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
 
-                // Gọi cho phoneme, CÓ cần dấu /
-                SpannableStringBuilder phonemeSpannable = buildColoredSpannable(result.getPhonemeScores(), DisplayType.PHONEME, true);
-                tvphoneme.setText(phonemeSpannable);
+                    Log.d("PRONUNCIATION_RESULT", "Overall Score: " + result.getOverallScore());
 
-                btnRetry.setVisibility(View.VISIBLE);
-                btnNextQuestion.setVisibility(View.VISIBLE);
+                    // 1. Hiển thị kết quả chấm điểm (tô màu text)
+                    SpannableStringBuilder characterSpannable = buildColoredSpannable(result.getPhonemeScores(), DisplayType.CHARACTER, false);
+                    tvTalk.setText(characterSpannable);
+
+                    SpannableStringBuilder phonemeSpannable = buildColoredSpannable(result.getPhonemeScores(), DisplayType.PHONEME, true);
+                    tvphoneme.setText(phonemeSpannable);
+
+                    // 2. Hiển thị các nút lựa chọn
+                    actionButtonsContainer.setVisibility(View.VISIBLE);
+                    btnRetry.setEnabled(true); // Đảm bảo nút có thể nhấn
+                    btnNextQuestion.setEnabled(true); // Đảm bảo nút có thể nhấn
+
+                    // 3. Gán sự kiện cho nút "Thử lại"
+                    btnRetry.setOnClickListener(v -> {
+                        // Reset giao diện về trạng thái ban đầu cho câu hỏi hiện tại
+                        tvphoneme.setText("");
+                        actionButtonsContainer.setVisibility(View.GONE);
+                        // Tải lại câu trả lời mẫu ngẫu nhiên mới cho câu hỏi hiện tại
+                        loadQuestion(currentQuestionIndex);
+                    });
+
+                    // 4. Gán sự kiện cho nút "Câu tiếp theo" (ĐÚNG CÚ PHÁP)
+                    btnNextQuestion.setOnClickListener(v -> {
+
+                        // Hiển thị loading khi đang lưu câu trả lời
+                        progressDialog = new ProgressDialog(RecordQuestionActivity.this);
+                        progressDialog.setMessage(getString(R.string.load));
+                        progressDialog.setCancelable(false);
+                        progressDialog.show();
+
+                        // Gọi API để lưu câu trả lời
+                        quesManager.saveUserAnswer(
+                                questions.get(currentQuestionIndex).getId(),
+                                transcript,
+                                result.getOverallScore(),
+                                null,
+                                enrollmentId,
+                                new ApiCallback<Void>() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.d("CheckAnswer", "Lưu câu trả lời thành công!");
+                                        // Chuyển sang câu hỏi tiếp theo trên luồng chính
+                                        runOnUiThread(() -> {
+                                            if (progressDialog != null && progressDialog.isShowing()) {
+                                                progressDialog.dismiss();
+                                            }
+
+                                            currentQuestionIndex++;
+                                            if (currentQuestionIndex < questions.size()) {
+                                                // Reset giao diện hoàn toàn cho câu hỏi mới
+                                                tvTalk.setText("");
+                                                tvphoneme.setText("");
+
+                                                actionButtonsContainer.setVisibility(View.GONE);
+
+                                                createProgressBars(totalSteps, currentQuestionIndex);
+                                                loadQuestion(currentQuestionIndex);
+                                            } else {
+                                                finishLesson();
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        Log.e("CheckAnswer", "Lỗi lưu câu trả lời: " + errorMessage);
+                                        // Hiển thị lỗi và kích hoạt lại nút trên luồng chính
+                                        runOnUiThread(() -> {
+                                            if (progressDialog != null && progressDialog.isShowing()) {
+                                                progressDialog.dismiss();
+                                            }
+                                            // Kích hoạt lại nút để người dùng có thể thử lại
+                                            btnNextQuestion.setEnabled(true);
+                                            btnRetry.setEnabled(true);
+                                            showErrorDialog("Lỗi khi lưu kết quả. Vui lòng thử lại.");
+                                        });
+                                    }
+
+                                    // Phương thức này có thể không cần thiết nếu ApiCallback của bạn
+                                    // không yêu cầu, nhưng để đây cho an toàn.
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        onSuccess(); // Gọi lại phương thức onSuccess() không có tham số
+                                    }
+                                }
+                        );
+                    });
+                });
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                recordedFile.delete();
-                Log.e("PRONUNCIATION_RESULT", errorMessage);
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
+                if (recordedFile != null) {
+                    recordedFile.delete();
                 }
-                showErrorDialog("Lỗi chấm điểm phát âm: " + errorMessage);
+                Log.e("PRONUNCIATION_RESULT", errorMessage);
+
+                // Đảm bảo hiển thị lỗi trên luồng chính
+                runOnUiThread(() -> {
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+                    showErrorDialog("Lỗi chấm điểm phát âm: " + errorMessage);
+                });
             }
 
-            @Override public void onSuccess() {}
+            // Để trống phương thức này nếu ApiCallback của bạn có 2 hàm onSuccess
+            // (một có tham số, một không) và bạn không dùng đến nó.
+            @Override
+            public void onSuccess() {}
         });
     }
 
@@ -284,20 +372,6 @@ public class RecordQuestionActivity extends AppCompatActivity {
         }
 
         return spannableBuilder;
-    }
-
-    private void showResultAndMoveNext(EvaluationResult result) {
-        String quesType = "speaking"; // Giả định
-        PopupHelper.showResultPopup(RecordQuestionActivity.this, quesType, null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
-            tvTalk.setText(""); // Xóa text cũ
-            currentQuestionIndex++;
-            if (currentQuestionIndex < totalSteps) {
-                createProgressBars(totalSteps, currentQuestionIndex);
-                loadQuestion(currentQuestionIndex);
-            } else {
-                finishLesson();
-            }
-        });
     }
 
 
