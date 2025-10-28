@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Material Content</title>
+    <style>
+        /* CSS của bạn vẫn giữ nguyên, không cần thay đổi */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 16px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+        }
+        h1 { font-size: 2em; }
+        h2 { font-size: 1.75em; border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
+        h3 { font-size: 1.5em; }
+        h4 { font-size: 1.25em; }
+        p { margin-bottom: 1em; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul, ol { margin-left: 20px; margin-bottom: 1em; }
+        ul li, ol li { margin-bottom: 0.5em; }
+        pre { background-color: #ecf0f1; padding: 10px 15px; border-radius: 5px; overflow-x: auto; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 0.9em; line-height: 1.4; color: #2c3e50; border: 1px solid #ddd; }
+        code { font-family: 'Fira Code', 'Cascadia Code', monospace; background-color: #e0e0e0; padding: 2px 4px; border-radius: 3px; font-size: 0.9em; }
+        pre code { background-color: transparent; padding: 0; }
+        blockquote { border-left: 4px solid #bdc3c7; margin: 1.5em 0; padding-left: 1.5em; color: #7f8c8d; font-style: italic; }
+        img { max-width: 100%; height: auto; display: block; margin: 1em auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin: 1.5em 0; background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #e0e0e0; font-weight: bold; color: #333; }
+        tr:nth-child(even) { background-color: #f6f6f6; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 1.5em 0; background-color: #000; border-radius: 5px; }
+        .video-container iframe, .video-container object, .video-container embed, .video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        video { max-width: 100%; height: auto; display: block; margin: 1em auto; }
+    </style>
+    <!-- Tải thư viện marked.js từ CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+<div id="content">Loading Markdown...</div>
+
+<script>
+    // Hàm này sẽ được gọi từ Android để inject và render Markdown
+    function setMarkdown(markdownText) {
+        try {
+            // Kiểm tra xem thư viện `marked` đã được tải chưa
+            if (typeof marked === 'undefined') {
+                document.getElementById('content').innerHTML = "<p style='color:red;'>Error: marked.js library could not be loaded. Please check internet connection.</p>";
+                return;
+            }
+
+            // Cấu hình các tùy chọn cho marked
+            marked.setOptions({
+                renderer: new marked.Renderer(),
+                gfm: true,        // Bật GitHub Flavored Markdown (quan trọng cho bảng)
+                breaks: true,     // Chuyển đổi dấu xuống dòng thành <br>
+                headerIds: false, // Tắt tự động thêm ID vào thẻ heading
+                mangle: false     // Giữ nguyên địa chỉ email
+            });
+
+            // **SỬA LỖI TẠI ĐÂY:** Dùng `marked.parse()` thay vì `marked()`
+            const htmlContent = marked.parse(markdownText);
+            document.getElementById('content').innerHTML = htmlContent;
+
+            // --- Xử lý video sau khi render ---
+            // Đoạn code này sẽ tìm tất cả thẻ video/iframe và bọc chúng lại để responsive
+            const mediaElements = document.querySelectorAll('#content iframe, #content video');
+            mediaElements.forEach(function(el) {
+                if (!el.closest('.video-container')) { // Nếu chưa được bọc
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'video-container';
+                    el.parentNode.insertBefore(wrapper, el);
+                    wrapper.appendChild(el);
+                }
+            });
+
+        } catch (e) {
+            // Hiển thị lỗi và mã markdown gốc nếu có vấn đề
+            document.getElementById('content').innerHTML = "<p style='color:red;'>Error rendering Markdown: " + e.message + "</p><pre>" + escapeHtml(markdownText) + "</pre>";
+            console.error("Markdown rendering error:", e);
+        }
+    }
+
+    // Hàm phụ để tránh lỗi XSS khi hiển thị mã Markdown gốc
+    function escapeHtml(unsafe) {
+        return unsafe
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+    }
+</script>
+</body>
+</html>

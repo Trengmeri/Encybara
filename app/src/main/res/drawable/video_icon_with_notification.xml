@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Lớp 1: Icon video gốc của bạn -->
+    <item android:drawable="@drawable/video_17236469"
+        android:width="30dp"
+        android:height="30dp" />
+
+    <!-- Lớp 2: Dấu chấm đỏ, đặt ở góc trên bên phải -->
+    <item
+        android:drawable="@drawable/red_dot"
+        android:gravity="top|start" />
+</layer-list>

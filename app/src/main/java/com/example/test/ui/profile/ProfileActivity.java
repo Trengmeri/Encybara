@@ -4,8 +4,11 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -13,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,6 +47,8 @@ public class ProfileActivity extends AppCompatActivity {
     AuthenticationManager apiManager;
     private UserManager userManager;
     private ImageView imgAvatar;
+    private int apiPendingCount = 0;
+    private Dialog loadingDialog;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -55,8 +61,16 @@ public class ProfileActivity extends AppCompatActivity {
         userName = findViewById(R.id.userName);
         userEmail = findViewById(R.id.userEmail);
 
+        // Khởi tạo Dialog loading
+        loadingDialog = new Dialog(this);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.setContentView(R.layout.dialog_loading);
+        loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loadingDialog.setCancelable(false); // Không cho phép đóng khi chạm ngoài màn hình
+
         loadUserProfile();
         setupBottomBar();
+        showLoading();
 
         btnLogout = findViewById(R.id.btnLogout);
         btnedit = findViewById(R.id.btnEdit);
@@ -101,9 +115,20 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private synchronized void apiFinished() {
+        apiPendingCount--;
+        if (apiPendingCount <= 0) {
+            hideLoading();
+        }
+    }
+
+
     private void loadUserProfile() {
         String userId = SharedPreferencesManager.getInstance(this).getID();
-        if (userId == null) return;
+        if (userId == null) {
+            apiFinished();
+            return;
+        }
 
         userManager.fetchUserProfile(Integer.parseInt(userId), new ApiCallback<JSONObject>() {
             @Override
@@ -123,14 +148,18 @@ public class ProfileActivity extends AppCompatActivity {
                                     .circleCrop()
                                     .into(imgAvatar);
                         }
+                        apiFinished();
                     } catch (JSONException e) {
+                        apiFinished();
                         Log.e("ProfileActivity", "Error parsing profile data: " + e.getMessage());
                     }
                 });
             }
 
             @Override
-            public void onSuccess() { }
+            public void onSuccess() {
+                apiFinished();
+            }
 
             @Override
             public void onFailure(String errorMessage) {
@@ -139,6 +168,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 "Failed to load profile: " + errorMessage,
                                 Toast.LENGTH_SHORT).show()
                 );
+                apiFinished();
             }
         });
     }
@@ -146,6 +176,8 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        apiPendingCount = 1;
+        showLoading();
         loadUserProfile();
     }
 
@@ -223,5 +255,17 @@ public class ProfileActivity extends AppCompatActivity {
             overridePendingTransition(0,0);
             finish();
         });
+    }
+
+    private void showLoading() {
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void hideLoading() {
+        if (loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
     }
 }

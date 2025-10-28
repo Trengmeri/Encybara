@@ -15,6 +15,9 @@
     <string name="joinn">You have successfully joined the course, go to Study to start the lesson!</string>
     <string name="success">Success</string>
     <string name="error">Error</string>
+    <string name="material_course">Complete the lesson</string>
+    <string name="first">Do you want to study the lecture of this course?</string>
+    <string name="not_first">Do you want to study the lecture of this course again?</string>
     <string name="lichmoi">The schedule has been successfully set!</string>
     <string name="trunglich">You have already set this schedule!</string>
     <string name="start_">HOW WOULD YOU LIKE TO START ?</string>

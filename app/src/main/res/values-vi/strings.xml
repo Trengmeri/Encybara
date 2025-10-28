@@ -13,9 +13,12 @@
     <string name="compcourse">Bạn đã hoàn thành khóa học này!</string>
     <string name="joincourse">Bạn đã tham gia khóa học này!</string>
     <string name="start_">BẠN MUỐN BẮT ĐẦU NHƯ THẾ NÀO ?</string>
-    <string name="joinn">Bạn đã tham gia khóa học thành công, vào Study để bắt đầu bài học!</string>
+    <string name="joinn">Bạn đã tham gia khóa học thành công, vào "Học tập" để bắt đầu bài học!</string>
     <string name="success">Thành công</string>
     <string name="error">Thất bại</string>
+    <string name="first">Bạn có muốn học bài giảng của khóa học này không?</string>
+    <string name="not_first">Bạn có muốn học lại bài giảng của khóa học này không?</string>
+    <string name="material_course">Hoàn thành bài học</string>
     <string name="lichmoi">Lịch học đã được đặt thành công!</string>
     <string name="trunglich">Bạn đã đặt lịch học này rồi!</string>
     <string name="viewpointcourse">Xem kết quả khóa học</string>

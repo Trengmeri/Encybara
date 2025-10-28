@@ -5,8 +5,8 @@
     android:orientation="vertical"
     android:background="@drawable/bg_choose"
     android:backgroundTint="@color/colorDefault"
-    android:padding="@dimen/dp_16"
-    android:layout_margin="@dimen/dp_16">
+    android:padding="16dp"
+    android:layout_margin="16dp">
 
     <!-- Tiêu đề khóa học -->
     <TextView
@@ -16,32 +16,51 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#333333"/>
+
+    <!-- Mô tả khóa học -->
     <TextView
         android:id="@+id/tvCourseDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:textColor="#333333"/>
+        android:textColor="#333333"
+        android:layout_marginTop="4dp"/>
 
-
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:fillViewport="true"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
-
-    <!-- Chứa danh sách bài học -->
+    <!-- BẮT ĐẦU PHẦN THAY ĐỔI -->
+    <!-- Container mới để nhóm và căn giữa nút video và danh sách bài học -->
     <LinearLayout
-        android:id="@+id/lessonContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="10dp">
+
+        <!-- Nút Video, đặt trước danh sách bài học để khớp với ảnh chụp màn hình -->
+        <Button
+            android:id="@+id/videobtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/video_17236469"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone" /> <!-- Mặc định ẩn đi để code Java điều khiển -->
+
+        <!-- Vùng cuộn cho các bài học -->
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <!-- Chứa danh sách bài học -->
+            <LinearLayout
+                android:id="@+id/lessonContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"/>
+        </HorizontalScrollView>
+
     </LinearLayout>
-    </HorizontalScrollView>
+    <!-- KẾT THÚC PHẦN THAY ĐỔI -->
+
 </LinearLayout>

@@ -57,7 +57,7 @@ public class LearningMaterialsManager extends BaseApiManager {
 
                         if (mediaFiles != null && !mediaFiles.isEmpty()) {
                             for (MediaFile media : mediaFiles) {
-                                String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                                String mediaUrl = BaseApiManager.replaceHost(media.getMaterLink());
                                 if (mediaUrl.matches(".*\\.(jpg|png|jpeg)$")) {  // Chỉ lấy ảnh
                                     new Handler(Looper.getMainLooper()).post(() -> {
                                         imageView.setVisibility(View.VISIBLE);
@@ -111,7 +111,7 @@ public class LearningMaterialsManager extends BaseApiManager {
                             // Collect all MP3 URLs
                             List<String> mp3Urls = new ArrayList<>();
                             for (MediaFile media : mediaFiles) {
-                                String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                                String mediaUrl = BaseApiManager.replaceHost(media.getMaterLink());
                                 if (mediaUrl.endsWith(".mp3")) {
                                     mp3Urls.add(mediaUrl);
                                 }
@@ -202,7 +202,7 @@ public class LearningMaterialsManager extends BaseApiManager {
 
                         if (mediaFiles != null && !mediaFiles.isEmpty()) {
                             for (MediaFile media : mediaFiles) {
-                                String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                                String mediaUrl = BaseApiManager.replaceHost(media.getMaterLink());
                                 if (mediaUrl.matches(".*\\.(jpg|png|jpeg)$")) {  // Chỉ lấy ảnh
                                     new Handler(Looper.getMainLooper()).post(() -> {
                                         imageView.setVisibility(View.VISIBLE);
@@ -255,7 +255,7 @@ public class LearningMaterialsManager extends BaseApiManager {
                         if (mediaFiles != null && !mediaFiles.isEmpty()) {
                             for (MediaFile media : mediaFiles) {
                                 Log.d("MediaFile", media.getFileType() + "   " + media.getMaterLink());
-                                String mediaUrl = media.getMaterLink().replace("0.0.0.0", "14.225.198.3");
+                                String mediaUrl = BaseApiManager.replaceHost(media.getMaterLink());
 
                                 if (mediaUrl.endsWith(".mp3")) {  // So sánh đúng cách
                                     callback.onSuccess(mediaUrl);

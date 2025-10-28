@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.study.MaterialCourseActivity">
+
+    <!-- Nút Hoàn thành bài học ở dưới cùng -->
+    <Button
+        android:id="@+id/completeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:text="@string/material_course"
+        android:textSize="16sp"
+        android:backgroundTint="@color/btncolor"/>
+
+    <!-- WebView sẽ lấp đầy không gian còn lại, nằm BÊN TRÊN nút Hoàn thành -->
+    <WebView
+        android:id="@+id/webViewMaterial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/completeButton" />
+
+    <!-- Nút X (đóng) nằm ở góc trên bên trái, nổi trên WebView -->
+    <ImageButton
+        android:id="@+id/closeButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Đóng"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:tint="@android:color/black" />
+
+</RelativeLayout>

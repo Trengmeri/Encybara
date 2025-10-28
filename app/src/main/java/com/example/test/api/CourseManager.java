@@ -8,6 +8,7 @@ import android.util.Log;
 import com.example.test.SharedPreferencesManager;
 import com.example.test.model.Course;
 import com.example.test.model.Enrollment;
+import com.example.test.model.MediaFile;
 import com.example.test.response.ApiResponseCourse;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -84,6 +85,50 @@ public class CourseManager extends BaseApiManager{
             }
         });
     }
+
+    public void fetchMaterialsByCourse(int courseId, ApiCallback<List<MediaFile>> callback) {
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        String url = BASE_URL + "/api/v1/material/courses/" + courseId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", "application/json")
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d("API_RESPONSE", "Dữ liệu nhận được: " + responseBody);
+
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+                        JSONArray dataArray = jsonResponse.getJSONArray("data");
+
+                        Gson gson = new Gson();
+                        Type materialListType = new TypeToken<List<MediaFile>>() {}.getType();
+                        List<MediaFile> materials = gson.fromJson(dataArray.toString(), materialListType);
+
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(materials));
+                    } catch (JSONException e) {
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi parse JSON: " + e.getMessage()));
+                    }
+                } else {
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi: " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                new Handler(Looper.getMainLooper()).post(() -> callback.onFailure("Lỗi kết nối: " + e.getMessage()));
+            }
+        });
+    }
+
+
     public void fetchCourseById(int courseId, ApiCallback callback) {
         Request request = new Request.Builder()
                 .url(BASE_URL + "/api/v1/courses/" + courseId ) // Thay bằng URL máy chủ của bạn

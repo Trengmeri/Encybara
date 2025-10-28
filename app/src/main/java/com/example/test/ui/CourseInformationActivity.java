@@ -191,7 +191,6 @@ import java.util.List;
 //                                        .load(R.raw.dragon_like)
 //                                        .into(imgSuccessGif);
 
-                                // Tự động chuyển đến Study sau vài giây
                                 new Handler().postDelayed(() -> {
                                     Intent intent = new Intent(CourseInformationActivity.this, HomeActivity.class);
                                     intent.putExtra("targetPage", 1);
