@@ -1,8 +1,9 @@
-package game;
+package com.example.test.game;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView; // ✅ Thêm TextView
 import android.widget.Toast;
@@ -27,6 +28,10 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         gameView = findViewById(R.id.gameView);
+        if (gameView == null) {
+            Log.e("MainActivity", "GameView not found in layout!");
+            // Đây là một lỗi nghiêm trọng, SurfaceView sẽ không bao giờ hiển thị.
+        }
         timerTextView = findViewById(R.id.timerTextView); // ✅ Gán TextView từ layout
 
         gameView.setOnQuestionListener((row, col) -> showQuestionDialog(row, col));

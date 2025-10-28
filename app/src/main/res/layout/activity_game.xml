@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
@@ -13,10 +14,10 @@
         android:textColor="@android:color/holo_red_dark"
         android:layout_marginTop="16dp"
         />
-    <game.GameView
+    <com.example.test.game.GameView
         android:id="@+id/gameView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_marginTop="8dp"
         android:layout_gravity="center"

@@ -30,10 +30,10 @@
             android:name=".ui.study.MaterialCourseActivity"
             android:exported="true" />
         <activity
-            android:name="game.IntroGameActivity"
+            android:name=".game.IntroGameActivity"
             android:exported="true" />
         <activity
-            android:name="game.GameActivity"
+            android:name=".game.GameActivity"
             android:exported="true" />
         <activity
             android:name=".ui.study.StudyActivity"

@@ -1,4 +1,4 @@
-package game;
+package com.example.test.game;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

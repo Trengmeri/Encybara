@@ -1,4 +1,4 @@
-package game;
+package com.example.test.game;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -76,6 +77,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
         initBitmaps(context);
         initPaints();
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+
         // initMap sẽ được gọi sau khi SurfaceView có kích thước, thường trong surfaceCreated
     }
 
@@ -84,6 +88,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
         initBitmaps(context);
         initPaints();
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+
         // initMap sẽ được gọi sau khi SurfaceView có kích thước, thường trong surfaceCreated
     }
 
@@ -105,6 +112,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         rock = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.rock);
         question = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ques);
         honey = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.honey);
+
+        Log.d("DEBUG_BITMAP", "bear = " + (bear != null));
+        Log.d("DEBUG_BITMAP", "rock = " + (rock != null));
+        Log.d("DEBUG_BITMAP", "question = " + (question != null));
+        Log.d("DEBUG_BITMAP", "honey = " + (honey != null));
+
     }
 
     private void initMap() {
@@ -214,6 +227,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         // Gọi initMap ở đây để đảm bảo kích thước view đã có
+        Log.d("GameView", "surfaceCreated() called. Initializing map and drawing.");
         initMap();
         drawGame(holder);
     }
@@ -296,12 +310,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private void drawGame(SurfaceHolder holder) {
         Canvas canvas = holder.lockCanvas();
-        if (canvas == null) return;
+        if (canvas == null) {
+            Log.e("GameView", "drawGame(): Canvas is null!");
+            return;
+        }
+
 
         // Lấy kích thước canvas (kích thước của GameView)
         int viewWidth = canvas.getWidth();
         int viewHeight = canvas.getHeight();
-
+        Log.d("GameView", "drawGame(): Canvas Width=" + viewWidth + ", Height=" + viewHeight);
         // Tính toán lại các thông số vẽ mỗi khi vẽ (đảm bảo thích ứng với thay đổi kích thước)
         calculateDrawingMetrics(viewWidth, viewHeight);
 
@@ -364,6 +382,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawBitmap(bearScaled, bearX, bearY, null);
 
         holder.unlockCanvasAndPost(canvas);
+        Log.d("GameView", "drawGame(): Canvas unlocked and posted.");
     }
 
     @Override

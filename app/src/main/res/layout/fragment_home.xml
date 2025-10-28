@@ -73,14 +73,17 @@
             android:layout_marginTop="@dimen/dp_16"
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginEnd="@dimen/dp_16"
-            >
+            android:layout_marginBottom="@dimen/dp_16">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
             <LinearLayout
                 android:id="@+id/pointContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:layout_gravity="center_horizontal">
+                android:layout_centerInParent="true">
 
                 <!-- Tổng điểm -->
                 <LinearLayout
@@ -254,6 +257,7 @@
 
                 </LinearLayout>
             </LinearLayout>
+            </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 
