@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.BaseActivity;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -31,7 +32,7 @@ import com.example.test.ui.question_data.PointResultCourseActivity;
 
 import java.util.List;
 
-public class WritingActivity extends AppCompatActivity {
+public class WritingActivity extends BaseActivity {
 
     private TextView tvContent, key;
     private EditText etAnswer;
@@ -142,8 +143,6 @@ public class WritingActivity extends AppCompatActivity {
         String questionContent = tvContent.getText().toString().trim();
         ApiService apiService = new ApiService(this);
 
-
-        // Hiển thị ProgressDialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.load));
         progressDialog.setCancelable(false);
@@ -151,49 +150,38 @@ public class WritingActivity extends AppCompatActivity {
 
         apiService.sendAnswerToApi(questionContent, userAnswer, new ApiCallback<EvaluationResult>() {
             @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
             public void onSuccess(EvaluationResult result) {
-
-                SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                // Lưu kết quả vào hệ thống
-                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, result.getPoint(), result.getimprovements(),enrollmentId,new ApiCallback() {
+                // SỬA ĐỔI: Sử dụng currentQuestionIndex để lấy ID câu hỏi
+                quesManager.saveUserAnswer(questionIds.get(currentStep), userAnswer, result.getPoint(), result.getimprovements(), enrollmentId, new ApiCallback() {
                     @Override
                     public void onSuccess() {
-                        Log.d("WritingActivity.this", "Lưu thành công!");
-                        Log.d("improve","improve:"+ result.getimprovements());
+                        Log.d("WritingActivity", "Lưu câu trả lời thành công!");
+                        Log.d("improve", "improve:" + result.getimprovements());
+
+                        // Lưu gợi ý cải thiện vào SharedPreferences
+                        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("improvement_suggestion", result.getimprovements());
-                        editor.apply(); // Lưu thay đổi
+                        editor.apply();
 
                         progressDialog.dismiss();
                         runOnUiThread(() -> {
                             PopupHelper.showResultPopup(WritingActivity.this, "WRITING", null, null, result.getPoint(), result.getimprovements(), result.getevaluation(), () -> {
+                                // Logic bên trong popup được tái cấu trúc theo mẫu
                                 etAnswer.setText("");
                                 key.setText("");
-                                currentStep++;
-                                if (currentStep < totalSteps) {
+                                currentStep++; // Tăng chỉ số câu hỏi hiện tại
+
+                                if (currentStep < questionIds.size()) {
+                                    // Tải câu hỏi tiếp theo
+                                    createProgressBars(totalSteps, currentStep);
                                     fetchQuestion(questionIds.get(currentStep));
-                                    createProgressBars(totalSteps, currentStep); // Cập nhật thanh tiến trình mỗi lần chuyển câu
                                 } else {
-                                    Intent intent = new Intent(WritingActivity.this, PointResultCourseActivity.class);
-                                    intent.putExtra("status", "test");
-                                    intent.putExtra("enrollmentId", enrollmentId);
-                                    intent.putExtra("EXTRA_MODE", "MODE_TEST"); // hoặc MODE_COURSE
-                                    startActivity(intent);
-                                    finish();
+                                    // Kết thúc bài học
+                                    finishLesson(enrollmentId);
                                 }
                             });
                         });
-                    }
-
-                    @Override
-                    public void onSuccess(Object result) {
-
                     }
 
                     @Override
@@ -202,47 +190,35 @@ public class WritingActivity extends AppCompatActivity {
                         Log.e("WritingActivity", "Lỗi lưu câu trả lời: " + errorMessage);
                         showErrorDialog("Lỗi khi lưu câu trả lời. Vui lòng thử lại.");
                     }
+
+                    // Các phương thức không cần thiết có thể được bỏ qua nếu interface của bạn cho phép
+                    @Override public void onSuccess(Object result) {}
                 });
             }
 
             @Override
             public void onFailure(String errorMessage) {
                 progressDialog.dismiss();
-                Log.e("WritingActivity", "Câu trả lời khong hop le: " + errorMessage);
+                Log.e("WritingActivity", "API đánh giá thất bại: " + errorMessage);
                 showErrorDialog(getString(R.string.invalidans));
-                apiService.getSuggestionFromApi(questionContent, new ApiCallback<String>(){
-
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onSuccess(String tip) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                key.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                                key.setMovementMethod(new ScrollingMovementMethod());
-
-                                String formattedTip = tip
-                                        .replaceAll("(?<!\\d)\\. ", ".\n")
-                                        .replaceAll(": ", ":\n");
-
-                                key.setText("Tip: \n" +formattedTip);
-                            }
-                        });
-                    }
-
-
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-
-                    }
-                });
             }
+
+            // Các phương thức không cần thiết có thể được bỏ qua
+            @Override public void onSuccess() {}
         });
+    }
+
+    /**
+     * PHƯƠNG THỨC MỚI: Tách logic kết thúc bài học ra riêng
+     * Phương thức này chứa logic Intent không thay đổi của bạn.
+     */
+    private void finishLesson(int enrollmentId) {
+        Intent intent = new Intent(this, PointResultCourseActivity.class);
+        intent.putExtra("status", "test");
+        intent.putExtra("enrollmentId", enrollmentId);
+        intent.putExtra("EXTRA_MODE", "MODE_TEST"); // hoặc MODE_COURSE
+        startActivity(intent);
+        finish();
     }
     private void showErrorDialog(String message) {
         runOnUiThread(() -> {

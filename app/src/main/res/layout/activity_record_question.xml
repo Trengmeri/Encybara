@@ -37,7 +37,7 @@
             android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <!-- ScrollView -->
+    <!-- ScrollView sẽ chiếm hết không gian còn lại -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -70,125 +70,116 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvTalk"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="@dimen/dp_16">
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dp_60">
-
-                    <!-- Nút nghe tùy chỉnh -->
-                    <LinearLayout
-                        android:layout_width="200dp"
-                        android:layout_height="200dp"
-                        android:layout_gravity="center"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="3dp"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <!-- Biểu tượng loa -->
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_record" />
-                    </LinearLayout>
-                    <!-- Vòng tròn 1 -->
-                    <View
-                        android:id="@+id/wave_1"
-                        android:layout_width="220dp"
-                        android:layout_height="220dp"
-                        android:background="@drawable/circle_shape2"
-                        android:alpha="0.5"
-                        android:layout_gravity="center" />
-
-                    <!-- Vòng tròn 2 -->
-                    <View
-                        android:id="@+id/wave_2"
-                        android:layout_width="240dp"
-                        android:layout_height="240dp"
-                        android:background="@drawable/circle_shape2"
-                        android:alpha="0.3"
-                        android:layout_gravity="center" />
-
-                    <!-- Vòng tròn 3 -->
-                    <View
-                        android:id="@+id/wave_3"
-                        android:layout_width="260dp"
-                        android:layout_height="260dp"
-                        android:background="@drawable/circle_shape2"
-                        android:alpha="0.1"
-                        android:layout_gravity="center" />
-                    <LinearLayout
-                        android:id="@+id/imgVoice"
-                        android:layout_width="200dp"
-                        android:layout_height="200dp"
-                        android:layout_gravity="center"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="3dp"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <!-- Biểu tượng loa -->
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_record2" />
-                    </LinearLayout>
-                </FrameLayout>
-
-                <ImageView
-                    android:id="@+id/imgReset"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:background="@drawable/icon_restart"/>
-            </LinearLayout>
+                android:layout_marginTop="@dimen/dp_30"
+                android:drawablePadding="10dp"
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/txt"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvphoneme"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/your_ans"
-                android:textColor="#436EEE"
+                android:layout_marginTop="@dimen/dp_30"
+                android:drawablePadding="10dp"
                 android:textSize="20sp"
-                android:layout_marginTop="12dp"
-                android:textStyle="bold"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/tvTranscription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:layout_marginTop="10dp"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/key"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:textSize="16sp"/>
-
-            <Button
-                android:id="@+id/btnCheckResult"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/check"
-                android:textSize="20sp"
-                android:backgroundTint="#436EEE"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="@dimen/dp_30"
-                android:layout_gravity="center" />
+                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>
+
+    <!-- Cụm nút loa được đặt ở đây, bên dưới ScrollView -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="16dp"> <!-- Giảm padding để có không gian cho các nút mới -->
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <!-- Vòng tròn 1 (đã thu nhỏ) -->
+            <View
+                android:id="@+id/wave_1"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_gravity="center"
+                android:alpha="0.5"
+                android:background="@drawable/circle_shape2" />
+
+            <!-- Vòng tròn 2 (đã thu nhỏ) -->
+            <View
+                android:id="@+id/wave_2"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_gravity="center"
+                android:alpha="0.3"
+                android:background="@drawable/circle_shape2" />
+
+            <!-- Vòng tròn 3 (đã thu nhỏ) -->
+            <View
+                android:id="@+id/wave_3"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_gravity="center"
+                android:alpha="0.1"
+                android:background="@drawable/circle_shape2" />
+
+            <LinearLayout
+                android:id="@+id/imgVoice"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="3dp"
+                android:background="@drawable/circle_shape2"> <!-- Thêm background để dễ nhấn -->
+
+                <!-- Biểu tượng loa -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_record2" />
+            </LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <!-- KHỐI MÃ MỚI: Cụm nút hành động (Nói lại, Câu tiếp theo) -->
+    <LinearLayout
+        android:id="@+id/actionButtonsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingBottom="24dp"
+        android:visibility="gone"
+        tools:visibility="visible"> <!-- tools:visibility="visible" để xem trước trong Android Studio -->
+
+        <Button
+            android:id="@+id/btnRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/record_again"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/color_selected" />
+
+        <Button
+            android:id="@+id/btnNextQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nextquestion"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/btncolor" />
+
+    </LinearLayout>
+
 
     <FrameLayout
         android:id="@+id/popupContainer"

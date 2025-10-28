@@ -14,6 +14,7 @@
     <string name="joincourse">You’ve joined this course!</string>
     <string name="joinn">You have successfully joined the course, go to Study to start the lesson!</string>
     <string name="success">Success</string>
+    <string name="record_again">Record again</string>
     <string name="error">Error</string>
     <string name="material_course">Complete the lesson</string>
     <string name="first">Do you want to study the lecture of this course?</string>

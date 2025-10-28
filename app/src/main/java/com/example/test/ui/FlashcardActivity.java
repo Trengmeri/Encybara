@@ -38,6 +38,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.test.BaseActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.SharedPreferencesManager;
@@ -65,7 +66,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FlashcardActivity extends AppCompatActivity {
+public class FlashcardActivity extends BaseActivity {
 
     private RecyclerView recyclerViewFlashcards;
     private FlashcardManager flashcardManager;

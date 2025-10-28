@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.example.test.BaseActivity;
 import com.example.test.PopupHelper;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -50,7 +51,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ListeningActivity extends AppCompatActivity {
+public class ListeningActivity extends BaseActivity {
     String correctAnswer;
     private MediaPlayer mediaPlayer;
     private EditText etAnswer;

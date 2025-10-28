@@ -31,6 +31,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.test.BaseActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -46,7 +47,7 @@ import com.example.test.model.Result;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends BaseActivity {
 
     EditText edtName, edtEmail, edtMKhau1;
     TextView txtEmailerror, txtPasserror,btnIn;

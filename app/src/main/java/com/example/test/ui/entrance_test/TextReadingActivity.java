@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.BaseActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.PopupHelper;
 import com.example.test.R;
@@ -42,7 +43,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class TextReadingActivity extends AppCompatActivity {
+public class TextReadingActivity extends BaseActivity {
     String correctAnswers;
     private List<String> userAnswers = new ArrayList<>();
     private int currentStep =0;

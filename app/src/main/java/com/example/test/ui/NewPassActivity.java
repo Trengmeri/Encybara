@@ -28,6 +28,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.BaseActivity;
 import com.example.test.NetworkChangeReceiver;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
@@ -45,7 +46,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NewPassActivity extends AppCompatActivity {
+public class NewPassActivity extends BaseActivity {
 
     EditText edtPass, edtRePass;
     TextView tPasserror, tNewpasserror;
