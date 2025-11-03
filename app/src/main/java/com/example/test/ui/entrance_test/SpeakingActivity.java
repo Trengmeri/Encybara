@@ -37,11 +37,13 @@ import com.example.test.model.Lesson;
 import com.example.test.model.PhonemeScore;
 import com.example.test.model.PronunciationResult;
 import com.example.test.model.Question;
+import com.example.test.model.SampleAnswer;
 import com.example.test.ui.question_data.PointResultLessonActivity;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 // Đổi tên class nếu cần thiết, ví dụ thành SpeakingActivity để khớp với file layout
 public class SpeakingActivity extends AppCompatActivity {
@@ -53,6 +55,7 @@ public class SpeakingActivity extends AppCompatActivity {
     private List<Integer> questionIds;
     private int currentStep = 0;
     private int totalSteps, enrollmentId;
+    private int lessonId = 6; // ID này có thể được truyền qua Intent
 
     // Managers
     private QuestionManager quesManager = new QuestionManager(this);
@@ -93,7 +96,7 @@ public class SpeakingActivity extends AppCompatActivity {
         actionButtonsContainer = findViewById(R.id.actionButtonsContainer);
 
         enrollmentId = getIntent().getIntExtra("enrollmentId", 1);
-        int lessonId = 6; // ID này có thể được truyền qua Intent
+
         fetchLessonAndQuestions(lessonId);
         tvTalk.setText(""); // Khởi đầu với text rỗng
         tvphoneme.setText("");
@@ -139,7 +142,6 @@ public class SpeakingActivity extends AppCompatActivity {
             recorder.start();
             isRecording = true;
             startWaves();
-            tvTalk.setText("Đang lắng nghe..."); // Phản hồi cho người dùng
             Log.d("Recording", "Recording started");
         } catch (IOException e) {
             e.printStackTrace();
@@ -215,8 +217,7 @@ public class SpeakingActivity extends AppCompatActivity {
                         // Reset giao diện về trạng thái ban đầu cho câu hỏi hiện tại
                         tvphoneme.setText("");
                         actionButtonsContainer.setVisibility(View.GONE);
-                        // Tải lại câu trả lời mẫu ngẫu nhiên mới cho câu hỏi hiện tại
-                        fetchQuestion(currentStep);
+                        fetchLessonAndQuestions(lessonId);
                     });
 
                     // 4. Gán sự kiện cho nút "Câu tiếp theo" (ĐÚNG CÚ PHÁP)
@@ -254,7 +255,7 @@ public class SpeakingActivity extends AppCompatActivity {
                                                 actionButtonsContainer.setVisibility(View.GONE);
 
                                                 createProgressBars(totalSteps, currentStep);
-                                                fetchQuestion(currentStep);
+                                                fetchLessonAndQuestions(lessonId);
                                             } else {
                                                 finishLesson();
                                             }
@@ -419,6 +420,51 @@ public class SpeakingActivity extends AppCompatActivity {
             public void onSuccess(Question question) {
                 if (question != null) {
                     runOnUiThread(() -> tvQuestion.setText(question.getQuesContent()));
+                    // Gọi API để lấy danh sách các câu trả lời mẫu
+                    quesManager.fetchSampleAnswersFromApi(question.getId(), new ApiCallback<List<SampleAnswer>>() {
+                        @Override
+                        public void onSuccess() {}
+
+                        @Override
+                        public void onSuccess(List<SampleAnswer> sampleAnswers) {
+                            // Kiểm tra xem danh sách có hợp lệ và không rỗng không
+                            if (sampleAnswers != null && !sampleAnswers.isEmpty()) {
+                                // 1. Tạo một đối tượng Random
+                                Random random = new Random();
+
+                                // 2. Lấy một chỉ số ngẫu nhiên trong khoảng từ 0 đến (kích thước danh sách - 1)
+                                int randomIndex = random.nextInt(sampleAnswers.size());
+
+                                // 3. Lấy câu trả lời ngẫu nhiên từ danh sách
+                                SampleAnswer randomAnswer = sampleAnswers.get(randomIndex);
+
+                                // 4. Hiển thị nội dung của câu trả lời đó lên UI
+                                // QUAN TRỌNG: Cập nhật UI phải được thực hiện trên Main Thread
+                                runOnUiThread(() -> {
+                                    if (randomAnswer != null) {
+                                        // Giả sử tvTalk là TextView để hiển thị câu trả lời
+                                        tvTalk.setText(randomAnswer.getAnswerContent());
+                                    }
+                                });
+                            } else {
+                                // Xử lý trường hợp danh sách rỗng hoặc null
+                                runOnUiThread(() -> {
+                                    tvTalk.setText("Không có câu trả lời mẫu.");
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            // Xử lý khi API gọi thất bại
+                            runOnUiThread(() -> {
+                                // Hiển thị thông báo lỗi cho người dùng
+                                tvTalk.setText("Lỗi khi tải câu trả lời.");
+                                // Hoặc bạn có thể dùng Toast
+                                // Toast.makeText(YourActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
                 }
             }
 
