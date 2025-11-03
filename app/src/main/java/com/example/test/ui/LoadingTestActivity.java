@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
 import com.example.test.ui.entrance_test.Pick1Activity;
+import com.example.test.ui.entrance_test.SpeakingActivity;
 import com.example.test.ui.entrance_test.TextReadingActivity;
 
 public class LoadingTestActivity extends AppCompatActivity {
