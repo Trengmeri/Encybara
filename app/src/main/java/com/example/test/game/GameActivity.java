@@ -2,11 +2,17 @@ package com.example.test.game;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -153,10 +159,10 @@ public class GameActivity extends AppCompatActivity {
             selectedAnswerIndex[0] = checkedId; // checkedId chính là ID bạn gán cho RadioButton
         });
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.TransparentDialog);
 
-        new AlertDialog.Builder(this)
-                .setView(dialogView) // Đặt layout tùy chỉnh của bạn vào đây
-                // .setTitle("Câu hỏi tiếng Anh 🧠") // Không dùng setTitle nữa vì layout đã có hình gấu
+        AlertDialog dialog = builder
+                .setView(dialogView)
                 .setPositiveButton("Xác nhận", (d, w) -> {
                     if (selectedAnswerIndex[0] == correctAnswerIndex) {
                         gameView.clearQuestionAt(row, col);
@@ -165,24 +171,30 @@ public class GameActivity extends AppCompatActivity {
                         gameView.handleWrongAnswer(row, col);
                         Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi!", Toast.LENGTH_LONG).show();
                     }
-
-                    if (gameView.isGameRunning()) {
-                        startTimer();
-                    } else {
-                        stopTimer();
-                    }
+                    if (gameView.isGameRunning()) startTimer();
                 })
                 .setNegativeButton("Hủy", (d, w) -> {
                     Toast.makeText(GameActivity.this, "Bạn đã hủy trả lời.", Toast.LENGTH_SHORT).show();
-                    if (gameView.isGameRunning()) {
-                        startTimer();
-                    }
+                    if (gameView.isGameRunning()) startTimer();
                 })
                 .setCancelable(false)
-                .show();
+                .create();
+
+//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        dialog.getWindow().setGravity(Gravity.CENTER);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER);
+
+        }
+
+        dialog.show();
+
     }
 
-    // 🍯 Khi đến hũ mật
+        // 🍯 Khi đến hũ mật
     private void showWinDialog() {
         stopTimer(); // ✅ Dừng timer khi thắng
         new AlertDialog.Builder(this)
