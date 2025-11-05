@@ -1,10 +1,16 @@
 package com.example.test.game;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView; // ✅ Thêm TextView
 import android.widget.Toast;
 
@@ -101,27 +107,75 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // 🧩 Câu hỏi pop-up
-    private void showQuestionDialog(int row, int col) {
-        // Tạm dừng timer khi dialog câu hỏi hiện ra
-        stopTimer(); // ✅ Tạm dừng timer
+    @SuppressLint("MissingInflatedId")
+    private void showQuestionDialog(final int row, final int col) {
+        stopTimer(); // Tạm dừng timer khi dialog câu hỏi hiện ra
+
+        final String questionText = "Từ 'bear' có nghĩa là gì?";
+        final String[] answers = {"Con gấu", "Con ong", "Mang/Chịu đựng", "Trần trụi"};
+        final int correctAnswerIndex = 0;
+
+        // Inflate layout tùy chỉnh
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_question_background, null);
+
+        // Tìm và thiết lập câu hỏi
+        TextView questionTextView = dialogView.findViewById(R.id.question_text_view); // Cần thêm ID này vào layout
+        if (questionTextView != null) {
+            questionTextView.setText(questionText);
+        }
+
+        // Tạo RadioGroup và RadioButton cho các đáp án
+        RadioGroup radioGroupAnswers = dialogView.findViewById(R.id.radio_group_answers); // Cần thêm ID này vào layout
+        if (radioGroupAnswers == null) {
+            radioGroupAnswers = new RadioGroup(this);
+            radioGroupAnswers.setId(R.id.radio_group_answers); // Gán ID nếu tạo động
+            // Thêm radioGroupAnswers vào dialogView nếu nó chưa tồn tại (ví dụ, thêm vào LinearLayout chính)
+            // Đây là phần phức tạp hơn nếu bạn muốn hoàn toàn động.
+            // Tốt nhất là định nghĩa RadioGroup trong XML của dialog_question_background.xml
+            // Ví dụ: <RadioGroup android:id="@+id/radio_group_answers" ... />
+            ((LinearLayout) dialogView.findViewById(R.id.dialog_content_container)).addView(radioGroupAnswers); // Giả sử bạn có container
+        }
+
+        // Để lưu trữ lựa chọn của người dùng
+        final int[] selectedAnswerIndex = {-1}; // Khởi tạo với -1
+
+        // Thêm RadioButton vào RadioGroup
+        for (int i = 0; i < answers.length; i++) {
+            RadioButton rb = new RadioButton(this);
+            rb.setText(answers[i]);
+            rb.setId(i); // Gán ID cho mỗi RadioButton bằng chỉ số của nó
+            radioGroupAnswers.addView(rb);
+        }
+
+        // Lắng nghe sự kiện chọn đáp án
+        radioGroupAnswers.setOnCheckedChangeListener((group, checkedId) -> {
+            selectedAnswerIndex[0] = checkedId; // checkedId chính là ID bạn gán cho RadioButton
+        });
+
+
         new AlertDialog.Builder(this)
-                .setTitle("Câu hỏi tiếng Anh 🧠")
-                .setMessage("Từ 'bear' có nghĩa là gì?")
-                .setPositiveButton("Con gấu", (d, w) -> {
-                    gameView.clearQuestionAt(row, col);
-                    Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống.", Toast.LENGTH_SHORT).show();
-                    if (gameView.isGameRunning()) { // ✅ Chỉ khởi động lại timer nếu game vẫn đang chạy
-                        startTimer();
+                .setView(dialogView) // Đặt layout tùy chỉnh của bạn vào đây
+                // .setTitle("Câu hỏi tiếng Anh 🧠") // Không dùng setTitle nữa vì layout đã có hình gấu
+                .setPositiveButton("Xác nhận", (d, w) -> {
+                    if (selectedAnswerIndex[0] == correctAnswerIndex) {
+                        gameView.clearQuestionAt(row, col);
+                        Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        gameView.handleWrongAnswer(row, col);
+                        Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi!", Toast.LENGTH_LONG).show();
                     }
-                })
-                .setNegativeButton("Con ong", (d, w) -> {
-                    gameView.handleWrongAnswer(row, col);
-                    Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi!", Toast.LENGTH_LONG).show();
-                    if (gameView.isGameRunning()) { // ✅ Chỉ khởi động lại timer nếu game vẫn đang chạy
+
+                    if (gameView.isGameRunning()) {
                         startTimer();
                     } else {
-                        // Nếu handleWrongAnswer dẫn đến game over, timer sẽ không được khởi động lại
                         stopTimer();
+                    }
+                })
+                .setNegativeButton("Hủy", (d, w) -> {
+                    Toast.makeText(GameActivity.this, "Bạn đã hủy trả lời.", Toast.LENGTH_SHORT).show();
+                    if (gameView.isGameRunning()) {
+                        startTimer();
                     }
                 })
                 .setCancelable(false)
