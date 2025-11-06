@@ -1,6 +1,9 @@
 package com.example.test.game;
 
 import android.annotation.SuppressLint;
+
+import com.example.test.api.ApiCallback;
+import com.example.test.api.GameManager;
 import android.content.Intent;
 import android.media.MediaPlayer; // Import MediaPlayer
 import android.media.SoundPool;   // Import SoundPool
@@ -9,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +34,8 @@ public class IntroGameActivity extends AppCompatActivity {
     private MediaPlayer introMediaPlayer; // Đối tượng MediaPlayer cho nhạc nền intro
     private SoundPool soundPool;          // Đối tượng SoundPool cho hiệu ứng âm thanh
     private HashMap<Integer, Integer> soundMap; // Lưu trữ ID của các âm thanh đã tải vào SoundPool
+    private int courseID;
+    private GameManager gameManager = new GameManager(this);
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -80,6 +86,19 @@ public class IntroGameActivity extends AppCompatActivity {
         // Tải âm thanh button_start_sound vào SoundPool và lưu ID của nó
         soundMap.put(R.raw.pop_sound, soundPool.load(this, R.raw.pop_sound, 1)); // 1 là ưu tiên
 
+
+        // Lấy courseID từ Intent
+        courseID = getIntent().getIntExtra("courseID", -1); // Giá trị mặc định là -1 để kiểm tra
+        if (courseID == -1) {
+            Log.e("IntroGameActivity", "courseID không được truyền qua Intent hoặc có giá trị không hợp lệ.");
+            // Xử lý trường hợp courseID không hợp lệ, ví dụ: đóng activity, hiển thị thông báo
+            Toast.makeText(this, "Lỗi: Không tìm thấy ID khóa học.", Toast.LENGTH_LONG).show();
+            finish();
+            return; // Dừng onCreate nếu courseID không hợp lệ
+        } else {
+            Log.d("IntroGameActivity", "courseID nhận được: " + courseID);
+        }
+
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,10 +112,53 @@ public class IntroGameActivity extends AppCompatActivity {
                     introMediaPlayer.pause();
                 }
 
-                Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
-                startActivity(intent);
-                // Optional: kết thúc IntroGameActivity nếu không muốn quay lại
-                // finish();
+                // --- GỌI API sendCreateGameRequest TẠI ĐÂY ---
+                // Các giá trị mẫu. Bạn cần thay thế bằng giá trị thực tế nếu cần.
+                String gameName = "Game Course " + courseID;
+                String gameDescription = "Testing game for course " + courseID;
+                String gameType = "REVIEW"; // REVIEW, PRACTICE, ...
+                int maxQuestions = 10;
+                int timeLimit = 120; //
+
+                gameManager.sendCreateGameRequest(
+                        courseID,
+                        gameName,
+                        gameDescription,
+                        gameType,
+                        maxQuestions,
+                        timeLimit,
+                        new ApiCallback() {
+                            @Override
+                            public void onSuccess() {
+                                runOnUiThread(() -> {
+                                    Toast.makeText(IntroGameActivity.this, "Tạo game thành công!", Toast.LENGTH_SHORT).show();
+                                    Log.d("IntroGameActivity", "API Create Game thành công. Bắt đầu GameActivity.");
+                                    Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
+                                    // Bạn có thể truyền thêm dữ liệu vào intent nếu API trả về gameId
+                                    // intent.putExtra("gameId", gameId);
+                                    startActivity(intent);
+                                    // Optional: finish();
+                                });
+                            }
+
+                            @Override
+                            public void onSuccess(Object result) {
+
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                runOnUiThread(() -> {
+                                    Toast.makeText(IntroGameActivity.this, "Lỗi tạo game: " + errorMessage, Toast.LENGTH_LONG).show();
+                                    Log.e("IntroGameActivity", "API Create Game thất bại: " + errorMessage);
+                                    // Khôi phục nhạc nền nếu thất bại và người dùng ở lại activity
+                                    if (introMediaPlayer != null && !introMediaPlayer.isPlaying()) {
+                                        introMediaPlayer.start();
+                                    }
+                                });
+                            }
+                        }
+                );
             }
         });
 

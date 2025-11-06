@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.api.ApiService;
+import com.example.test.game.IntroGameActivity;
 import com.example.test.model.Enrollment;
 import com.example.test.ui.CourseInformationActivity;
 import com.example.test.ui.ReviewActivity;
@@ -83,7 +84,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
                 startActivity(intent);
             } else if ("MODE_COURSE".equals(mode)) {
                 // sang ReviewCourse
-                Intent intent = new Intent(PointResultCourseActivity.this, ReviewActivity.class);
+                Intent intent = new Intent(PointResultCourseActivity.this, IntroGameActivity.class);
                 intent.putExtra("CourseID",courseID);
                 startActivity(intent);
             }
