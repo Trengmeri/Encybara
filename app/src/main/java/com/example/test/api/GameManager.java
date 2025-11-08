@@ -74,8 +74,17 @@ public class GameManager extends BaseApiManager{
                 if (response.isSuccessful()) {
                     try {
                         JSONObject jsonResponse = new JSONObject(responseBody);
-                        Log.d("CreateGame","Create game successfully");
-                        callback.onSuccess();
+
+                        if (jsonResponse.has("data")) {
+                            JSONObject dataObj = jsonResponse.getJSONObject("data");
+                            int gameId = dataObj.getInt("id");
+
+                            Log.d("CreateGame", "Tạo game thành công, ID = " + gameId);
+                            callback.onSuccess(gameId);
+                        } else {
+                            callback.onFailure("Phản hồi không có trường 'data'!");
+                        }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                         callback.onFailure("Lỗi khi phân tích phản hồi JSON: " + e.getMessage());
@@ -87,4 +96,48 @@ public class GameManager extends BaseApiManager{
             }
         });
     }
+    public void sendStartGameRequest(int gameId, ApiCallback callback) {
+        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            callback.onFailure("Không tìm thấy Access Token! Vui lòng đăng nhập lại.");
+            return;
+        }
+
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/game/" + gameId + "/start")
+                .header("Authorization", "Bearer " + accessToken)
+                .post(RequestBody.create("", MediaType.parse("application/json; charset=utf-8")))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("GameManager", "Kết nối thất bại: " + e.getMessage());
+                callback.onFailure("Kết nối thất bại! Không thể kết nối tới API.");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("GameManager", "Phản hồi từ server: " + responseBody);
+
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+                        Log.d("StartGame", "Game started successfully");
+                        callback.onSuccess();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callback.onFailure("Lỗi khi phân tích phản hồi JSON: " + e.getMessage());
+                    }
+                } else {
+                    Log.e("GameManager", "Lỗi từ server: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+                    callback.onFailure("Bắt đầu game thất bại! Mã lỗi: " + response.code() + ", Nội dung: " + responseBody);
+                }
+            }
+        });
+    }
+
+
 }

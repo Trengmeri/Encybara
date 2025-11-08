@@ -113,8 +113,6 @@ public class IntroGameActivity extends AppCompatActivity {
                     introMediaPlayer.pause();
                 }
 
-                // --- GỌI API sendCreateGameRequest TẠI ĐÂY ---
-                // Các giá trị mẫu. Bạn cần thay thế bằng giá trị thực tế nếu cần.
                 String gameName = "Game Course " + courseID;
                 String gameDescription = "Testing game for course " + courseID;
                 String gameType = "REVIEW"; // REVIEW, PRACTICE, ...
@@ -128,14 +126,13 @@ public class IntroGameActivity extends AppCompatActivity {
                         gameType,
                         maxQuestions,
                         timeLimit,
-                        new ApiCallback() {
+                        new ApiCallback<Integer>() {
                             @Override
                             public void onSuccess() {
                                 runOnUiThread(() -> {
                                     Toast.makeText(IntroGameActivity.this, "Tạo game thành công!", Toast.LENGTH_SHORT).show();
                                     Log.d("IntroGameActivity", "API Create Game thành công. Bắt đầu GameActivity.");
                                     Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
-                                    // Bạn có thể truyền thêm dữ liệu vào intent nếu API trả về gameId
                                     // intent.putExtra("gameId", gameId);
                                     startActivity(intent);
                                     // Optional: finish();
@@ -143,7 +140,29 @@ public class IntroGameActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onSuccess(Object result) {
+                            public void onSuccess(Integer gameId) {
+                                Log.d("GameFlow", "Game created with ID: " + gameId);
+
+                                // Sau khi tạo thành công => gọi API start
+                                gameManager.sendStartGameRequest(gameId, new ApiCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.d("GameFlow", "Game started successfully!");
+                                        Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
+                                        // intent.putExtra("gameId", gameId);
+                                        startActivity(intent);
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Object result) {
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        Log.e("GameFlow", "Start game failed: " + errorMessage);
+                                    }
+                                });
 
                             }
 
