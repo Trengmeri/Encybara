@@ -21,6 +21,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.test.R;
+import com.example.test.ui.question_data.PointResultCourseActivity;
 // Các import khác không liên quan đến âm thanh có thể bị xóa nếu không dùng
 // import com.example.test.ui.ForgotPassWordActivity;
 // import com.example.test.ui.SignInActivity;
@@ -194,7 +195,9 @@ public class IntroGameActivity extends AppCompatActivity {
                 if (introMediaPlayer != null && introMediaPlayer.isPlaying()) {
                     introMediaPlayer.pause();
                 }
-                finish();
+                Intent intent = new Intent(IntroGameActivity.this, PointResultCourseActivity.class);
+                startActivity(intent);
+
             }
         });
 

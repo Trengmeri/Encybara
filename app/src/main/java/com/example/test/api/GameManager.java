@@ -7,11 +7,17 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.test.SharedPreferencesManager;
+import com.example.test.model.Course;
+import com.example.test.model.Game;
+import com.example.test.model.Lesson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -138,6 +144,85 @@ public class GameManager extends BaseApiManager{
             }
         });
     }
+
+    public void sendGetGameLessonsRequest(int courseId, ApiCallback<List<Game>> callback) {
+        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            callback.onFailure("Không tìm thấy Access Token! Vui lòng đăng nhập lại.");
+            return;
+        }
+
+        String url = BASE_URL + "/api/v1/game/course/" + courseId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer " + accessToken)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure("Kết nối thất bại: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("GameManager", "Response: " + responseBody);
+
+                if (!response.isSuccessful()) {
+                    callback.onFailure("Lỗi từ server: " + response.code());
+                    return;
+                }
+
+                try {
+                    JSONObject json = new JSONObject(responseBody);
+                    JSONArray dataArray = json.getJSONArray("data");
+                    List<Game> gameList = new ArrayList<>();
+
+                    for (int i = 0; i < dataArray.length(); i++) {
+                        JSONObject gameObj = dataArray.getJSONObject(i);
+                        Game game = new Game();
+                        game.setId(gameObj.getInt("id"));
+                        game.setName(gameObj.getString("name"));
+
+                        // Parse Course
+                        JSONObject courseObj = gameObj.getJSONObject("course");
+                        Course course = new Course();
+                        course.setId(courseObj.getInt("id"));
+                        course.setName(courseObj.getString("name"));
+
+                        // Parse Lessons
+                        JSONArray lessonArray = courseObj.getJSONArray("lessons");
+                        List<Lesson> lessonList = new ArrayList<>();
+
+                        for (int j = 0; j < lessonArray.length(); j++) {
+                            JSONObject lessonObj = lessonArray.getJSONObject(j);
+                            Lesson lesson = new Lesson();
+                            lesson.setId(lessonObj.getInt("id"));
+                            lesson.setName(lessonObj.getString("name"));
+                            lesson.setSumQues(lessonObj.getInt("sumQues"));
+
+                            lessonList.add(lesson);
+                        }
+
+                        course.setLessons(lessonList);
+                        game.setCourse(course);
+                        gameList.add(game);
+                    }
+
+                    callback.onSuccess(gameList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callback.onFailure("Lỗi khi phân tích JSON: " + e.getMessage());
+                }
+            }
+        });
+    }
+
 
 
 }
