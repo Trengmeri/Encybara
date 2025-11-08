@@ -457,7 +457,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             spannable.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             spannable.setSpan(new RelativeSizeSpan(0.8f), answerStart, answerEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // Cỡ chữ nhỏ hơn
                             questionTextView.setText(spannable);
-                            questionTextView.setPadding(10, 10, 10, 10);
+                            questionTextView.setPadding(10, 10, 10, 30);
                             questionTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2));
                             questionTextView.setTypeface(null, Typeface.BOLD);
                             questionTextView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -481,7 +481,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
                             // TextView cho điểm số
                             TextView pointTextView = new TextView(tableResult.getContext());
                             pointTextView.setText(String.valueOf(answer.getPointAchieved()));
-                            pointTextView.setPadding(10, 10, 10, 10);
+                            pointTextView.setPadding(10, 10, 10, 30);
                             pointTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
                             pointTextView.setGravity(Gravity.CENTER);
                             pointTextView.setTypeface(null, Typeface.BOLD);

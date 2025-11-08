@@ -88,16 +88,17 @@ public class IntroGameActivity extends AppCompatActivity {
 
 
         // Lấy courseID từ Intent
-        courseID = getIntent().getIntExtra("courseID", -1); // Giá trị mặc định là -1 để kiểm tra
-        if (courseID == -1) {
-            Log.e("IntroGameActivity", "courseID không được truyền qua Intent hoặc có giá trị không hợp lệ.");
-            // Xử lý trường hợp courseID không hợp lệ, ví dụ: đóng activity, hiển thị thông báo
-            Toast.makeText(this, "Lỗi: Không tìm thấy ID khóa học.", Toast.LENGTH_LONG).show();
-            finish();
-            return; // Dừng onCreate nếu courseID không hợp lệ
-        } else {
-            Log.d("IntroGameActivity", "courseID nhận được: " + courseID);
-        }
+        courseID = getIntent().getIntExtra("CourseID", 1);
+        Log.d("CourseID","CourseID tu intent : "+ courseID);
+//        if (courseID == 1) {
+//            Log.e("IntroGameActivity", "courseID không được truyền qua Intent hoặc có giá trị không hợp lệ.");
+//            // Xử lý trường hợp courseID không hợp lệ, ví dụ: đóng activity, hiển thị thông báo
+//            Toast.makeText(this, "Lỗi: Không tìm thấy ID khóa học.", Toast.LENGTH_LONG).show();
+//            finish();
+//            return; // Dừng onCreate nếu courseID không hợp lệ
+//        } else {
+//            Log.d("IntroGameActivity", "courseID nhận được: " + courseID);
+//        }
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
