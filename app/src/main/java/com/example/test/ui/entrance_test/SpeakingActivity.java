@@ -7,6 +7,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,6 +18,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +33,7 @@ import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.ApiService;
 import com.example.test.api.AudioManager;
+import com.example.test.api.BaseApiManager;
 import com.example.test.api.LessonManager;
 import com.example.test.api.QuestionManager;
 import com.example.test.model.EvaluationResult;
@@ -76,12 +80,20 @@ public class SpeakingActivity extends AppCompatActivity {
     private ObjectAnimator animator2ScaleX, animator2ScaleY, animator2Alpha;
     private ObjectAnimator animator3ScaleX, animator3ScaleY, animator3Alpha;
 
+    private ImageView playBtn;
+    private MediaPlayer mediaPlayer;
+    private String musicUrl ;
+    private boolean isPrepared = false;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Đảm bảo bạn đang sử dụng đúng layout đã cung cấp
         setContentView(R.layout.activity_record_question);
+
+        playBtn = findViewById(R.id.playBtn);
+        mediaPlayer = new MediaPlayer();
 
         // Ánh xạ các view từ layout mới
         imgVoice = findViewById(R.id.imgVoice);
@@ -107,6 +119,28 @@ public class SpeakingActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         }
+
+        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .build());
+
+        // 3. Lắng nghe khi tải nhạc xong (Buffering hoàn tất)
+        mediaPlayer.setOnPreparedListener(mp -> {
+            isPrepared = true;
+            // Có thể thêm Toast báo nhạc sẵn sàng nếu thích
+        });
+
+        mediaPlayer.setOnCompletionListener(mp -> {
+            playBtn.setImageResource(R.drawable.btn_play);
+        });
+
+        playBtn.setOnClickListener(v -> {
+            if (!isPrepared) {
+                return;
+            }
+            toggleAudio();
+        });
 
         // Thiết lập sự kiện click cho nút ghi âm
         imgVoice.setOnClickListener(v -> {
@@ -312,6 +346,20 @@ public class SpeakingActivity extends AppCompatActivity {
         });
     }
 
+    private void loadAudio(String url) {
+        if (url == null || url.isEmpty()) return;
+
+        try {
+            isPrepared = false; // Reset trạng thái
+            mediaPlayer.reset(); // Xóa bài cũ đi
+            mediaPlayer.setDataSource(url); // Nạp link mới
+            mediaPlayer.prepareAsync(); // Tải ngầm
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Không thể tải file nhạc", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * HÀM CHUNG: Xây dựng một chuỗi Spannable được tô màu
      * @param phonemeScores Danh sách điểm của âm vị
@@ -444,6 +492,13 @@ public class SpeakingActivity extends AppCompatActivity {
                                     if (randomAnswer != null) {
                                         // Giả sử tvTalk là TextView để hiển thị câu trả lời
                                         tvTalk.setText(randomAnswer.getAnswerContent());
+                                        String media = randomAnswer.getAudioLink();
+                                        musicUrl = BaseApiManager.replaceHost(media);
+
+                                        loadAudio(musicUrl);
+
+                                        // Reset icon nút play về mặc định
+                                        playBtn.setImageResource(R.drawable.btn_play);
                                     }
                                 });
                             } else {
@@ -474,6 +529,18 @@ public class SpeakingActivity extends AppCompatActivity {
             }
             @Override public void onSuccess() {}
         });
+    }
+
+    private void toggleAudio() {
+        if (mediaPlayer.isPlaying()) {
+            // Đang phát -> Tạm dừng
+            mediaPlayer.pause();
+            playBtn.setImageResource(R.drawable.btn_play);
+        } else {
+            // Đang dừng -> Phát tiếp
+            mediaPlayer.start();
+            playBtn.setImageResource(R.drawable.ic_pause);
+        }
     }
 
     private void createProgressBars(int totalQuestions, int currentProgress) {
@@ -551,6 +618,10 @@ public class SpeakingActivity extends AppCompatActivity {
         if (recorder != null) {
             recorder.release();
             recorder = null;
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 }

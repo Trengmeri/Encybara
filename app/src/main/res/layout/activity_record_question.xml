@@ -52,7 +52,8 @@
                 android:id="@+id/tvInstruction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginTop="10dp
+"
                 android:gravity="center|start"
                 android:drawableLeft="@drawable/grommet_icons_assist_listening"
                 android:text="@string/ans_record"
@@ -62,31 +63,42 @@
 
             <TextView
                 android:id="@+id/tvQuestion"
+                android:text="abc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/fe_question"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginTop="10dp"
                 android:drawablePadding="10dp"
                 android:textSize="20sp"
                 android:textStyle="bold" />
+
 
             <TextView
                 android:id="@+id/tvTalk"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_margin="5dp"
                 android:drawablePadding="10dp"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvphoneme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_margin="5dp"
                 android:drawablePadding="10dp"
-                android:textSize="20sp"
+                android:textSize="10sp"
                 android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/playBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/btn_play"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"/>
 
         </LinearLayout>
     </ScrollView>
