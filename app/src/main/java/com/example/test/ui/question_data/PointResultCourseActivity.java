@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.api.ApiService;
+import com.example.test.game.IntroGameActivity;
 import com.example.test.model.Enrollment;
 import com.example.test.ui.CourseInformationActivity;
 import com.example.test.ui.ReviewActivity;
@@ -47,7 +48,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
     private double compCourse;
     private int coursePoint;
     private double comR, comL, comS, comW;
-    ImageView star1,star2,star3, imgSuccessGif;
+    ImageView star1,star2,star3, imgSuccessGif,gamebtn;
     QuestionManager quesManager = new QuestionManager(this);
     LessonManager lesManager = new LessonManager();
     ApiService apiService = new ApiService(this);
@@ -95,6 +96,11 @@ public class PointResultCourseActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         });
+        gamebtn.setOnClickListener(v -> {
+            Intent intent = new Intent(PointResultCourseActivity.this, IntroGameActivity.class);
+            intent.putExtra("CourseID",courseID);
+            startActivity(intent);
+        });
 
 
     }
@@ -102,6 +108,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
         pointTextView = findViewById(R.id.point);
         btnReview = findViewById(R.id.btnReview);
         btnNext = findViewById(R.id.btnNext);
+        gamebtn=findViewById(R.id.game_btn);
         correctRead = findViewById(R.id.correct_read);
         compRead = findViewById(R.id.comp_read);
         correctLis = findViewById(R.id.correct_lis);
@@ -114,6 +121,7 @@ public class PointResultCourseActivity extends AppCompatActivity {
         listeningSkillLayout = findViewById(R.id.listeningSkillLayout);
         speakingSkillLayout = findViewById(R.id.speakingSkillLayout);
         writingSkillLayout = findViewById(R.id.writingSkillLayout);
+
         readingSkillLayout.setVisibility(View.GONE);
         listeningSkillLayout.setVisibility(View.GONE);
         speakingSkillLayout.setVisibility(View.GONE);

@@ -19,6 +19,7 @@ public class Course implements Serializable {
     private int sumLesson;
     private boolean proStatus;
     private List<Integer> lessonIds;
+    private List<Lesson> lessons;
 
     // Getters and Setters
     public int getId() {
@@ -132,4 +133,5 @@ public class Course implements Serializable {
     public void setProStatus(boolean proStatus) {
         this.proStatus = proStatus;
     }
+    public void setLessons(List<Lesson> lessons) { this.lessons = lessons; }
 }

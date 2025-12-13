@@ -140,6 +140,13 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/game_btn"
+                android:layout_width="30dp"
+                android:layout_height="25dp"
+                android:background="@drawable/icon_game">
+
+            </ImageView>
 
         </LinearLayout>
 

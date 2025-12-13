@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <!-- Phần background của dialog (từ lưng gấu đổ xuống) -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="50dp"
+    app:cardCornerRadius="16dp"
+        android:background="@android:color/transparent">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="60dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/dialog_content_container">
+
+    <!-- TextView cho câu hỏi -->
+    <TextView
+        android:id="@+id/question_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Từ 'bear' có nghĩa là gì?"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="16dp" />
+
+    <!-- RadioGroup cho các đáp án -->
+    <RadioGroup
+        android:id="@+id/radio_group_answers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!-- Các RadioButton sẽ được thêm vào đây bằng code Java -->
+    </RadioGroup>
+
+</LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- ImageView cho hình gấu dễ thương (sẽ nổi lên trên) -->
+<ImageView
+android:id="@+id/cute_bear_icon"
+android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:src="@drawable/bear_popup_game"
+    android:layout_gravity="center_horizontal|top"
+    android:adjustViewBounds="true"
+    android:scaleType="fitCenter"
+    android:elevation="10dp" /> <!-- elevation để gấu nổi lên trên -->
+
+    </FrameLayout>
