@@ -170,11 +170,12 @@ public class QuestionManager extends BaseApiManager {
     }
 
     public void fetchSampleAnswersFromApi(int questionId, ApiCallback callback) {
-        // Xây dựng URL động
-        String url = BASE_URL + "/api/v1/questions/" + questionId + "/sample-answers";
+        String token = SharedPreferencesManager.getInstance(context).getAccessToken();
+        String url = BASE_URL + "/api/v1/speaking-sample-answers/question/" + questionId + "/with-audio";
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("Authorization", "Bearer " + token)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

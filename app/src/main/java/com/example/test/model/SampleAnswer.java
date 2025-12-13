@@ -60,5 +60,23 @@ public class SampleAnswer {
         this.description = description;
     }
 
-    // ... Thêm các getter và setter còn lại cho tất cả các trường
+    public int getDifficultyLevel() {
+        return difficultyLevel;
+    }
+    public void setDifficultyLevel(int difficultyLevel) {
+        this.difficultyLevel = difficultyLevel;
+    }
+    public int getEstimatedScore() {
+        return estimatedScore;
+    }
+    public void setEstimatedScore(int estimatedScore) {
+        this.estimatedScore = estimatedScore;
+    }
+
+    public String getAudioLink() {
+        return audioLink;
+    }
+    public void setAudioLink(String audioLink) {
+        this.audioLink = audioLink;
+    }
 }
