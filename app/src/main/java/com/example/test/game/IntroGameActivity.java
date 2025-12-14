@@ -35,7 +35,7 @@ public class IntroGameActivity extends AppCompatActivity {
     private MediaPlayer introMediaPlayer; // Đối tượng MediaPlayer cho nhạc nền intro
     private SoundPool soundPool;          // Đối tượng SoundPool cho hiệu ứng âm thanh
     private HashMap<Integer, Integer> soundMap; // Lưu trữ ID của các âm thanh đã tải vào SoundPool
-    private int courseID;
+    private int courseID,sessionId;
     private GameManager gameManager = new GameManager(this);
 
     @SuppressLint("MissingInflatedId")
@@ -91,15 +91,6 @@ public class IntroGameActivity extends AppCompatActivity {
         // Lấy courseID từ Intent
         courseID = getIntent().getIntExtra("CourseID", 1);
         Log.d("CourseID","CourseID tu intent : "+ courseID);
-//        if (courseID == 1) {
-//            Log.e("IntroGameActivity", "courseID không được truyền qua Intent hoặc có giá trị không hợp lệ.");
-//            // Xử lý trường hợp courseID không hợp lệ, ví dụ: đóng activity, hiển thị thông báo
-//            Toast.makeText(this, "Lỗi: Không tìm thấy ID khóa học.", Toast.LENGTH_LONG).show();
-//            finish();
-//            return; // Dừng onCreate nếu courseID không hợp lệ
-//        } else {
-//            Log.d("IntroGameActivity", "courseID nhận được: " + courseID);
-//        }
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,9 +125,9 @@ public class IntroGameActivity extends AppCompatActivity {
                                     Toast.makeText(IntroGameActivity.this, "Tạo game thành công!", Toast.LENGTH_SHORT).show();
                                     Log.d("IntroGameActivity", "API Create Game thành công. Bắt đầu GameActivity.");
                                     Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
-                                    // intent.putExtra("gameId", gameId);
+                                    intent.putExtra("Courseid", courseID);
+                                    intent.putExtra("SESSION_ID", sessionId); // Truyền sessionId
                                     startActivity(intent);
-                                    // Optional: finish();
                                 });
                             }
 
@@ -148,16 +139,30 @@ public class IntroGameActivity extends AppCompatActivity {
                                 gameManager.sendStartGameRequest(gameId, new ApiCallback() {
                                     @Override
                                     public void onSuccess() {
-                                        Log.d("GameFlow", "Game started successfully!");
-                                        Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
-                                        // intent.putExtra("gameId", gameId);
-                                        startActivity(intent);
+//                                        Log.d("GameFlow", "Game started successfully!");
+//                                        Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
+//                                        intent.putExtra("Courseid", courseID);
+//                                        //intent.putExtra("SESSION_ID", sessionId); // Truyền sessionId
+//                                        startActivity(intent);
                                     }
 
                                     @Override
                                     public void onSuccess(Object result) {
+                                        if (result instanceof Integer) {
+                                            // Lấy Session ID từ phản hồi (Ví dụ: 21)
+                                            int receivedSessionId = (int) result;
+                                            Log.d("GameFlow", "Game started successfully. Session ID: " + receivedSessionId);
 
-                                    }
+                                            runOnUiThread(() -> {
+                                                Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
+                                                intent.putExtra("Courseid", courseID);
+
+                                                // ✅ Đảm bảo khóa là "SESSION_ID" và giá trị là receivedSessionId
+                                                intent.putExtra("SESSION_ID", receivedSessionId);
+
+                                                startActivity(intent);
+                                            });
+                                        }}
 
                                     @Override
                                     public void onFailure(String errorMessage) {

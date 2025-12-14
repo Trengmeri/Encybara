@@ -189,6 +189,7 @@ public class PointResultLessonActivity extends AppCompatActivity {
                                 intent.putExtra("courseId", course.getId());
                                 intent.putExtra("status", "study");
                                 intent.putExtra("EXTRA_MODE", "MODE_COURSE");
+                                intent.putExtra("SKILL_TYPE", course.getCourseType());
                                 startActivity(intent);
                                 finish();
                             });

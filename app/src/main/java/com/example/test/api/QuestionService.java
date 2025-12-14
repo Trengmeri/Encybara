@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -26,24 +28,26 @@ import okhttp3.Response;
 
 public class QuestionService {
 
-    private static final String base_URL = "http://18.136.223.96:8080/api/v1"; // THAY THẾ BẰNG BASE URL THỰC TẾ CỦA BẠN
+    private static final String base_URL = "http://18.136.223.96:8080/api/v1";
     private final OkHttpClient client;
     private final Gson gson;
     private final ExecutorService executorService;
     private final Context context;
-    public QuestionService(Context context) { // ✅ Constructor nhận Context
-        this.context = context.getApplicationContext(); // Sử dụng Application Context để tránh rò rỉ bộ nhớ
+
+    // Hằng số cho loại câu hỏi trắc nghiệm
+    private static final String REQUIRED_QUES_TYPE = "CHOICE";
+
+    public QuestionService(Context context) {
+        this.context = context.getApplicationContext();
         // ✅ Thêm Interceptor để tự động đính kèm token vào mọi yêu cầu
         client = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();
                     Request.Builder requestBuilder = original.newBuilder();
 
-                    // ✅ Lấy token ngay tại thời điểm yêu cầu được tạo
                     String currentAuthToken = SharedPreferencesManager.getInstance(this.context).getAccessToken();
 
                     if (currentAuthToken != null && !currentAuthToken.isEmpty()) {
-                        // Nếu có token, thêm header Authorization
                         requestBuilder.header("Authorization", "Bearer " + currentAuthToken);
                     }
 
@@ -63,7 +67,7 @@ public class QuestionService {
     public void getRandomReviewQuestionsForCourse(int courseId, int numberOfQuestions, QuestionFetchCallback callback) {
         executorService.execute(() -> {
             try {
-                // 1. Lấy thông tin khóa học để có danh sách các Lesson ID
+                // 1. Lấy thông tin khóa học để có danh sách các Lesson ID (Giữ nguyên)
                 Request courseRequest = new Request.Builder()
                         .url(base_URL + "/game/course/" + courseId)
                         .build();
@@ -85,9 +89,9 @@ public class QuestionService {
                     return;
                 }
 
-                Set<Integer> allQuestionIds = new HashSet<>(); // Sử dụng Set để tránh trùng lặp
-
-                // 2. Lặp qua từng bài học để lấy tất cả các Question ID
+                //Set<Integer> allQuestionIds = new HashSet<>();
+                final Map<Integer, Integer> questionLessonMap = new ConcurrentHashMap<>();
+                // 2. Lặp qua từng bài học để lấy tất cả các Question ID (Giữ nguyên)
                 List<Future<?>> lessonFutures = new ArrayList<>();
                 for (ApiResponeGameCourse.LessonSummary lessonSummary : courseData.getLessons()) {
                     lessonFutures.add(executorService.submit(() -> {
@@ -105,8 +109,11 @@ public class QuestionService {
                             LessonDetailRespone lessonDetailWrapper = gson.fromJson(lessonJson, LessonDetailRespone.class);
 
                             if (lessonDetailWrapper.getStatusCode() == 200 && lessonDetailWrapper.getData() != null && lessonDetailWrapper.getData().getQuestionIds() != null) {
-                                synchronized (allQuestionIds) { // Đồng bộ hóa khi thêm vào Set
-                                    allQuestionIds.addAll(lessonDetailWrapper.getData().getQuestionIds());
+                                // SỬA ĐỔI: Thay vì synchronized (allQuestionIds), chúng ta lặp qua danh sách ID
+                                List<Integer> questionIds = lessonDetailWrapper.getData().getQuestionIds();
+                                for (int questionId : questionIds) {
+                                    // ✅ LƯU TRỮ KEY (Question ID) và VALUE (Lesson ID)
+                                    questionLessonMap.put(questionId, lessonId);
                                 }
                             } else {
                                 Log.w("QuestionService", "Cảnh báo: Không thể lấy Question IDs cho bài học ID: " + lessonId);
@@ -119,30 +126,30 @@ public class QuestionService {
 
                 // Đợi tất cả các tác vụ lấy lesson hoàn thành
                 for (Future<?> future : lessonFutures) {
-                    future.get(); // Chờ từng future hoàn thành
+                    future.get();
                 }
 
 
-                if (allQuestionIds.isEmpty()) {
+                if (questionLessonMap.isEmpty()) { // ✅ Dùng map để kiểm tra
                     callback.onError("Không tìm thấy Question ID nào trong các bài học của khóa học này.");
                     return;
                 }
 
-                // 3. Chọn ngẫu nhiên các Question ID
-                List<Integer> uniqueShuffledQuestionIds = new ArrayList<>(allQuestionIds);
+                // 3. Chọn ngẫu nhiên các Question ID (Giữ nguyên)
+                List<Integer> uniqueShuffledQuestionIds = new ArrayList<>(questionLessonMap.keySet());
                 Collections.shuffle(uniqueShuffledQuestionIds);
-                List<Integer> selectedQuestionIds = uniqueShuffledQuestionIds.subList(0, Math.min(numberOfQuestions, uniqueShuffledQuestionIds.size()));
 
-                if (selectedQuestionIds.isEmpty()) {
-                    callback.onError("Không có đủ câu hỏi duy nhất để chọn ngẫu nhiên.");
-                    return;
-                }
+                // Chọn một số lượng câu hỏi ngẫu nhiên lớn hơn numberOfQuestions
+                // để tăng khả năng tìm thấy đủ câu hỏi CHOICE sau khi lọc.
+                int fetchLimit = Math.min(numberOfQuestions * 3, uniqueShuffledQuestionIds.size());
+                List<Integer> idsToFetch = uniqueShuffledQuestionIds.subList(0, fetchLimit);
+
 
                 List<QuestionDetailRespone.QuestionDetail> finalQuestions = new ArrayList<>();
                 List<Future<?>> questionFutures = new ArrayList<>();
 
-                // 4. Lấy nội dung đầy đủ của các câu hỏi đã chọn
-                for (int questionId : selectedQuestionIds) {
+                // 4. Lấy nội dung đầy đủ của các câu hỏi và áp dụng bộ lọc
+                for (int questionId : idsToFetch) {
                     questionFutures.add(executorService.submit(() -> {
                         try {
                             Request questionRequest = new Request.Builder()
@@ -157,9 +164,22 @@ public class QuestionService {
                             QuestionDetailRespone questionDetailWrapper = gson.fromJson(questionJson, QuestionDetailRespone.class);
 
                             if (questionDetailWrapper.getStatusCode() == 200 && questionDetailWrapper.getData() != null) {
-                                synchronized (finalQuestions) { // Đồng bộ hóa khi thêm vào list
-                                    finalQuestions.add(questionDetailWrapper.getData());
+                                QuestionDetailRespone.QuestionDetail questionDetail = questionDetailWrapper.getData();
+                                Integer lessonId = questionLessonMap.get(questionId);
+                                if (lessonId != null) {
+                                    // Cần đảm bảo setter này đã có trong QuestionDetailRespone.QuestionDetail
+                                    questionDetail.setLessonId(lessonId);
                                 }
+                                // ✅ BỘ LỌC CHỈ LẤY QUES_TYPE LÀ "CHOICE"
+                                if (REQUIRED_QUES_TYPE.equalsIgnoreCase(questionDetail.getQuesType())) {
+                                    synchronized (finalQuestions) {
+                                        finalQuestions.add(questionDetail);
+                                    }
+                                } else {
+                                    // Log nếu câu hỏi bị loại bỏ
+                                    Log.d("QuestionService", "Đã loại bỏ câu hỏi ID: " + questionId + " vì quesType là: " + questionDetail.getQuesType());
+                                }
+
                             } else {
                                 Log.w("QuestionService", "Cảnh báo: Không thể lấy nội dung cho Question ID: " + questionId);
                             }
@@ -174,16 +194,23 @@ public class QuestionService {
                     future.get();
                 }
 
-                // Sắp xếp lại các câu hỏi theo thứ tự ID đã chọn ban đầu nếu cần
-                // Nếu không, thứ tự sẽ là ngẫu nhiên hoặc theo thứ tự các thread hoàn thành.
-                // Để đảm bảo thứ tự ban đầu, bạn cần một Map<Integer, QuestionDetail> và sau đó duyệt selectedQuestionIds
+                // 5. Cắt danh sách cuối cùng theo số lượng yêu cầu (numberOfQuestions)
+                List<QuestionDetailRespone.QuestionDetail> limitedQuestions;
+                if (finalQuestions.size() > numberOfQuestions) {
+                    // Nếu sau khi lọc có nhiều hơn số lượng yêu cầu, cắt bớt
+                    limitedQuestions = finalQuestions.subList(0, numberOfQuestions);
+                } else {
+                    // Nếu có ít hơn hoặc bằng số lượng yêu cầu
+                    limitedQuestions = finalQuestions;
+                }
 
-                if (finalQuestions.isEmpty()) {
-                    callback.onError("Không có câu hỏi nào để hiển thị.");
+
+                if (limitedQuestions.isEmpty()) {
+                    callback.onError("Không tìm thấy câu hỏi trắc nghiệm (" + REQUIRED_QUES_TYPE + ") nào trong khóa học này.");
                 } else {
                     // Chuyển kết quả về luồng chính để cập nhật UI
                     android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
-                    mainHandler.post(() -> callback.onSuccess(finalQuestions));
+                    mainHandler.post(() -> callback.onSuccess(limitedQuestions));
                 }
 
             } catch (Exception e) {

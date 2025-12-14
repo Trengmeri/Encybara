@@ -2,6 +2,7 @@ package com.example.test.game;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout; // Đảm bảo đã import
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,8 +24,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test.R;
+import com.example.test.api.ApiCallback;
+import com.example.test.api.GameManager;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.response.QuestionDetailRespone;
 import com.example.test.api.QuestionService;
+import com.example.test.ui.home.HomeActivity;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,9 +43,10 @@ public class GameActivity extends AppCompatActivity {
     private final long START_TIME_IN_MILLIS = 2 * 60 * 1000;
     private long timeLeftInMillis = START_TIME_IN_MILLIS;
     private int courseID;
-
+    private int currentSessionId;
+    private GameManager gameManager = new GameManager(this);
     private QuestionService questionService; // ✅ Thêm QuestionService
-    //private final int COURSE_ID_FOR_REVIEW = 11; // ✅ ID khóa học cố định để lấy câu hỏi. Thay đổi nếu cần.
+    private LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);;
     private static final String TAG = "GameActivity";
 
     @Override
@@ -68,8 +75,10 @@ public class GameActivity extends AppCompatActivity {
         down.setOnClickListener(v -> gameView.moveBear(1, 0));
         left.setOnClickListener(v -> gameView.moveBear(0, -1));
         right.setOnClickListener(v -> gameView.moveBear(0, 1));
-        courseID = getIntent().getIntExtra("CourseID", 1);
-        Log.d("CourseID","CourseID tu intent : "+ courseID);
+        courseID = getIntent().getIntExtra("Courseid", 1);
+        Log.d("CourseID","Courseid tu intent : "+ courseID);
+        currentSessionId=getIntent().getIntExtra("SESSION_ID",1);
+        Log.d("SESSION_ID","SESSION_ID tu intent : "+ currentSessionId);
         startGame();
     }
     private void startGame() {
@@ -168,6 +177,13 @@ public class GameActivity extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_question_background, null);
 
+        TextView btnShowImage = dialogView.findViewById(R.id.btn_show_image);
+        // ⭐ LẤY LESSON ID TỪ CÂU HỎI (đã được set trong QuestionService)
+        final int dynamicLessonId = question.getLessonId();
+
+        btnShowImage.setVisibility(View.VISIBLE);
+        btnShowImage.setOnClickListener(v -> showImageDialogByLesson(dynamicLessonId));
+
         // Tìm và thiết lập câu hỏi
         TextView questionTextView = dialogView.findViewById(R.id.question_text_view);
         if (questionTextView != null) {
@@ -242,7 +258,11 @@ public class GameActivity extends AppCompatActivity {
                     if (gameView.isGameRunning()) startTimer();
                 })
                 .setNegativeButton("Hủy", (d, w) -> {
-                    Toast.makeText(GameActivity.this, "Bạn đã hủy trả lời.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GameActivity.this, "Bạn đã hủy trả lời. Lùi lại 1 bước.", Toast.LENGTH_SHORT).show();
+
+                    // ✅ GỌI HÀM MỚI ĐỂ ĐẨY LÙI GẤU VỀ Ô TRƯỚC ĐÓ
+                    gameView.pushBearBack();
+
                     if (gameView.isGameRunning()) startTimer();
                 })
                 .setCancelable(false)
@@ -257,8 +277,79 @@ public class GameActivity extends AppCompatActivity {
 
         dialog.show();
     }
+    // Thay thế phương thức cũ bằng phương thức này
+    // Trong GameActivity.java
+    private void showImageDialogByLesson(int lessonId) {
+        if (lessonId <= 0) {
+            Toast.makeText(this, "Bài học này không có tài liệu minh họa.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        stopTimer();
+        LayoutInflater inflater = this.getLayoutInflater();
+        View imageDialogView = inflater.inflate(R.layout.dialog_image_viewer, null);
+        ImageView imageView = imageDialogView.findViewById(R.id.question_image_view);
+        imageView.setVisibility(View.GONE);
 
+        //  GỌI HÀM TẢI ẢNH THEO LESSON ID
+        materialsManager.fetchAndLoadImageByLesId(lessonId, imageView);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Hình ảnh tài liệu bài học")
+                .setView(imageDialogView)
+                .setPositiveButton("Đóng", (d, w) -> {
+                    d.dismiss();
+                    if (gameView.isGameRunning()) startTimer();
+                })
+                .create()
+                .show();
+    }
+    private void endGameAndShowResult() {
+        // 1. Dừng Timer và các hoạt động khác
+        stopTimer();
+
+        // 2. Gọi API End Game
+        gameManager.sendEndGameRequest(currentSessionId, new ApiCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> {
+                    // Xử lý thành công: Chuyển sang màn hình kết quả hoặc hiển thị thông báo
+                    Toast.makeText(GameActivity.this, "Kết thúc Game thành công!", Toast.LENGTH_SHORT).show();
+                    // Ví dụ: Hiển thị dialog thắng/thua ở đây, sau đó finish()
+                    navigateToHomeAndFinish();
+                });
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+                // Không sử dụng phương thức này cho hàm End Game, chỉ sử dụng onSuccess()
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                runOnUiThread(() -> {
+                    // Xử lý lỗi: Thông báo cho người dùng
+                    Log.e("GameActivity", "Lỗi kết thúc game: " + errorMessage);
+                    Toast.makeText(GameActivity.this, "Lỗi kết thúc game: " + errorMessage, Toast.LENGTH_LONG).show();
+                });
+                // Dù lỗi API, vẫn nên cho người dùng thoát khỏi GameActivity
+                navigateToHomeAndFinish();
+            }
+        });
+    }
+
+    private void navigateToHomeAndFinish() {
+        // Tạo Intent để chuyển về HomeActivity
+        Intent intent = new Intent(GameActivity.this, HomeActivity.class);
+
+        // Đặt cờ để dọn dẹp Stack Activity (quay về màn hình Home)
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        startActivity(intent);
+
+        // Đóng GameActivity
+        finish();
+    }
     // 🍯 Khi đến hũ mật
     private void showWinDialog() {
         stopTimer();
@@ -266,7 +357,9 @@ public class GameActivity extends AppCompatActivity {
                 .setTitle("🎉 Chúc mừng!")
                 .setMessage("Bạn đã tìm được hũ mật 🍯!")
                 .setPositiveButton("Chơi lại", (d, w) -> startGame())
-                .setNegativeButton("Thoát", (d,w) -> finish())
+                .setNegativeButton("Thoát", (d,w) -> {
+                    endGameAndShowResult(); // ✅ GỌI HÀM END GAME
+                })
                 .setCancelable(false)
                 .show();
     }
@@ -278,7 +371,9 @@ public class GameActivity extends AppCompatActivity {
                 .setTitle("Game Over 😭")
                 .setMessage("Bạn đã bị chặn hết đường đi! Thử lại nhé.")
                 .setPositiveButton("Chơi lại", (d, w) -> startGame())
-                .setNegativeButton("Thoát", (d,w) -> finish())
+                .setNegativeButton("Thoát", (d,w) -> {
+                    endGameAndShowResult(); // ✅ GỌI HÀM END GAME
+                })
                 .setCancelable(false)
                 .show();
     }
@@ -290,7 +385,9 @@ public class GameActivity extends AppCompatActivity {
                 .setTitle("Hết giờ! ⌛")
                 .setMessage("Bạn đã hết thời gian để tìm hũ mật. Game Over!")
                 .setPositiveButton("Chơi lại", (d, w) -> startGame())
-                .setNegativeButton("Thoát", (d,w) -> finish())
+                .setNegativeButton("Thoát", (d,w) -> {
+                    endGameAndShowResult(); // ✅ GỌI HÀM END GAME
+                })
                 .setCancelable(false)
                 .show();
     }

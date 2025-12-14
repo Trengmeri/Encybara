@@ -73,7 +73,12 @@ public class PointResultCourseActivity extends AppCompatActivity {
         fetchCourseData(courseID);
 
         String mode = getIntent().getStringExtra("EXTRA_MODE");
-
+        String skillType = getIntent().getStringExtra("SKILL_TYPE");
+        if (skillType != null && skillType.equalsIgnoreCase("READING")) {
+            gamebtn.setVisibility(View.VISIBLE); // Hiện nếu là Reading
+        } else {
+            gamebtn.setVisibility(View.GONE);    // Ẩn hoàn toàn nếu là các kỹ năng khác
+        }
         btnReview.setOnClickListener(v -> {
 //            Intent intent = new Intent(PointResultCourseActivity.this, ReviewActivity.class);
 //            intent.putExtra("courseId", courseID);

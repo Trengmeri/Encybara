@@ -385,6 +385,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         Log.d("GameView", "drawGame(): Canvas unlocked and posted.");
     }
 
+    public void pushBearBack() {
+        if (!gameRunning) return;
+        if (gameWon || gameOver) return;
+
+        // Đặt vị trí hiện tại của gấu bằng vị trí trước đó đã lưu
+        bearRow = prevBearRow;
+        bearCol = prevBearCol;
+
+        // Vẽ lại game để hiển thị gấu đã lùi về ô trước
+        drawGame(getHolder());
+
+        // Ghi lại vị trí đã lùi về là vị trí trước đó mới
+        // (Đây là bước tùy chọn, nhưng giúp đảm bảo tính nhất quán nếu có logic di chuyển phức tạp sau này)
+        // prevBearRow = bearRow;
+        // prevBearCol = bearCol;
+
+        Log.d("GameView", "Bear pushed back to: (" + bearRow + ", " + bearCol + ")");
+    }
+
+
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         drawGame(holder);

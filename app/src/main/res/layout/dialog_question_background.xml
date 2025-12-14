@@ -25,6 +25,18 @@
         android:layout_gravity="center_horizontal"
         android:id="@+id/dialog_content_container">
 
+        <TextView
+            android:id="@+id/btn_show_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💡 Hiển thị hình ảnh"
+            android:textColor="#63A6C5"
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="5dp"
+            android:background="?attr/selectableItemBackground"
+            />
     <!-- TextView cho câu hỏi -->
     <TextView
         android:id="@+id/question_text_view"

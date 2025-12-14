@@ -536,7 +536,7 @@ public class FlashcardActivity extends BaseActivity {
                                 new AddFlashCardApiCallback<String>() {
                                     @Override
                                     public void onSuccess() {
-
+                                        Log.d("Definition", "Luong 1");
                                     }
 
                                     @Override
@@ -547,6 +547,7 @@ public class FlashcardActivity extends BaseActivity {
                                             TextView vietnameseMeaningTextView = dialogView
                                                     .findViewById(R.id.vietnameseMeaningTextView);
                                             vietnameseMeaningTextView.setText(vietnameseMeaning);
+                                            Log.d("Definition",vietnameseMeaning );
                                         });
                                     }
 
