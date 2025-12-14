@@ -134,9 +134,8 @@ public class IntroGameActivity extends AppCompatActivity {
                                     Toast.makeText(IntroGameActivity.this, "Tạo game thành công!", Toast.LENGTH_SHORT).show();
                                     Log.d("IntroGameActivity", "API Create Game thành công. Bắt đầu GameActivity.");
                                     Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
-                                    // intent.putExtra("gameId", gameId);
+                                    intent.putExtra("Courseid", courseID);
                                     startActivity(intent);
-                                    // Optional: finish();
                                 });
                             }
 
@@ -150,7 +149,7 @@ public class IntroGameActivity extends AppCompatActivity {
                                     public void onSuccess() {
                                         Log.d("GameFlow", "Game started successfully!");
                                         Intent intent = new Intent(IntroGameActivity.this, GameActivity.class);
-                                        // intent.putExtra("gameId", gameId);
+                                        intent.putExtra("Courseid", courseID);
                                         startActivity(intent);
                                     }
 

@@ -68,8 +68,8 @@ public class GameActivity extends AppCompatActivity {
         down.setOnClickListener(v -> gameView.moveBear(1, 0));
         left.setOnClickListener(v -> gameView.moveBear(0, -1));
         right.setOnClickListener(v -> gameView.moveBear(0, 1));
-//        courseID = getIntent().getIntExtra("CourseID", 1);
-//        Log.d("CourseID","CourseID tu intent : "+ courseID);
+        courseID = getIntent().getIntExtra("Courseid", 1);
+        Log.d("CourseID","Courseid tu intent : "+ courseID);
         startGame();
     }
     private void startGame() {
@@ -134,7 +134,7 @@ public class GameActivity extends AppCompatActivity {
 
         // ✅ Gọi QuestionService để lấy một câu hỏi ngẫu nhiên
         // Chúng ta sẽ chỉ lấy 1 câu hỏi mỗi lần mở dialog
-        questionService.getRandomReviewQuestionsForCourse(11, 1, new QuestionService.QuestionFetchCallback() {
+        questionService.getRandomReviewQuestionsForCourse(courseID, 1, new QuestionService.QuestionFetchCallback() {
             @Override
             public void onSuccess(List<QuestionDetailRespone.QuestionDetail> questions) {
                 runOnUiThread(() -> { // Đảm bảo chạy trên UI thread
