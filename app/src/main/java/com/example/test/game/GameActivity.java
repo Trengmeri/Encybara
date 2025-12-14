@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout; // Đảm bảo đã import
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.GameManager;
+import com.example.test.api.LearningMaterialsManager;
 import com.example.test.response.QuestionDetailRespone;
 import com.example.test.api.QuestionService;
 import com.example.test.ui.home.HomeActivity;
@@ -44,7 +46,7 @@ public class GameActivity extends AppCompatActivity {
     private int currentSessionId;
     private GameManager gameManager = new GameManager(this);
     private QuestionService questionService; // ✅ Thêm QuestionService
-    //private final int COURSE_ID_FOR_REVIEW = 11; // ✅ ID khóa học cố định để lấy câu hỏi. Thay đổi nếu cần.
+    private LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);;
     private static final String TAG = "GameActivity";
 
     @Override
@@ -175,6 +177,12 @@ public class GameActivity extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_question_background, null);
 
+        TextView btnShowImage = dialogView.findViewById(R.id.btn_show_image);
+        final int currentQuestionId = question.getId();
+
+        btnShowImage.setVisibility(View.VISIBLE);
+        btnShowImage.setOnClickListener(v -> showImageDialog(currentQuestionId));
+
         // Tìm và thiết lập câu hỏi
         TextView questionTextView = dialogView.findViewById(R.id.question_text_view);
         if (questionTextView != null) {
@@ -268,7 +276,37 @@ public class GameActivity extends AppCompatActivity {
 
         dialog.show();
     }
+    // Thay thế phương thức cũ bằng phương thức này
+    private void showImageDialog(int questionId) {
+        // Tạm dừng timer
+        stopTimer();
 
+        // 1. Inflate layout Dialog chứa ImageView
+        LayoutInflater inflater = this.getLayoutInflater();
+        View imageDialogView = inflater.inflate(R.layout.dialog_image_viewer, null);
+        ImageView imageView = imageDialogView.findViewById(R.id.question_image_view);
+
+        // Hiển thị một Progress Bar hoặc ẩn ImageView
+        imageView.setVisibility(View.GONE);
+
+        // 2. Gọi API để tải hình ảnh
+        materialsManager.fetchAndLoadImage(questionId, imageView); // ✅ Tải ảnh trực tiếp vào ImageView
+
+        // 3. Xây dựng và hiển thị AlertDialog
+        new AlertDialog.Builder(this)
+                .setTitle("Hình ảnh minh họa")
+                .setView(imageDialogView)
+                .setPositiveButton("Đóng", (d, w) -> {
+                    d.dismiss();
+                    // Khởi động lại timer sau khi đóng dialog hình ảnh
+                    if (gameView.isGameRunning()) startTimer();
+                })
+                .setOnCancelListener(d -> {
+                    if (gameView.isGameRunning()) startTimer();
+                })
+                .create()
+                .show();
+    }
     private void endGameAndShowResult() {
         // 1. Dừng Timer và các hoạt động khác
         stopTimer();

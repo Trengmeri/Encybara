@@ -177,9 +177,6 @@ public class LearningMaterialsManager extends BaseApiManager {
         });
     }
 
-
-
-
     public void fetchAndLoadImageByLesId(int lessonId, ImageView imageView) {
         String token = SharedPreferencesManager.getInstance(context).getAccessToken();
         Request request = new Request.Builder()
