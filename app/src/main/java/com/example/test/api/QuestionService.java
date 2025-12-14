@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -87,8 +89,8 @@ public class QuestionService {
                     return;
                 }
 
-                Set<Integer> allQuestionIds = new HashSet<>();
-
+                //Set<Integer> allQuestionIds = new HashSet<>();
+                final Map<Integer, Integer> questionLessonMap = new ConcurrentHashMap<>();
                 // 2. Lặp qua từng bài học để lấy tất cả các Question ID (Giữ nguyên)
                 List<Future<?>> lessonFutures = new ArrayList<>();
                 for (ApiResponeGameCourse.LessonSummary lessonSummary : courseData.getLessons()) {
@@ -107,8 +109,11 @@ public class QuestionService {
                             LessonDetailRespone lessonDetailWrapper = gson.fromJson(lessonJson, LessonDetailRespone.class);
 
                             if (lessonDetailWrapper.getStatusCode() == 200 && lessonDetailWrapper.getData() != null && lessonDetailWrapper.getData().getQuestionIds() != null) {
-                                synchronized (allQuestionIds) {
-                                    allQuestionIds.addAll(lessonDetailWrapper.getData().getQuestionIds());
+                                // SỬA ĐỔI: Thay vì synchronized (allQuestionIds), chúng ta lặp qua danh sách ID
+                                List<Integer> questionIds = lessonDetailWrapper.getData().getQuestionIds();
+                                for (int questionId : questionIds) {
+                                    // ✅ LƯU TRỮ KEY (Question ID) và VALUE (Lesson ID)
+                                    questionLessonMap.put(questionId, lessonId);
                                 }
                             } else {
                                 Log.w("QuestionService", "Cảnh báo: Không thể lấy Question IDs cho bài học ID: " + lessonId);
@@ -125,13 +130,13 @@ public class QuestionService {
                 }
 
 
-                if (allQuestionIds.isEmpty()) {
+                if (questionLessonMap.isEmpty()) { // ✅ Dùng map để kiểm tra
                     callback.onError("Không tìm thấy Question ID nào trong các bài học của khóa học này.");
                     return;
                 }
 
                 // 3. Chọn ngẫu nhiên các Question ID (Giữ nguyên)
-                List<Integer> uniqueShuffledQuestionIds = new ArrayList<>(allQuestionIds);
+                List<Integer> uniqueShuffledQuestionIds = new ArrayList<>(questionLessonMap.keySet());
                 Collections.shuffle(uniqueShuffledQuestionIds);
 
                 // Chọn một số lượng câu hỏi ngẫu nhiên lớn hơn numberOfQuestions
@@ -160,7 +165,11 @@ public class QuestionService {
 
                             if (questionDetailWrapper.getStatusCode() == 200 && questionDetailWrapper.getData() != null) {
                                 QuestionDetailRespone.QuestionDetail questionDetail = questionDetailWrapper.getData();
-
+                                Integer lessonId = questionLessonMap.get(questionId);
+                                if (lessonId != null) {
+                                    // Cần đảm bảo setter này đã có trong QuestionDetailRespone.QuestionDetail
+                                    questionDetail.setLessonId(lessonId);
+                                }
                                 // ✅ BỘ LỌC CHỈ LẤY QUES_TYPE LÀ "CHOICE"
                                 if (REQUIRED_QUES_TYPE.equalsIgnoreCase(questionDetail.getQuesType())) {
                                     synchronized (finalQuestions) {

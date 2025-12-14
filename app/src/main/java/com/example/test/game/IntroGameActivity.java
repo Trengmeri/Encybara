@@ -151,10 +151,6 @@ public class IntroGameActivity extends AppCompatActivity {
                                         if (result instanceof Integer) {
                                             // Lấy Session ID từ phản hồi (Ví dụ: 21)
                                             int receivedSessionId = (int) result;
-
-                                            // ❌ LỖI GỐC: Bạn khai báo biến global là 'sessionId', nhưng lại KHÔNG dùng nó ở đây.
-                                            // HÃY GÁN CHO BIẾN GLOBAL NẾU CẦN, NHƯNG TỐT NHẤT DÙNG BIẾN CỤC BỘ receivedSessionId.
-
                                             Log.d("GameFlow", "Game started successfully. Session ID: " + receivedSessionId);
 
                                             runOnUiThread(() -> {

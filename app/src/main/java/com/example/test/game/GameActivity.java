@@ -178,10 +178,11 @@ public class GameActivity extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.dialog_question_background, null);
 
         TextView btnShowImage = dialogView.findViewById(R.id.btn_show_image);
-        final int currentQuestionId = question.getId();
+        // ⭐ LẤY LESSON ID TỪ CÂU HỎI (đã được set trong QuestionService)
+        final int dynamicLessonId = question.getLessonId();
 
         btnShowImage.setVisibility(View.VISIBLE);
-        btnShowImage.setOnClickListener(v -> showImageDialog(currentQuestionId));
+        btnShowImage.setOnClickListener(v -> showImageDialogByLesson(dynamicLessonId));
 
         // Tìm và thiết lập câu hỏi
         TextView questionTextView = dialogView.findViewById(R.id.question_text_view);
@@ -277,31 +278,27 @@ public class GameActivity extends AppCompatActivity {
         dialog.show();
     }
     // Thay thế phương thức cũ bằng phương thức này
-    private void showImageDialog(int questionId) {
-        // Tạm dừng timer
-        stopTimer();
+    // Trong GameActivity.java
+    private void showImageDialogByLesson(int lessonId) {
+        if (lessonId <= 0) {
+            Toast.makeText(this, "Bài học này không có tài liệu minh họa.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // 1. Inflate layout Dialog chứa ImageView
+        stopTimer();
         LayoutInflater inflater = this.getLayoutInflater();
         View imageDialogView = inflater.inflate(R.layout.dialog_image_viewer, null);
         ImageView imageView = imageDialogView.findViewById(R.id.question_image_view);
-
-        // Hiển thị một Progress Bar hoặc ẩn ImageView
         imageView.setVisibility(View.GONE);
 
-        // 2. Gọi API để tải hình ảnh
-        materialsManager.fetchAndLoadImage(questionId, imageView); // ✅ Tải ảnh trực tiếp vào ImageView
+        //  GỌI HÀM TẢI ẢNH THEO LESSON ID
+        materialsManager.fetchAndLoadImageByLesId(lessonId, imageView);
 
-        // 3. Xây dựng và hiển thị AlertDialog
         new AlertDialog.Builder(this)
-                .setTitle("Hình ảnh minh họa")
+                .setTitle("Hình ảnh tài liệu bài học")
                 .setView(imageDialogView)
                 .setPositiveButton("Đóng", (d, w) -> {
                     d.dismiss();
-                    // Khởi động lại timer sau khi đóng dialog hình ảnh
-                    if (gameView.isGameRunning()) startTimer();
-                })
-                .setOnCancelListener(d -> {
                     if (gameView.isGameRunning()) startTimer();
                 })
                 .create()

@@ -27,7 +27,10 @@ public class QuestionDetailRespone {
         private int point;
         @SerializedName("questionChoices")
         private List<QuestionChoice> questionChoices;
+        private int lessonId;
 
+        public int getLessonId() { return lessonId; }
+        public void setLessonId(int lessonId) { this.lessonId = lessonId;}
         public int getId() { return id; }
         public String getQuesContent() { return quesContent; }
         public String getQuesType() { return quesType; }
