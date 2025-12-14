@@ -133,8 +133,27 @@ public class GameManager extends BaseApiManager{
                 if (response.isSuccessful()) {
                     try {
                         JSONObject jsonResponse = new JSONObject(responseBody);
-                        Log.d("StartGame", "Game started successfully");
-                        callback.onSuccess();
+
+                        // Lấy đối tượng 'data'
+                        if (jsonResponse.has("data")) {
+                            JSONObject data = jsonResponse.getJSONObject("data");
+
+                            // ✅ Lấy sessionId từ đối tượng 'data'
+                            if (data.has("sessionId")) {
+                                int sessionId = data.getInt("sessionId");
+                                Log.d("StartGame", "Game started successfully. Session ID: " + sessionId);
+
+                                // 🔑 Gọi onSuccess(Object result) và truyền sessionId (dưới dạng Integer)
+                                callback.onSuccess(sessionId);
+
+                            } else {
+                                callback.onFailure("Phản hồi thành công nhưng không có sessionId trong dữ liệu.");
+                            }
+                        } else {
+                            // Trường hợp không có data, nhưng status code là 200
+                            Log.d("StartGame", "Game started successfully (No data)");
+                            callback.onSuccess();
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                         callback.onFailure("Lỗi khi phân tích phản hồi JSON: " + e.getMessage());
@@ -147,41 +166,60 @@ public class GameManager extends BaseApiManager{
         });
     }
 
-    public void fetchGameAndCourseInfoById(int courseID, final ApiCallback<List<Game>> callback) {
+    public void sendEndGameRequest(int sessionId, ApiCallback callback) {
+        // 1. Kiểm tra Access Token
+        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            callback.onFailure("Không tìm thấy Access Token! Vui lòng đăng nhập lại.");
+            return;
+        }
+
+        // 2. Xây dựng URL và Request
+        // Endpoint: POST /api/v1/game/{sessionId}/end
+        String url = BASE_URL + "/api/v1/game/" + sessionId + "/end";
+
+        // Request POST, sử dụng body rỗng
         Request request = new Request.Builder()
-                .url(BASE_URL + "/api/v1/game/course/" + courseID)
+                .url(url)
+                .header("Authorization", "Bearer " + accessToken)
+                .post(RequestBody.create("", MediaType.parse("application/json; charset=utf-8")))
                 .build();
 
+        // 3. Gửi yêu cầu bất đồng bộ
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Log.d("ApiManager", "Phản hồi từ server: " + responseBody);
-
-                    Gson gson = new Gson();
-                    ApiResponseGame apiResponse = gson.fromJson(responseBody, ApiResponseGame.class);
-
-                    if (apiResponse.getStatusCode() == 200) {
-                        List<Game> games = apiResponse.getData();
-                        callback.onSuccess(games); // Trả về danh sách game
-                    } else {
-                        callback.onFailure("Lỗi từ server: " + apiResponse.getMessage());
-                    }
-                } else {
-                    Log.e("ApiManager", "Lỗi từ server: Mã lỗi " + response.code());
-                    callback.onFailure("Lỗi từ server: Mã lỗi " + response.code());
-                }
+            public void onFailure(Call call, IOException e) {
+                Log.e("GameManager", "Kết nối thất bại khi kết thúc game: " + e.getMessage());
+                callback.onFailure("Kết nối thất bại! Không thể kết nối tới API kết thúc game.");
             }
 
             @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("ApiManager", "Lỗi kết nối: " + e.getMessage());
-                callback.onFailure("Không thể kết nối tới API.");
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("GameManager", "Phản hồi kết thúc game từ server: " + responseBody);
+
+                if (response.isSuccessful()) {
+                    try {
+                        // Thường API kết thúc game chỉ trả về status 200/201,
+                        // nhưng chúng ta vẫn nên kiểm tra JSON nếu có body trả về (ví dụ: điểm số cuối cùng)
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+
+                        Log.d("EndGame", "Game ended successfully for session ID: " + sessionId);
+
+                        // Gọi onSuccess() không tham số để báo hiệu kết thúc thành công
+                        callback.onSuccess();
+
+                    } catch (JSONException e) {
+                        Log.w("GameManager", "Phản hồi thành công nhưng không phải JSON hợp lệ. Tiếp tục coi là thành công.");
+                        // Nếu không cần dữ liệu cụ thể từ body, có thể coi 200 là thành công
+                        callback.onSuccess();
+                    }
+                } else {
+                    Log.e("GameManager", "Lỗi từ server khi kết thúc game: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+                    callback.onFailure("Kết thúc game thất bại! Mã lỗi: " + response.code() + ", Nội dung: " + responseBody);
+                }
             }
         });
     }
-
-
-
 }
