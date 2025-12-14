@@ -242,7 +242,11 @@ public class GameActivity extends AppCompatActivity {
                     if (gameView.isGameRunning()) startTimer();
                 })
                 .setNegativeButton("Hủy", (d, w) -> {
-                    Toast.makeText(GameActivity.this, "Bạn đã hủy trả lời.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GameActivity.this, "Bạn đã hủy trả lời. Lùi lại 1 bước.", Toast.LENGTH_SHORT).show();
+
+                    // ✅ GỌI HÀM MỚI ĐỂ ĐẨY LÙI GẤU VỀ Ô TRƯỚC ĐÓ
+                    gameView.pushBearBack();
+
                     if (gameView.isGameRunning()) startTimer();
                 })
                 .setCancelable(false)
