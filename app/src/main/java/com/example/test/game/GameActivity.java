@@ -141,7 +141,7 @@ public class GameActivity extends AppCompatActivity {
         // Hiển thị một ProgressDialog hoặc Toast "Đang tải câu hỏi..." nếu muốn
         Toast.makeText(this, "Đang tải câu hỏi...", Toast.LENGTH_SHORT).show();
 
-        // ✅ Gọi QuestionService để lấy một câu hỏi ngẫu nhiên
+        //  Gọi QuestionService để lấy một câu hỏi ngẫu nhiên
         // Chúng ta sẽ chỉ lấy 1 câu hỏi mỗi lần mở dialog
         questionService.getRandomReviewQuestionsForCourse(courseID, 1, new QuestionService.QuestionFetchCallback() {
             @Override
@@ -180,7 +180,8 @@ public class GameActivity extends AppCompatActivity {
         TextView btnShowImage = dialogView.findViewById(R.id.btn_show_image);
         // ⭐ LẤY LESSON ID TỪ CÂU HỎI (đã được set trong QuestionService)
         final int dynamicLessonId = question.getLessonId();
-
+        final int questionId = question.getId(); // Lấy ID của câu hỏi
+        Log.d(TAG, "Question ID đang hiển thị: " + questionId);
         btnShowImage.setVisibility(View.VISIBLE);
         btnShowImage.setOnClickListener(v -> showImageDialogByLesson(dynamicLessonId));
 

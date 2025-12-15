@@ -222,4 +222,82 @@ public class GameManager extends BaseApiManager{
             }
         });
     }
+
+    public void sendAnswerRequest(int sessionId, String questionId, String answerData, ApiCallback callback) {
+        // Lấy access token từ SharedPreferences
+        String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            callback.onFailure("Không tìm thấy Access Token! Vui lòng đăng nhập lại.");
+            return;
+        }
+
+        // --- 1. Tạo JSON request body chứa câu trả lời ---
+        JSONObject jsonBody = new JSONObject();
+        try {
+            // Đây là cấu trúc cơ bản. Bạn cần điều chỉnh các trường này
+            // để phù hợp với định dạng yêu cầu của API /answer thực tế
+            jsonBody.put("questionId", questionId);
+            jsonBody.put("answer", answerData); // Hoặc có thể là "selectedOptionId", v.v.
+            jsonBody.put("timeTakenMs", 1500); // Ví dụ: Thời gian trả lời (miligiây)
+            // ... Các trường khác cần thiết (ví dụ: playerId)
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.onFailure("Lỗi khi tạo request body JSON: " + e.getMessage());
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+
+        // --- 2. Tạo request ---
+        // Đường dẫn API: /api/v1/game/{sessionId}/answer
+        Request request = new Request.Builder()
+                .url(BASE_URL + "/api/v1/game/" + sessionId + "/answer")
+                .header("Authorization", "Bearer " + accessToken)
+                .post(body)
+                .build();
+
+        // --- 3. Thực hiện cuộc gọi không đồng bộ ---
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("GameManager", "Kết nối thất bại khi gửi câu trả lời: " + e.getMessage());
+                callback.onFailure("Kết nối thất bại! Không thể gửi câu trả lời.");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("GameManager", "Phản hồi gửi câu trả lời: " + responseBody);
+
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+
+                        // Phân tích phản hồi thành công (thường chứa điểm số mới, trạng thái câu trả lời)
+                        if (jsonResponse.has("data")) {
+                            JSONObject dataObj = jsonResponse.getJSONObject("data");
+                            // Tùy thuộc vào API, bạn có thể lấy điểm số (score), trạng thái (isCorrect), v.v.
+                            boolean isCorrect = dataObj.optBoolean("isCorrect", false);
+                            int currentScore = dataObj.optInt("score", 0);
+
+                            Log.d("SendAnswer", "Gửi câu trả lời thành công. Đúng: " + isCorrect + ", Điểm: " + currentScore);
+                            // Trả về dữ liệu cần thiết qua onSuccess
+                            callback.onSuccess(jsonResponse); // Trả về toàn bộ response JSON để dễ xử lý
+                        } else {
+                            callback.onFailure("Phản hồi thành công nhưng không có trường 'data'!");
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callback.onFailure("Lỗi khi phân tích phản hồi JSON gửi câu trả lời: " + e.getMessage());
+                    }
+                } else {
+                    // Xử lý lỗi (Mã lỗi 4xx, 5xx)
+                    Log.e("GameManager", "Lỗi từ server khi gửi câu trả lời: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+                    callback.onFailure("Gửi câu trả lời thất bại! Mã lỗi: " + response.code() + ", Nội dung: " + responseBody);
+                }
+            }
+        });
+    }
 }
