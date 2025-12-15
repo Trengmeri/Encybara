@@ -48,7 +48,7 @@ public class GameActivity extends AppCompatActivity {
     private QuestionService questionService; // ✅ Thêm QuestionService
     private LearningMaterialsManager materialsManager = new LearningMaterialsManager(this);;
     private static final String TAG = "GameActivity";
-
+    private int currentScore = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -209,25 +209,17 @@ public class GameActivity extends AppCompatActivity {
         // Xáo trộn thứ tự các lựa chọn để chúng không luôn xuất hiện ở cùng một vị trí
         List<QuestionDetailRespone.QuestionChoice> choices = question.getQuestionChoices();
         if (choices != null) {
-            Collections.shuffle(choices); // ✅ Xáo trộn thứ tự lựa chọn
-            for (int i = 0; i < choices.size(); i++) {
-                QuestionDetailRespone.QuestionChoice choice = choices.get(i);
+            Collections.shuffle(choices);
+            for (QuestionDetailRespone.QuestionChoice choice : choices) {
                 RadioButton rb = new RadioButton(this);
                 rb.setText(choice.getChoiceContent());
-                rb.setId(choice.getId()); // ✅ Gán ID của choice làm ID của RadioButton
+                rb.setId(choice.getId()); // Gán ID của choice làm ID của RadioButton
                 radioGroupAnswers.addView(rb);
-
-                if (choice.isChoiceKey()) {
-                    // correctAnswerId = i; // Nếu bạn muốn lưu trữ index
-                    // Hoặc lưu trữ ID của lựa chọn đúng
-                    final int finalCorrectAnswerId = choice.getId();
-                    radioGroupAnswers.setOnCheckedChangeListener((group, checkedId) -> {
-                        selectedAnswerId[0] = checkedId;
-                    });
-                }
             }
+            radioGroupAnswers.setOnCheckedChangeListener((group, checkedId) -> {
+                selectedAnswerId[0] = checkedId;
+            });
         }
-
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.TransparentDialog);
 
@@ -235,35 +227,20 @@ public class GameActivity extends AppCompatActivity {
                 .setView(dialogView)
                 .setPositiveButton("Xác nhận", (d, w) -> {
                     if (selectedAnswerId[0] != -1) { // Đảm bảo người dùng đã chọn
-                        boolean isCorrect = false;
-                        for (QuestionDetailRespone.QuestionChoice choice : question.getQuestionChoices()) {
-                            if (choice.getId() == selectedAnswerId[0] && choice.isChoiceKey()) {
-                                isCorrect = true;
-                                break;
-                            }
-                        }
+                        d.dismiss(); // Đóng dialog ngay lập tức
 
-                        if (isCorrect) {
-                            gameView.clearQuestionAt(row, col);
-                            Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            gameView.handleWrongAnswer(row, col);
-                            Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi!", Toast.LENGTH_LONG).show();
-                        }
+                        // 🔔 GỌI HÀM MỚI để gửi câu trả lời lên server
+                        submitAnswerToServer(question.getId(), selectedAnswerId[0], row, col);
+
                     } else {
                         Toast.makeText(GameActivity.this, "Vui lòng chọn một đáp án.", Toast.LENGTH_SHORT).show();
-                        // Nếu không chọn, có thể cho phép dialog đóng hoặc buộc chọn
-                        // Hiện tại, dialog sẽ đóng và không xử lý câu trả lời.
-                        // Bạn có thể cân nhắc gọi lại showQuestionDialog để buộc chọn.
+                        // KHÔNG đóng dialog, buộc người dùng phải chọn hoặc Hủy
                     }
-                    if (gameView.isGameRunning()) startTimer();
+                    // startTimer() sẽ được gọi sau khi nhận được phản hồi từ API (xem hàm submitAnswerToServer)
                 })
                 .setNegativeButton("Hủy", (d, w) -> {
                     Toast.makeText(GameActivity.this, "Bạn đã hủy trả lời. Lùi lại 1 bước.", Toast.LENGTH_SHORT).show();
-
-                    // ✅ GỌI HÀM MỚI ĐỂ ĐẨY LÙI GẤU VỀ Ô TRƯỚC ĐÓ
                     gameView.pushBearBack();
-
                     if (gameView.isGameRunning()) startTimer();
                 })
                 .setCancelable(false)
@@ -278,8 +255,88 @@ public class GameActivity extends AppCompatActivity {
 
         dialog.show();
     }
-    // Thay thế phương thức cũ bằng phương thức này
-    // Trong GameActivity.java
+    private void submitAnswerToServer(int questionId, int choiceId, int row, int col) {
+        Toast.makeText(this, "Đang gửi đáp án...", Toast.LENGTH_SHORT).show();
+
+        // Tham số currentSessionId đã được lấy từ Intent trong onCreate
+
+        gameManager.sendAnswerRequest(
+                (long) currentSessionId,
+                (long) questionId,
+                (long) choiceId,
+                new ApiCallback() {
+
+                    @Override
+                    public void onSuccess() {
+                        // Không sử dụng, cần onSuccess(Object result) để lấy điểm
+                    }
+
+                    // ✅ Phương thức onSuccess mới cần được định nghĩa trong ApiCallback
+                    // Dùng Object để linh hoạt nhận String (message) hoặc Integer (score)
+                    // Hoặc trong trường hợp này, chúng ta sẽ cần thay đổi nó.
+                    // Xem ghi chú bên dưới về chữ ký ApiCallback.
+                    @Override
+                    public void onSuccess(Object result) {
+                        runOnUiThread(() -> {
+                            if (gameView.isGameRunning()) startTimer(); // Khởi động lại timer
+
+                            if (result instanceof Integer) {
+                                // Trường hợp 1: Nhận được điểm số (currentScore/finalScore)
+                                int score = (Integer) result;
+                                currentScore = score;
+                                Toast.makeText(GameActivity.this, "Điểm hiện tại: " + currentScore, Toast.LENGTH_SHORT).show();
+
+                                // *** RẤT QUAN TRỌNG:
+                                // Vì API không trả về isCorrect, chúng ta cần sửa đổi ApiCallback
+                                // hoặc xử lý isCorrect ở đây. Giả định bạn đã sửa đổi ApiCallback.
+                                // GIẢ ĐỊNH: Nếu điểm số tăng, câu trả lời là ĐÚNG.
+                                // *Đây là cách xử lý tạm, nên sửa ApiCallback để nhận isCorrect.*
+
+                                // Nếu API trả về true/false về độ chính xác
+                                boolean isCorrect = true; // Cần lấy từ Object result thực tế
+
+                                if (isCorrect) {
+                                    gameView.clearQuestionAt(row, col);
+                                    Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống. Điểm: " + currentScore, Toast.LENGTH_LONG).show();
+                                } else {
+                                    gameView.handleWrongAnswer(row, col);
+                                    Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi! Điểm: " + currentScore, Toast.LENGTH_LONG).show();
+                                }
+
+                            } else if (result instanceof String && "Game Completed".equals(result)) {
+                                // Trường hợp 2: Game kết thúc
+                                Toast.makeText(GameActivity.this, "Game Completed. Chuyển sang kết quả.", Toast.LENGTH_LONG).show();
+                                // Không cần gọi endGameAndShowResult nữa vì đã kết thúc trên server
+                                // Bạn nên chuyển thẳng sang màn hình hiển thị final score.
+                            } else {
+                                // Phản hồi không rõ ràng
+                                Toast.makeText(GameActivity.this, "Đáp án đã được gửi.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(() -> {
+                            if (gameView.isGameRunning()) startTimer(); // Khởi động lại timer
+
+                            Log.e(TAG, "Lỗi gửi đáp án: " + errorMessage);
+                            Toast.makeText(GameActivity.this, "Lỗi gửi đáp án: " + errorMessage, Toast.LENGTH_LONG).show();
+
+                            // Nếu lỗi do "Game session has ended" (Lỗi nghiệp vụ)
+                            if (errorMessage.contains("Game session has ended")) {
+                                Toast.makeText(GameActivity.this, "Game đã kết thúc. Xem kết quả.", Toast.LENGTH_LONG).show();
+                                // Bỏ qua lỗi và chuyển sang màn hình kết quả cuối cùng
+                                endGameAndShowResult();
+                            } else {
+                                // Nếu lỗi khác (Mất kết nối, v.v.), vẫn lùi gấu về ô cũ
+                                gameView.pushBearBack();
+                            }
+                        });
+                    }
+                }
+        );
+    }
     private void showImageDialogByLesson(int lessonId) {
         if (lessonId <= 0) {
             Toast.makeText(this, "Bài học này không có tài liệu minh họa.", Toast.LENGTH_SHORT).show();

@@ -223,8 +223,11 @@ public class GameManager extends BaseApiManager{
         });
     }
 
-    public void sendAnswerRequest(int sessionId, String questionId, String answerData, ApiCallback callback) {
-        // Lấy access token từ SharedPreferences
+// Giả định bạn có các lớp BASE_URL, client, SharedPreferencesManager, và ApiCallback
+// trong bối cảnh ứng dụng Android của bạn.
+
+    public void sendAnswerRequest(Long sessionId, Long questionId, Long choiceId, ApiCallback callback) {
+        // 1. Lấy Access Token (Giống như mẫu trước của bạn)
         String accessToken = SharedPreferencesManager.getInstance(context).getAccessToken();
 
         if (accessToken == null || accessToken.isEmpty()) {
@@ -232,32 +235,33 @@ public class GameManager extends BaseApiManager{
             return;
         }
 
-        // --- 1. Tạo JSON request body chứa câu trả lời ---
+        // 2. Tạo JSON Request Body
         JSONObject jsonBody = new JSONObject();
         try {
-            // Đây là cấu trúc cơ bản. Bạn cần điều chỉnh các trường này
-            // để phù hợp với định dạng yêu cầu của API /answer thực tế
+            // Cấu trúc body yêu cầu questionId và choiceId
             jsonBody.put("questionId", questionId);
-            jsonBody.put("answer", answerData); // Hoặc có thể là "selectedOptionId", v.v.
-            jsonBody.put("timeTakenMs", 1500); // Ví dụ: Thời gian trả lời (miligiây)
-            // ... Các trường khác cần thiết (ví dụ: playerId)
+            jsonBody.put("choiceId", choiceId);
+
+            // Bạn có thể thêm các trường tùy chọn khác nếu cần, ví dụ:
+            // jsonBody.put("timeTakenMs", System.currentTimeMillis() - questionStartTime);
         } catch (JSONException e) {
             e.printStackTrace();
             callback.onFailure("Lỗi khi tạo request body JSON: " + e.getMessage());
             return;
         }
 
+        // Định nghĩa loại nội dung là JSON
         RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
 
-        // --- 2. Tạo request ---
-        // Đường dẫn API: /api/v1/game/{sessionId}/answer
+        // 3. Tạo Request
+        // Đường dẫn: BASE_URL + /api/v1/game/{sessionId}/answer
         Request request = new Request.Builder()
                 .url(BASE_URL + "/api/v1/game/" + sessionId + "/answer")
                 .header("Authorization", "Bearer " + accessToken)
                 .post(body)
                 .build();
 
-        // --- 3. Thực hiện cuộc gọi không đồng bộ ---
+        // 4. Thực hiện cuộc gọi không đồng bộ
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -271,33 +275,50 @@ public class GameManager extends BaseApiManager{
                 Log.d("GameManager", "Phản hồi gửi câu trả lời: " + responseBody);
 
                 if (response.isSuccessful()) {
-                    try {
-                        JSONObject jsonResponse = new JSONObject(responseBody);
-
-                        // Phân tích phản hồi thành công (thường chứa điểm số mới, trạng thái câu trả lời)
-                        if (jsonResponse.has("data")) {
-                            JSONObject dataObj = jsonResponse.getJSONObject("data");
-                            // Tùy thuộc vào API, bạn có thể lấy điểm số (score), trạng thái (isCorrect), v.v.
-                            boolean isCorrect = dataObj.optBoolean("isCorrect", false);
-                            int currentScore = dataObj.optInt("score", 0);
-
-                            Log.d("SendAnswer", "Gửi câu trả lời thành công. Đúng: " + isCorrect + ", Điểm: " + currentScore);
-                            // Trả về dữ liệu cần thiết qua onSuccess
-                            callback.onSuccess(jsonResponse); // Trả về toàn bộ response JSON để dễ xử lý
-                        } else {
-                            callback.onFailure("Phản hồi thành công nhưng không có trường 'data'!");
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        callback.onFailure("Lỗi khi phân tích phản hồi JSON gửi câu trả lời: " + e.getMessage());
-                    }
+                    // Xử lý phản hồi thành công (HTTP 200 OK)
+                    handleSuccessfulAnswerResponse(responseBody, callback);
                 } else {
-                    // Xử lý lỗi (Mã lỗi 4xx, 5xx)
-                    Log.e("GameManager", "Lỗi từ server khi gửi câu trả lời: Mã lỗi " + response.code() + ", Nội dung: " + responseBody);
+                    // Xử lý phản hồi lỗi HTTP (4xx, 5xx)
+                    Log.e("GameManager", "Lỗi từ server: Mã lỗi " + response.code());
                     callback.onFailure("Gửi câu trả lời thất bại! Mã lỗi: " + response.code() + ", Nội dung: " + responseBody);
                 }
             }
         });
+    }
+
+    // Hàm tách riêng để xử lý logic phân tích JSON
+    private void handleSuccessfulAnswerResponse(String responseBody, ApiCallback callback) {
+        try {
+            JSONObject jsonResponse = new JSONObject(responseBody);
+            JSONObject dataObj = jsonResponse.optJSONObject("data");
+
+            if (dataObj != null && dataObj.has("error")) {
+                // Trường hợp lỗi nghiệp vụ: game đã kết thúc
+                String errorMessage = dataObj.getString("error");
+                Log.e("API_ANSWER", "Lỗi nghiệp vụ: " + errorMessage);
+                callback.onFailure("Trò chơi đã kết thúc: " + errorMessage);
+
+            } else if (dataObj != null) {
+                // Trường hợp thành công bình thường (hoặc kết thúc game thành công)
+                boolean isCorrect = dataObj.optBoolean("correct", false);
+                int currentScore = dataObj.optInt("score", 0);
+                boolean gameCompleted = dataObj.optBoolean("gameCompleted", false);
+
+                if (gameCompleted) {
+                    int finalScore = dataObj.optInt("finalScore", currentScore);
+                    // Chuyển toàn bộ JSON dataObj cho callback để xử lý logic kết thúc game
+                    callback.onSuccess(dataObj);
+                } else {
+                    // Chuyển điểm số hoặc toàn bộ dataObj
+                    callback.onSuccess(currentScore);
+                }
+            } else {
+                callback.onFailure("Phản hồi thành công nhưng không có trường 'data'!");
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.onFailure("Lỗi khi phân tích phản hồi JSON: " + e.getMessage());
+        }
     }
 }
