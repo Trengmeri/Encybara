@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.example.test.model.AnswerResult;
 import com.example.test.response.ApiResponseGame;
 import com.google.gson.Gson;
 import com.example.test.SharedPreferencesManager;
@@ -292,27 +293,35 @@ public class GameManager extends BaseApiManager{
             JSONObject jsonResponse = new JSONObject(responseBody);
             JSONObject dataObj = jsonResponse.optJSONObject("data");
 
+            // Cần đảm bảo rằng callback đang được sử dụng đúng kiểu AnswerResult,
+            // mặc dù kiểu hình thức của ApiCallback là T.
+            // Trong thực tế Android, bạn thường phải ép kiểu hoặc truyền nó như T.
+
             if (dataObj != null && dataObj.has("error")) {
-                // Trường hợp lỗi nghiệp vụ: game đã kết thúc
+                // Trường hợp lỗi nghiệp vụ: game đã kết thúc (server trả về 200 OK nhưng data chứa lỗi)
                 String errorMessage = dataObj.getString("error");
                 Log.e("API_ANSWER", "Lỗi nghiệp vụ: " + errorMessage);
-                callback.onFailure("Trò chơi đã kết thúc: " + errorMessage);
+
+                // Tạo AnswerResult chứa lỗi nghiệp vụ
+                AnswerResult errorResult = new AnswerResult(errorMessage);
+                callback.onSuccess(errorResult); // Truyền lỗi nghiệp vụ qua onSuccess
 
             } else if (dataObj != null) {
                 // Trường hợp thành công bình thường (hoặc kết thúc game thành công)
-                boolean isCorrect = dataObj.optBoolean("correct", false);
+
+                // Lấy các giá trị cần thiết từ phản hồi API
+                boolean isCorrect = dataObj.optBoolean("correct", false); // Giả định API trả về "correct"
                 int currentScore = dataObj.optInt("score", 0);
                 boolean gameCompleted = dataObj.optBoolean("gameCompleted", false);
 
-                if (gameCompleted) {
-                    int finalScore = dataObj.optInt("finalScore", currentScore);
-                    // Chuyển toàn bộ JSON dataObj cho callback để xử lý logic kết thúc game
-                    callback.onSuccess(dataObj);
-                } else {
-                    // Chuyển điểm số hoặc toàn bộ dataObj
-                    callback.onSuccess(currentScore);
-                }
+                // Tạo đối tượng AnswerResult chứa kết quả
+                AnswerResult successResult = new AnswerResult(isCorrect, currentScore, gameCompleted);
+
+                // Dù game kết thúc hay không, chúng ta đều truyền AnswerResult qua onSuccess
+                callback.onSuccess(successResult);
+
             } else {
+                // Phản hồi thành công HTTP (200) nhưng không có nội dung data
                 callback.onFailure("Phản hồi thành công nhưng không có trường 'data'!");
             }
 

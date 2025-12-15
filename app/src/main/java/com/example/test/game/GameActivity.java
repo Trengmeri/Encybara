@@ -27,6 +27,7 @@ import com.example.test.R;
 import com.example.test.api.ApiCallback;
 import com.example.test.api.GameManager;
 import com.example.test.api.LearningMaterialsManager;
+import com.example.test.model.AnswerResult;
 import com.example.test.response.QuestionDetailRespone;
 import com.example.test.api.QuestionService;
 import com.example.test.ui.home.HomeActivity;
@@ -249,7 +250,7 @@ public class GameActivity extends AppCompatActivity {
         Window window = dialog.getWindow();
         if (window != null) {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             window.setGravity(Gravity.CENTER);
         }
 
@@ -260,57 +261,58 @@ public class GameActivity extends AppCompatActivity {
 
         // Tham số currentSessionId đã được lấy từ Intent trong onCreate
 
+        // 💡 Chỉ định AnswerResult là kiểu generic T cho ApiCallback
         gameManager.sendAnswerRequest(
                 (long) currentSessionId,
                 (long) questionId,
                 (long) choiceId,
-                new ApiCallback() {
+                new ApiCallback<AnswerResult>() {
 
                     @Override
                     public void onSuccess() {
-                        // Không sử dụng, cần onSuccess(Object result) để lấy điểm
+                        // Phương thức này không được dùng cho submitAnswer,
+                        // mà dùng cho các API không trả về dữ liệu (như End Game)
                     }
 
-                    // ✅ Phương thức onSuccess mới cần được định nghĩa trong ApiCallback
-                    // Dùng Object để linh hoạt nhận String (message) hoặc Integer (score)
-                    // Hoặc trong trường hợp này, chúng ta sẽ cần thay đổi nó.
-                    // Xem ghi chú bên dưới về chữ ký ApiCallback.
+                    // ✅ SỬ DỤNG AnswerResult để lấy thông tin chi tiết
                     @Override
-                    public void onSuccess(Object result) {
+                    public void onSuccess(AnswerResult result) {
                         runOnUiThread(() -> {
-                            if (gameView.isGameRunning()) startTimer(); // Khởi động lại timer
+                            // 1. Luôn khởi động lại timer sau khi xử lý xong câu hỏi
+                            if (gameView.isGameRunning()) startTimer();
 
-                            if (result instanceof Integer) {
-                                // Trường hợp 1: Nhận được điểm số (currentScore/finalScore)
-                                int score = (Integer) result;
-                                currentScore = score;
-                                Toast.makeText(GameActivity.this, "Điểm hiện tại: " + currentScore, Toast.LENGTH_SHORT).show();
+                            // 2. XỬ LÝ LỖI NGHIỆP VỤ (Ví dụ: Game đã kết thúc)
+                            if (result.isError()) {
+                                Log.e(TAG, "Lỗi nghiệp vụ gửi đáp án: " + result.getErrorMessage());
+                                Toast.makeText(GameActivity.this, "Lỗi: " + result.getErrorMessage(), Toast.LENGTH_LONG).show();
 
-                                // *** RẤT QUAN TRỌNG:
-                                // Vì API không trả về isCorrect, chúng ta cần sửa đổi ApiCallback
-                                // hoặc xử lý isCorrect ở đây. Giả định bạn đã sửa đổi ApiCallback.
-                                // GIẢ ĐỊNH: Nếu điểm số tăng, câu trả lời là ĐÚNG.
-                                // *Đây là cách xử lý tạm, nên sửa ApiCallback để nhận isCorrect.*
-
-                                // Nếu API trả về true/false về độ chính xác
-                                boolean isCorrect = true; // Cần lấy từ Object result thực tế
-
-                                if (isCorrect) {
-                                    gameView.clearQuestionAt(row, col);
-                                    Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống. Điểm: " + currentScore, Toast.LENGTH_LONG).show();
+                                // Nếu game đã kết thúc, chuyển sang màn hình kết quả
+                                if (result.getErrorMessage().contains("Game session has ended")) {
+                                    endGameAndShowResult();
                                 } else {
-                                    gameView.handleWrongAnswer(row, col);
-                                    Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi! Điểm: " + currentScore, Toast.LENGTH_LONG).show();
+                                    // Lỗi khác (ví dụ: câu hỏi/session không hợp lệ)
+                                    gameView.pushBearBack();
                                 }
+                                return;
+                            }
 
-                            } else if (result instanceof String && "Game Completed".equals(result)) {
-                                // Trường hợp 2: Game kết thúc
-                                Toast.makeText(GameActivity.this, "Game Completed. Chuyển sang kết quả.", Toast.LENGTH_LONG).show();
-                                // Không cần gọi endGameAndShowResult nữa vì đã kết thúc trên server
-                                // Bạn nên chuyển thẳng sang màn hình hiển thị final score.
+                            // 3. XỬ LÝ KẾT QUẢ ĐÚNG/SAI (Thành công API)
+                            currentScore = result.getCurrentScore(); // Cập nhật điểm
+
+                            if (result.isCorrect()) {
+                                gameView.clearQuestionAt(row, col);
+                                Toast.makeText(GameActivity.this, "Đúng! Ô đã được dọn trống. Điểm: " + currentScore, Toast.LENGTH_LONG).show();
                             } else {
-                                // Phản hồi không rõ ràng
-                                Toast.makeText(GameActivity.this, "Đáp án đã được gửi.", Toast.LENGTH_SHORT).show();
+                                // ❌ Xử lý trả lời SAI
+                                gameView.handleWrongAnswer(row, col);
+                                gameView.pushBearBack(); // ✅ ĐẨY GẤU LÙI LẠI 1 Ô (Khắc phục lỗi)
+                                Toast.makeText(GameActivity.this, "Sai rồi! Ô này biến thành đá và bạn bị đẩy lùi! Điểm: " + currentScore, Toast.LENGTH_LONG).show();
+                            }
+
+                            // 4. XỬ LÝ GAME KẾT THÚC
+                            if (result.isGameCompleted()) {
+                                Toast.makeText(GameActivity.this, "Game đã hoàn thành! Đang chuyển sang kết quả cuối cùng.", Toast.LENGTH_LONG).show();
+                                endGameAndShowResult();
                             }
                         });
                     }
@@ -320,18 +322,10 @@ public class GameActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             if (gameView.isGameRunning()) startTimer(); // Khởi động lại timer
 
-                            Log.e(TAG, "Lỗi gửi đáp án: " + errorMessage);
+                            // Lỗi HTTP/Kết nối: Lùi gấu lại để tránh bị kẹt
+                            Log.e(TAG, "Lỗi kết nối/server: " + errorMessage);
                             Toast.makeText(GameActivity.this, "Lỗi gửi đáp án: " + errorMessage, Toast.LENGTH_LONG).show();
-
-                            // Nếu lỗi do "Game session has ended" (Lỗi nghiệp vụ)
-                            if (errorMessage.contains("Game session has ended")) {
-                                Toast.makeText(GameActivity.this, "Game đã kết thúc. Xem kết quả.", Toast.LENGTH_LONG).show();
-                                // Bỏ qua lỗi và chuyển sang màn hình kết quả cuối cùng
-                                endGameAndShowResult();
-                            } else {
-                                // Nếu lỗi khác (Mất kết nối, v.v.), vẫn lùi gấu về ô cũ
-                                gameView.pushBearBack();
-                            }
+                            gameView.pushBearBack();
                         });
                     }
                 }
